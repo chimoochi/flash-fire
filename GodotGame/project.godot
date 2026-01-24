@@ -15,6 +15,10 @@ run/main_scene="uid://hmhsgxomj3kw"
 config/features=PackedStringArray("4.5", "GL Compatibility")
 config/icon="res://icon.svg"
 
+[autoload]
+
+CameraService="*res://scripts/utils/CameraService.gd"
+
 [input]
 
 MoveUp={
