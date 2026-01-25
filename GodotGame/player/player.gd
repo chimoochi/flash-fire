@@ -14,7 +14,10 @@ var PlayerState: Dictionary = {
 
 var is_swinging: bool = false
 var can_shoot: bool = false
-func _physics_process(delta: float) -> void:
+func _ready() -> void:
+	add_to_group("Player")
+
+func _physics_process(delta):
 	var direction = Vector2.ZERO
 	
 	if Input.is_action_pressed("MoveRight"):
@@ -53,7 +56,6 @@ func attack() -> void:
 	var shoot_dir = Vector2.RIGHT.rotated(rotation)
 	spawn_bullet(shoot_dir)
 	
-	# Add effects via CameraService (One-liners!)
 	CameraService.shake(0.3)
 	CameraService.kick(Vector2(0.05, 0.05))
 	
