@@ -9,11 +9,10 @@ var PlayerState: Dictionary = {
 	"health": 100,
 	"abilities": [],
 	"passives": [],
-	"is_alive": true
+	"is_alive": true,
+	"is_swinging": false,
+	"can_shoot": false
 }
-
-var is_swinging: bool = false
-var can_shoot: bool = false
 func _ready() -> void:
 	add_to_group("Player")
 
@@ -41,7 +40,7 @@ func _physics_process(delta):
 		attack()
 
 func spawn_bullet(direction: Vector2) -> void:	
-	if not can_shoot:
+	if not PlayerState["can_shoot"]:
 		return
 	var bullet = BULLET_SCENE.instantiate()
 	bullet.direction = direction
@@ -62,18 +61,35 @@ func attack() -> void:
 	swing()
 
 func swing() -> void:
-	if is_swinging: # no spam
+	if PlayerState["is_swinging"]: # no spam
 		return
 		
-	is_swinging = true # line 40
+	PlayerState["is_swinging"] = true
 	var tween = create_tween()
 	var start_rot = melee_pivot.rotation
 	
 	tween.tween_property(melee_pivot, "rotation", start_rot - PI/2, 0.1).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tween.tween_callback(check_melee_hit)
 	tween.tween_property(melee_pivot, "rotation", start_rot, 0.1).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 	
 	await tween.finished
-	is_swinging = false
+	PlayerState["is_swinging"] = false
+
+func check_melee_hit() -> void:
+	var space_state = get_world_2d().direct_space_state
+	var shape_node = $MeleePivot/MeleeHitBox
+	
+	var query = PhysicsShapeQueryParameters2D.new()
+	query.shape = shape_node.shape
+	query.transform = shape_node.global_transform
+	query.collide_with_areas = true # Just in case?
+	query.collide_with_bodies = true
+	
+	var result = space_state.intersect_shape(query)
+	for data in result:
+		var collider = data["collider"]
+		if collider.is_in_group("Enemy") and collider.has_method("take_damage"):
+			collider.take_damage(25)
 
 func use_ability(ability_name: String) -> void:
 	# Placeholder
