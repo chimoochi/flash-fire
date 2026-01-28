@@ -10,6 +10,10 @@ extends CharacterBody2D
 
 @export var search_duration := 5.0
 
+const PUSH_DECAY := 2000.0
+const MAX_PUSH_VELOCITY := 800.0
+const STOPPING_DISTANCE := 50.0
+
 enum State {IDLE, CHASING, SUSPICIOUS}
 
 var EnemyState: Dictionary = {
@@ -27,6 +31,8 @@ var scan_angle := 0.0
 var health_bar_scene = preload("res://enemy/health_bar.tscn")
 var health_bar: ProgressBar
 
+var push_velocity: Vector2 = Vector2.ZERO
+
 func _ready() -> void:
 	add_to_group("Enemy")
 	_acquire_target()
@@ -38,13 +44,20 @@ func _setup_health_bar() -> void:
 	health_bar.max_value = EnemyState["max_health"]
 	health_bar.value = EnemyState["health"]
 
+func push(force: Vector2) -> void:
+	push_velocity += force
+	if push_velocity.length() > MAX_PUSH_VELOCITY:
+		push_velocity = push_velocity.limit_length(MAX_PUSH_VELOCITY)
+
 func _physics_process(delta: float) -> void:
+	push_velocity = push_velocity.move_toward(Vector2.ZERO, PUSH_DECAY * delta)
+	
 	if not is_instance_valid(target):
 		_acquire_target()
+		_apply_movement(Vector2.ZERO)
 		return
 	
 	var can_see_player = _can_see_target()
-	
 	
 	match EnemyState["behavior"]:
 		State.IDLE:
@@ -52,27 +65,41 @@ func _physics_process(delta: float) -> void:
 				_set_state(State.CHASING)
 			elif _can_hear_target():
 				if _has_clear_line_of_fire(): _set_state(State.CHASING)
+			_apply_movement(Vector2.ZERO)
 
 		State.CHASING:
 			if can_see_player:
 				_chase_target(delta)
 			else:
 				_set_state(State.SUSPICIOUS)
+				_apply_movement(Vector2.ZERO)
 
 		State.SUSPICIOUS:
 			if can_see_player:
 				_set_state(State.CHASING)
 			else:
 				_perform_search(delta)
+			_apply_movement(Vector2.ZERO)
 
 	queue_redraw()
 
+func _apply_movement(drive_velocity: Vector2) -> void:
+	velocity = drive_velocity + push_velocity
+	move_and_slide()
+	# Update push_velocity to reflect external forces being resolved (e.g. wall collisions)
+	push_velocity = velocity - drive_velocity
+
 func _chase_target(delta: float) -> void:
 	var dir_to_target = global_position.direction_to(target.global_position)
+	var dist_to_target = global_position.distance_to(target.global_position)
+	
 	_smooth_rotate(dir_to_target.angle(), delta)
 	
-	velocity = dir_to_target * move_speed
-	move_and_slide()
+	var drive = Vector2.ZERO
+	if dist_to_target > STOPPING_DISTANCE:
+		drive = dir_to_target * move_speed
+	
+	_apply_movement(drive)
 
 func _perform_search(delta: float) -> void:
 	patience_timer -= delta
@@ -83,9 +110,12 @@ func _perform_search(delta: float) -> void:
 		scan_angle = rotation + randf_range(-PI / 2, PI / 2)
 	if patience_timer <= 0:
 		_set_state(State.IDLE)
+	
+	_apply_movement(Vector2.ZERO)
 
 func _smooth_rotate(target_angle: float, delta: float) -> void:
 	rotation = lerp_angle(rotation, target_angle, delta * turn_speed)
+
 
 func _set_state(new_state: State) -> void:
 	EnemyState["behavior"] = new_state

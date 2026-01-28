@@ -6,6 +6,7 @@
 size = Vector2(32, 32)
 
 [node name="Enemy bad" type="CharacterBody2D"]
+collision_layer = 4
 script = ExtResource("1_7643s")
 
 [node name="ColorRect" type="ColorRect" parent="."]
@@ -25,3 +26,4 @@ offset_bottom = 2.0
 shape = SubResource("RectangleShape2D_enemy")
 
 [node name="RayCast2D" type="RayCast2D" parent="."]
+collision_mask = 3
