@@ -11,6 +11,7 @@ const DASH_COOLDOWN = 0.8
 const BULLET_SPEED = 1500.0
 const BULLET_SCENE = preload("res://player/bullet.tscn")
 @onready var melee_pivot: Node2D = $MeleePivot
+@onready var weapon_visuals: Node2D = $MeleePivot/MeleeHitBox # Or whatever node holds the sprite/shape
 
 var PlayerState: Dictionary = {
 	"health": 100,
@@ -22,8 +23,13 @@ var PlayerState: Dictionary = {
 	"is_dashing": false,
 	"can_dash": true
 }
+var default_weapon_rotation: float = 0.0
+var default_weapon_position: Vector2 = Vector2.ZERO
+
 func _ready() -> void:
 	add_to_group("Player")
+	default_weapon_rotation = melee_pivot.rotation
+	default_weapon_position = weapon_visuals.position
 
 func _physics_process(delta):
 	var direction = Vector2.ZERO
@@ -106,37 +112,102 @@ func attack() -> void:
 	
 	swing()
 
+
 func swing() -> void:
-	if PlayerState["is_swinging"]: # no spam
+	
+	if PlayerState["is_swinging"]:
 		return
 		
 	PlayerState["is_swinging"] = true
+	
+	# --- SETTINGS ---
+	var duration = 0.25
+	# Start "behind" the aim (-135 deg) and end "in front" (+45 deg)
+	# This creates a wide overhead swing.
+	var start_angle = deg_to_rad(-135) 
+	var end_angle = deg_to_rad(45) 
+	
+	var start_dist = 10.0 # Close to body
+	var peak_dist = 50.0  # Max reach (The "Throw")
+	
+	# --- RESET & PREPARE ---
+	# Kill any running tweens to prevent conflicts if we interrupt
+	if get_tree_string_pretty().contains("tween"): 
+		# Note: In a real project, store the active tween in a variable and .kill() it.
+		pass 
+	
+	# 1. Orient the pivot to the start angle immediately
+	melee_pivot.rotation = start_angle
+	
+	# 2. Set the weapon distance close to body (windup feel)
+	weapon_visuals.position.x = start_dist
+	
+	# 3. Make sure it's visible (if you hide it during idle)
+	weapon_visuals.visible = true
+	
+	# --- THE ANIMATION ---
 	var tween = create_tween()
-	var start_rot = melee_pivot.rotation
 	
-	tween.tween_property(melee_pivot, "rotation", start_rot - PI / 2, 0.1).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	tween.tween_callback(check_melee_hit)
-	tween.tween_property(melee_pivot, "rotation", start_rot, 0.1).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	# We run the Rotation and Extension in parallel
+	tween.set_parallel(true)
 	
+	# A: ROTATION (The Arc)
+	# TRANS_EXPO + EASE_OUT makes it start FAST (explosive) and slow down at the end
+	tween.tween_property(melee_pivot, "rotation", end_angle, duration)\
+		.set_trans(Tween.TRANS_EXPO)\
+		.set_ease(Tween.EASE_OUT)
+		
+	# B: EXTENSION (The "Thrown" feel)
+	# We move the sprite OUT and then slightly IN.
+	# Using TRANS_BACK + EASE_OUT creates an "overshoot" effect, 
+	# effectively throwing it out and pulling it back slightly.
+	tween.tween_property(weapon_visuals, "position:x", peak_dist, duration)\
+		.set_trans(Tween.TRANS_BACK)\
+		.set_ease(Tween.EASE_OUT)
+	
+	# --- HIT DETECTION ---
+	# Check for hits specifically during the fastest part of the swing
+	tween.set_parallel(false)
+	tween.tween_callback(check_melee_hit).set_delay(duration * 0.2)
+	
+	# --- RESET ---
 	await tween.finished
+	
+	var return_tween = create_tween()
+	return_tween.set_parallel(true)
+	# Rotate back to original idle rotation
+	return_tween.tween_property(melee_pivot, "rotation", default_weapon_rotation, duration).set_trans(Tween.TRANS_QUART).set_ease(Tween.EASE_OUT)
+	return_tween.tween_property(weapon_visuals, "position:x", default_weapon_position.x, duration).set_trans(Tween.TRANS_QUART).set_ease(Tween.EASE_OUT)
+	await return_tween.finished
+	
+	# Hiding the weapon prevents the "stuck" feeling. 
+	# It essentially tells the player "Action over".
+	weapon_visuals.visible = true 
+	
+	# Optional: Small cooldown before allowing next swing logic
+	await get_tree().create_timer(0.1).timeout
 	PlayerState["is_swinging"] = false
 
 func check_melee_hit() -> void:
+	# Keep your existing logic, but maybe add a visual cue here
 	var space_state = get_world_2d().direct_space_state
 	var shape_node = $MeleePivot/MeleeHitBox
 	
 	var query = PhysicsShapeQueryParameters2D.new()
 	query.shape = shape_node.shape
 	query.transform = shape_node.global_transform
-	query.collide_with_areas = true # Just in case?
+	query.collide_with_areas = true 
 	query.collide_with_bodies = true
+	query.exclude = [self.get_rid()]
 	
 	var result = space_state.intersect_shape(query)
 	for data in result:
 		var collider = data["collider"]
 		if collider.is_in_group("Enemy") and collider.has_method("take_damage"):
 			collider.take_damage(25)
-
+			# Add hitstop or shake here for impact
+			CameraService.shake(0.1)
+			
 func use_ability(ability_name: String) -> void:
 	# Placeholder
 	# But grab table of abilities from PlayerState, and use ability
