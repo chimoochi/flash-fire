@@ -8,12 +8,13 @@ extends CharacterBody2D
 @export var fov_angle := 70.0
 @export var hearing_range := 90.0
 
-@export var search_duration := 5.0 
+@export var search_duration := 5.0
 
-enum State { IDLE, CHASING, SUSPICIOUS }
+enum State {IDLE, CHASING, SUSPICIOUS}
 
 var EnemyState: Dictionary = {
 	"health": 100,
+	"max_health": 100,
 	"is_alive": true,
 	"behavior": State.IDLE
 }
@@ -23,10 +24,19 @@ var patience_timer := 0.0
 var scan_angle := 0.0
 
 @onready var ray_cast: RayCast2D = $RayCast2D
+var health_bar_scene = preload("res://enemy/health_bar.tscn")
+var health_bar: ProgressBar
 
 func _ready() -> void:
 	add_to_group("Enemy")
 	_acquire_target()
+	_setup_health_bar()
+
+func _setup_health_bar() -> void:
+	health_bar = health_bar_scene.instantiate()
+	add_child(health_bar)
+	health_bar.max_value = EnemyState["max_health"]
+	health_bar.value = EnemyState["health"]
 
 func _physics_process(delta: float) -> void:
 	if not is_instance_valid(target):
@@ -40,7 +50,7 @@ func _physics_process(delta: float) -> void:
 		State.IDLE:
 			if can_see_player:
 				_set_state(State.CHASING)
-			elif _can_hear_target(): 
+			elif _can_hear_target():
 				if _has_clear_line_of_fire(): _set_state(State.CHASING)
 
 		State.CHASING:
@@ -70,7 +80,7 @@ func _perform_search(delta: float) -> void:
 	_smooth_rotate(scan_angle, delta)
 	
 	if abs(angle_difference(rotation, scan_angle)) < 0.1:
-		scan_angle = rotation + randf_range(-PI/2, PI/2)
+		scan_angle = rotation + randf_range(-PI / 2, PI / 2)
 	if patience_timer <= 0:
 		_set_state(State.IDLE)
 
@@ -133,6 +143,8 @@ func _draw() -> void:
 	
 func take_damage(amount: int) -> void:
 	EnemyState["health"] -= amount
+	if health_bar:
+		health_bar.value = EnemyState["health"]
 	if EnemyState["health"] <= 0:
 		die()
 
