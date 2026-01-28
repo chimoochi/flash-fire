@@ -12,7 +12,11 @@ extends CharacterBody2D
 
 enum State { IDLE, CHASING, SUSPICIOUS }
 
-var current_state := State.IDLE
+var EnemyState: Dictionary = {
+	"health": 100,
+	"is_alive": true,
+	"behavior": State.IDLE
+}
 var target: Node2D = null
 
 var patience_timer := 0.0
@@ -21,6 +25,7 @@ var scan_angle := 0.0
 @onready var ray_cast: RayCast2D = $RayCast2D
 
 func _ready() -> void:
+	add_to_group("Enemy")
 	_acquire_target()
 
 func _physics_process(delta: float) -> void:
@@ -31,7 +36,7 @@ func _physics_process(delta: float) -> void:
 	var can_see_player = _can_see_target()
 	
 	
-	match current_state:
+	match EnemyState["behavior"]:
 		State.IDLE:
 			if can_see_player:
 				_set_state(State.CHASING)
@@ -73,7 +78,7 @@ func _smooth_rotate(target_angle: float, delta: float) -> void:
 	rotation = lerp_angle(rotation, target_angle, delta * turn_speed)
 
 func _set_state(new_state: State) -> void:
-	current_state = new_state
+	EnemyState["behavior"] = new_state
 	
 	if new_state == State.SUSPICIOUS:
 		patience_timer = search_duration
@@ -88,7 +93,7 @@ func _can_see_target() -> bool:
 	var dist = global_position.distance_to(target.global_position)
 	
 	if dist > vision_range: return false
-	if current_state == State.IDLE:
+	if EnemyState["behavior"] == State.IDLE:
 		var dir_to_target = (target.global_position - global_position).normalized()
 		if abs(angle_difference(rotation, dir_to_target.angle())) > deg_to_rad(fov_angle / 2.0):
 			return false
@@ -109,7 +114,7 @@ func _has_clear_line_of_fire() -> bool:
 
 func _draw() -> void:
 	#red chasing, sus/idle orange / yellow
-	var cone_color = Color(1, 0.2, 0.2, 0.3) if current_state == State.CHASING else Color(1, 0.7, 0.1, 0.15)
+	var cone_color = Color(1, 0.2, 0.2, 0.3) if EnemyState["behavior"] == State.CHASING else Color(1, 0.7, 0.1, 0.15)
 	
 	#Cone
 	var points = PackedVector2Array([Vector2.ZERO])
@@ -125,3 +130,12 @@ func _draw() -> void:
 	
 	#circle
 	draw_arc(Vector2.ZERO, hearing_range, 0, TAU, 32, Color(1, 1, 1, 0.1), 1.0)
+	
+func take_damage(amount: int) -> void:
+	EnemyState["health"] -= amount
+	if EnemyState["health"] <= 0:
+		die()
+
+func die() -> void:
+	EnemyState["is_alive"] = false
+	queue_free()
