@@ -4,7 +4,7 @@ var speed: float = 1500.0
 var direction: Vector2 = Vector2.RIGHT
 var max_distance: float = 2000.0
 var start_position: Vector2
-var owner_node: Node = null 
+var owner_node: Node = null
 
 func _ready() -> void:
 	start_position = global_position
@@ -12,8 +12,6 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 	global_position += direction * speed * delta
-	
-	# Destroy if traveled too far
 	if global_position.distance_to(start_position) > max_distance:
 		queue_free()
 

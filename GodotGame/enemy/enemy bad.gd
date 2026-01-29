@@ -33,10 +33,40 @@ var health_bar: ProgressBar
 
 var push_velocity: Vector2 = Vector2.ZERO
 
+var swing_melee: SwingMelee
+var melee_pivot: Node2D
+var melee_visual: CollisionShape2D
+
 func _ready() -> void:
 	add_to_group("Enemy")
 	_acquire_target()
 	_setup_health_bar()
+	_setup_melee()
+
+func _setup_melee() -> void:
+	melee_pivot = Node2D.new()
+	melee_pivot.name = "MeleePivot"
+	add_child(melee_pivot)
+	
+	melee_visual = CollisionShape2D.new()
+	melee_visual.name = "MeleeHitBox"
+	var shape = RectangleShape2D.new()
+	shape.size = Vector2(40, 10)
+	melee_visual.shape = shape
+	
+	var vis = ColorRect.new()
+	vis.size = shape.size
+	vis.position = - shape.size / 2
+	vis.color = Color(1, 0, 0, 0.5)
+	melee_visual.add_child(vis)
+	
+	melee_visual.position.x = 10.0
+	
+	melee_pivot.add_child(melee_visual)
+	melee_pivot.position = Vector2(16, 16)
+	
+	swing_melee = SwingMelee.new()
+	add_child(swing_melee)
 
 func _setup_health_bar() -> void:
 	health_bar = health_bar_scene.instantiate()
@@ -86,7 +116,6 @@ func _physics_process(delta: float) -> void:
 func _apply_movement(drive_velocity: Vector2) -> void:
 	velocity = drive_velocity + push_velocity
 	move_and_slide()
-	# Update push_velocity to reflect external forces being resolved (e.g. wall collisions)
 	push_velocity = velocity - drive_velocity
 
 func _chase_target(delta: float) -> void:
@@ -98,6 +127,9 @@ func _chase_target(delta: float) -> void:
 	var drive = Vector2.ZERO
 	if dist_to_target > STOPPING_DISTANCE:
 		drive = dir_to_target * move_speed
+	else:
+		# TODO: attack range should overlap with stopping distance
+		swing_melee.swing(self)
 	
 	_apply_movement(drive)
 

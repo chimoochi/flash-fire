@@ -16,6 +16,8 @@ const BULLET_SCENE = preload("res://player/bullet.tscn")
 @onready var melee_pivot: Node2D = $MeleePivot
 @onready var weapon_visuals: Node2D = $MeleePivot/MeleeHitBox
 
+var swing_melee: SwingMelee
+
 var PlayerState: Dictionary = {
 	"health": 100,
 	"abilities": [],
@@ -27,14 +29,11 @@ var PlayerState: Dictionary = {
 	"can_dash": true,
 	"is_attacking": false
 }
-var hit_targets: Array = []
-var default_weapon_rotation: float = 0.0
-var default_weapon_position: Vector2 = Vector2.ZERO
 
 func _ready() -> void:
 	add_to_group("Player")
-	default_weapon_rotation = melee_pivot.rotation
-	default_weapon_position = weapon_visuals.position
+	swing_melee = SwingMelee.new()
+	add_child(swing_melee)
 
 
 func _physics_process(delta):
@@ -55,7 +54,7 @@ func _physics_process(delta):
 	_handle_push_interaction(delta)
 	
 	if PlayerState["is_attacking"]:
-		check_melee_hit()
+		pass # handled by SwingMelee
 	
 	if PlayerState["is_dashing"]:
 		_handle_dash_physics(delta)
@@ -85,6 +84,10 @@ func _handle_push_interaction(delta: float) -> void:
 	var result = space_state.intersect_shape(query)
 	for data in result:
 		var collider = data["collider"]
+		
+		if PlayerState["is_dashing"] and collider.is_in_group("Enemy"):
+			print("Dash Impact Velocity: ", velocity) # TODO: add collider to table, clear table after dash
+			
 		if collider.has_method("push"):
 			var push_dir = (collider.global_position - global_position).normalized()
 			
@@ -149,69 +152,18 @@ func attack() -> void:
 
 
 func swing() -> void:
-	if PlayerState["is_swinging"]:
+	if swing_melee.is_swinging:
 		return
 		
 	PlayerState["is_swinging"] = true
 	PlayerState["is_attacking"] = true
-	hit_targets.clear()
 	
-	var duration = 0.25
-	var start_angle = deg_to_rad(-135)
-	var end_angle = deg_to_rad(45)
-	var start_dist = 10.0
-	var peak_dist = 50.0
+	swing_melee.swing(self)
+	await swing_melee.attack_finished
 	
-	# Prepare Weapon
-	melee_pivot.rotation = start_angle
-	weapon_visuals.position.x = start_dist
-	weapon_visuals.visible = true
-	
-	if get_tree_string_pretty().contains("tween"): pass
-	
-	var tween = create_tween()
-	tween.set_parallel(true)
-	
-	tween.tween_property(melee_pivot, "rotation", end_angle, duration).set_trans(Tween.TRANS_EXPO).set_ease(Tween.EASE_OUT)
-	tween.tween_property(weapon_visuals, "position:x", peak_dist, duration).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-	
-	await tween.finished
-	PlayerState["is_attacking"] = false
-	
-	var return_tween = create_tween()
-	return_tween.set_parallel(true)
-	return_tween.tween_property(melee_pivot, "rotation", default_weapon_rotation, duration).set_trans(Tween.TRANS_QUART).set_ease(Tween.EASE_OUT)
-	return_tween.tween_property(weapon_visuals, "position:x", default_weapon_position.x, duration).set_trans(Tween.TRANS_QUART).set_ease(Tween.EASE_OUT)
-	await return_tween.finished
-	
-	weapon_visuals.visible = true
-	await get_tree().create_timer(0.1).timeout
 	PlayerState["is_swinging"] = false
+	PlayerState["is_attacking"] = false
 
-func check_melee_hit() -> void:
-	#todo: spawn particles here
-	var space_state = get_world_2d().direct_space_state
-	var shape_node = $MeleePivot/MeleeHitBox
-	
-	var query = PhysicsShapeQueryParameters2D.new()
-	query.shape = shape_node.shape
-	query.transform = shape_node.global_transform
-	query.collide_with_areas = true
-	query.collide_with_bodies = true
-	query.exclude = [self.get_rid()]
-	
-	var result = space_state.intersect_shape(query)
-	for data in result:
-		var collider = data["collider"]
-		
-		if hit_targets.has(collider):
-			continue
-			
-		if collider.is_in_group("Enemy") and collider.has_method("take_damage"):
-			collider.take_damage(25)
-			hit_targets.append(collider) # Mark as hit
-			
-			CameraService.shake(0.1)
 			
 func use_ability(ability_name: String) -> void:
 	# Placeholder
