@@ -13,6 +13,10 @@ position = Vector2(120, 139)
 position = Vector2(-14.999985, -472)
 rotation = 5.962261
 
+[node name="Enemy bad2" parent="." instance=ExtResource("3_enemy")]
+position = Vector2(-14.000008, -771)
+rotation = 5.962261
+
 [node name="Camera2D" type="Camera2D" parent="."]
 
 [node name="Wall2" parent="." instance=ExtResource("2_cn5mv")]

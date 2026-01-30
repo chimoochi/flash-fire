@@ -13,6 +13,7 @@ extends CharacterBody2D
 const PUSH_DECAY := 2000.0
 const MAX_PUSH_VELOCITY := 800.0
 const STOPPING_DISTANCE := 50.0
+const ENEMY_PUSH_FORCE := 3000.0
 
 enum State {IDLE, CHASING, SUSPICIOUS}
 
@@ -79,7 +80,24 @@ func push(force: Vector2) -> void:
 	if push_velocity.length() > MAX_PUSH_VELOCITY:
 		push_velocity = push_velocity.limit_length(MAX_PUSH_VELOCITY)
 
+func _handle_soft_collision(delta: float) -> void:
+	var space_state = get_world_2d().direct_space_state
+	var query = PhysicsShapeQueryParameters2D.new()
+	query.shape = $CollisionShape2D.shape
+	query.transform = global_transform
+	query.collision_mask = 4
+	query.exclude = [self.get_rid()]
+	
+	var result = space_state.intersect_shape(query)
+	for data in result:
+		var collider = data["collider"]
+		
+		if collider.is_in_group("Enemy") and collider.has_method("push"):
+			var push_dir = (collider.global_position - global_position).normalized()
+			collider.push(push_dir * ENEMY_PUSH_FORCE * delta)
+
 func _physics_process(delta: float) -> void:
+	_handle_soft_collision(delta)
 	push_velocity = push_velocity.move_toward(Vector2.ZERO, PUSH_DECAY * delta)
 	
 	if not is_instance_valid(target):
