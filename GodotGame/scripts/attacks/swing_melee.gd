@@ -4,6 +4,7 @@ class_name SwingMelee # makes it global variable, so leik other scripts can aces
 signal attack_finished
 
 @export var damage: int = 25
+@export var knockback_force: float = 800.0
 
 var pivot: Node2D
 var visual: Node2D
@@ -97,10 +98,11 @@ func _check_hit() -> void:
 		if is_player:
 			if collider.is_in_group("Enemy") and collider.has_method("take_damage"):
 				collider.take_damage(damage)
+				KnockbackService.apply_knockback(owner_node, collider, knockback_force)
 				hit_targets.append(collider) 
 				CameraService.shake(0.1)
 		else:
 			if collider.is_in_group("Player"):
+				KnockbackService.apply_knockback(owner_node, collider, knockback_force)
 				hit_targets.append(collider)
 				CameraService.shake(0.1)
-				pass
