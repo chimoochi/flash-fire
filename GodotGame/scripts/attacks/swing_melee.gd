@@ -31,8 +31,8 @@ func swing(caller: Node2D) -> void:
 	hit_targets.clear()
 	
 	var duration = 0.25
-	var start_angle = deg_to_rad(-135)
-	var end_angle = deg_to_rad(45)
+	var start_angle = deg_to_rad(45)
+	var end_angle = deg_to_rad(-45)
 	var start_dist = 10.0
 	var peak_dist = 50.0
 	
@@ -46,10 +46,8 @@ func swing(caller: Node2D) -> void:
 		CameraService.kick(Vector2(0.05, 0.05))
 	
 	var tween = create_tween()
-	tween.set_parallel(true)
-	
-	tween.tween_property(pivot, "rotation", end_angle, duration).set_trans(Tween.TRANS_EXPO).set_ease(Tween.EASE_OUT)
-	tween.tween_property(visual, "position:x", peak_dist, duration).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tween.tween_property(visual, "position:x", peak_dist, duration * 0.5).set_trans(Tween.TRANS_EXPO).set_ease(Tween.EASE_OUT)
+	tween.tween_property(pivot, "rotation", end_angle, duration).set_trans(Tween.TRANS_QUART).set_ease(Tween.EASE_OUT)
 	
 	await tween.finished
 	
@@ -99,10 +97,9 @@ func _check_hit() -> void:
 		if is_player:
 			if collider.is_in_group("Enemy") and collider.has_method("take_damage"):
 				collider.take_damage(damage)
-				hit_targets.append(collider) # Mark  hit
+				hit_targets.append(collider) 
 				CameraService.shake(0.1)
 		else:
-			# Enemy Logic
 			if collider.is_in_group("Player"):
 				hit_targets.append(collider)
 				CameraService.shake(0.1)
