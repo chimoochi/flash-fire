@@ -150,9 +150,6 @@ func attack() -> void:
 	var shoot_dir = Vector2.RIGHT.rotated(rotation)
 	spawn_bullet(shoot_dir)
 	
-	CameraService.shake(0.3)
-	CameraService.kick(Vector2(0.05, 0.05))
-	
 	swing()
 
 

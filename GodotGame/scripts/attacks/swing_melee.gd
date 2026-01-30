@@ -42,10 +42,6 @@ func swing(caller: Node2D) -> void:
 	visual.position.x = start_dist
 	visual.visible = true
 	
-	if is_player:
-		CameraService.shake(0.3)
-		CameraService.kick(Vector2(0.05, 0.05))
-	
 	var tween = create_tween()
 	tween.tween_property(visual, "position:x", peak_dist, duration * 0.5).set_trans(Tween.TRANS_EXPO).set_ease(Tween.EASE_OUT)
 	tween.tween_property(pivot, "rotation", end_angle, duration).set_trans(Tween.TRANS_QUART).set_ease(Tween.EASE_OUT)
