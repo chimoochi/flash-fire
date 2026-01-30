@@ -17,6 +17,7 @@ const BULLET_SCENE = preload("res://player/bullet.tscn")
 @onready var weapon_visuals: Node2D = $MeleePivot/MeleeHitBox
 
 var swing_melee: SwingMelee
+var _dash_hit_entities: Array = []
 
 var PlayerState: Dictionary = {
 	"health": 100,
@@ -86,7 +87,10 @@ func _handle_push_interaction(delta: float) -> void:
 		var collider = data["collider"]
 		
 		if PlayerState["is_dashing"] and collider.is_in_group("Enemy"):
-			print("Dash Impact Velocity: ", velocity) # TODO: add collider to table, clear table after dash
+			if collider in _dash_hit_entities:
+				continue
+			_dash_hit_entities.append(collider)
+			print("Dash Impact Velocity: ", velocity)
 			
 		if collider.has_method("push"):
 			var push_dir = (collider.global_position - global_position).normalized()
@@ -120,6 +124,7 @@ func start_dash(direction: Vector2) -> void:
 	
 	await get_tree().create_timer(DASH_DURATION).timeout
 	PlayerState["is_dashing"] = false
+	_dash_hit_entities.clear()
 	
 	await get_tree().create_timer(DASH_COOLDOWN).timeout
 	PlayerState["can_dash"] = true
