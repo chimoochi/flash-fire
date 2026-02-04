@@ -104,3 +104,6 @@ func _check_hit() -> void:
 				KnockbackService.apply_knockback(owner_node, collider, current_knockback)
 				hit_targets.append(collider)
 				CameraService.shake(0.1)
+	
+func chargedattack(charge_duration, begincharge, endcharge):
+	pass
