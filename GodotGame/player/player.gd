@@ -7,6 +7,9 @@ const FRICTION = 2000.0
 const DASH_SPEED = 1000.0
 const DASH_DURATION = 0.15
 const DASH_COOLDOWN = 0.8
+const MELEE_DAMAGE = 25
+const MELEE_KNOCKBACK = 800.0
+const MELEE_ATTACK_DURATION = 0.25
 
 const BULLET_SPEED = 1500.0
 const PUSH_FORCE = 1500.0
@@ -160,7 +163,7 @@ func swing() -> void:
 	PlayerState["is_swinging"] = true
 	PlayerState["is_attacking"] = true
 	
-	swing_melee.swing(self)
+	swing_melee.swing(self, MELEE_DAMAGE, MELEE_KNOCKBACK, MELEE_ATTACK_DURATION)
 	await swing_melee.attack_finished
 	
 	PlayerState["is_swinging"] = false

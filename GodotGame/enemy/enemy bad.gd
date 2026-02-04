@@ -14,6 +14,9 @@ const PUSH_DECAY := 2000.0
 const MAX_PUSH_VELOCITY := 800.0
 const STOPPING_DISTANCE := 50.0
 const ENEMY_PUSH_FORCE := 3000.0
+const ENEMY_MELEE_DAMAGE := 10
+const ENEMY_MELEE_KNOCKBACK := 500.0
+const ENEMY_MELEE_DURATION := 0.5
 
 enum State {IDLE, CHASING, SUSPICIOUS}
 
@@ -147,7 +150,7 @@ func _chase_target(delta: float) -> void:
 		drive = dir_to_target * move_speed
 	else:
 		# TODO: attack range should overlap with stopping distance
-		swing_melee.swing(self)
+		swing_melee.swing(self, ENEMY_MELEE_DAMAGE, ENEMY_MELEE_KNOCKBACK, ENEMY_MELEE_DURATION)
 	
 	_apply_movement(drive)
 

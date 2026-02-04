@@ -3,10 +3,6 @@ class_name SwingMelee # makes it global variable, so leik other scripts can aces
 
 signal attack_finished
 
-@export var damage: int = 25
-@export var knockback_force: float = 800.0
-@export var attack_duration: float = 0.25
-
 var pivot: Node2D
 var visual: Node2D
 var owner_node: Node2D
@@ -18,10 +14,16 @@ var hit_targets: Array = []
 var default_rotation: float = 0.0
 var default_vis_pos: Vector2 = Vector2.ZERO
 
-func swing(caller: Node2D) -> void:
+var current_damage: int = 0
+var current_knockback: float = 0.0
+
+func swing(caller: Node2D, damage: int, knockback: float, duration: float) -> void:
 	if is_swinging: return
 	
 	owner_node = caller
+	current_damage = damage
+	current_knockback = knockback
+	
 	is_player = owner_node.is_in_group("Player")
 	pivot = owner_node.get_node("MeleePivot")
 	visual = pivot.get_node("MeleeHitBox")
@@ -32,7 +34,6 @@ func swing(caller: Node2D) -> void:
 	is_swinging = true
 	hit_targets.clear()
 	
-	var duration = attack_duration
 	var start_angle = deg_to_rad(45)
 	var end_angle = deg_to_rad(-45)
 	var start_dist = 10.0
@@ -94,12 +95,12 @@ func _check_hit() -> void:
 			
 		if is_player:
 			if collider.is_in_group("Enemy") and collider.has_method("take_damage"):
-				collider.take_damage(damage)
-				KnockbackService.apply_knockback(owner_node, collider, knockback_force)
+				collider.take_damage(current_damage)
+				KnockbackService.apply_knockback(owner_node, collider, current_knockback)
 				hit_targets.append(collider)
 				CameraService.shake(0.1)
 		else:
 			if collider.is_in_group("Player"):
-				KnockbackService.apply_knockback(owner_node, collider, knockback_force)
+				KnockbackService.apply_knockback(owner_node, collider, current_knockback)
 				hit_targets.append(collider)
 				CameraService.shake(0.1)
