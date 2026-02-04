@@ -16,6 +16,8 @@ const PUSH_FORCE = 1500.0
 const DASH_PUSH_FORCE = 4000.0
 const PLAYER_PUSH_RESISTANCE = 50.0
 const BULLET_SCENE = preload("res://player/bullet.tscn")
+const THROWABLE_SCENE = preload("res://projectiles/throwable.tscn")
+const THROW_SPEED = 600.0
 @onready var melee_pivot: Node2D = $MeleePivot
 @onready var weapon_visuals: Node2D = $MeleePivot/MeleeHitBox
 
@@ -147,6 +149,17 @@ func spawn_bullet(direction: Vector2) -> void:
 	get_tree().root.add_child(bullet)
 	bullet.global_position = global_position
 	bullet.rotation = rotation
+
+func _input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_SPACE:
+		throw_item()
+
+func throw_item() -> void:
+	var throwable = THROWABLE_SCENE.instantiate()
+	get_tree().root.add_child(throwable)
+	throwable.global_position = global_position
+	var direction = (get_global_mouse_position() - global_position).normalized()
+	throwable.velocity = direction * THROW_SPEED
 
 
 func attack() -> void:

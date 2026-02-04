@@ -73,3 +73,4 @@ func explode(radius: float, position: Vector2, damage: int = 0, push_force: floa
 func lingering(duration, radius, position):
 	#DO NOT DO YET
 	pass
+	
