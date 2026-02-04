@@ -5,6 +5,7 @@ signal attack_finished
 
 @export var damage: int = 25
 @export var knockback_force: float = 800.0
+@export var attack_duration: float = 0.25
 
 var pivot: Node2D
 var visual: Node2D
@@ -31,7 +32,7 @@ func swing(caller: Node2D) -> void:
 	is_swinging = true
 	hit_targets.clear()
 	
-	var duration = 0.25
+	var duration = attack_duration
 	var start_angle = deg_to_rad(45)
 	var end_angle = deg_to_rad(-45)
 	var start_dist = 10.0
@@ -95,7 +96,7 @@ func _check_hit() -> void:
 			if collider.is_in_group("Enemy") and collider.has_method("take_damage"):
 				collider.take_damage(damage)
 				KnockbackService.apply_knockback(owner_node, collider, knockback_force)
-				hit_targets.append(collider) 
+				hit_targets.append(collider)
 				CameraService.shake(0.1)
 		else:
 			if collider.is_in_group("Player"):
