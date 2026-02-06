@@ -34,7 +34,7 @@ var PlayerState: Dictionary = {
 
 
 	"can_shoot": false,
-	"can_throw": false,
+	"can_throw": true,
 
 
 	"is_dashing": false,

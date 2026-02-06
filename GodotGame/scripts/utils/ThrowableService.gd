@@ -90,7 +90,7 @@ static func explode(radius: float, position: Vector2, damage: int = 0, push_forc
 			
 			if push_force > 0:
 				if source_node and source_node is Node2D and collider is Node2D:
-					KnockbackService.apply_knockback(source_node, collider, push_force)
+					KnockbackService.apply_knockback(explosion, collider, push_force)
 				elif collider.has_method("push"):
 					var direction = (collider.global_position - position).normalized()
 					if direction == Vector2.ZERO:
