@@ -5,8 +5,6 @@ const MAX_SPEED = 600.0
 const ACCELERATION = 3000.0
 const FRICTION = 2000.0
 
-const DASH_SPEED = 1000.0
-const DASH_DURATION = 0.15
 const DASH_COOLDOWN = 0.8
 const MELEE_DAMAGE = 25
 const MELEE_KNOCKBACK = 800.0
@@ -14,16 +12,16 @@ const MELEE_ATTACK_DURATION = 0.25
 
 const BULLET_SPEED = 1500.0
 const PUSH_FORCE = 1500.0
-const DASH_PUSH_FORCE = 4000.0
 const PLAYER_PUSH_RESISTANCE = 50.0
 const BULLET_SCENE = preload("res://player/bullet.tscn")
 const THROWABLE_SCENE = preload("res://projectiles/throwable.tscn")
 const THROW_SPEED = 600.0
 @onready var melee_pivot: Node2D = $MeleePivot
 @onready var weapon_visuals: Node2D = $MeleePivot/MeleeHitBox
+var dash_service: DashService
 
 var swing_melee: SwingMelee
-var _dash_hit_entities: Array = []
+
 
 var PlayerState: Dictionary = {
 	"health": 100,
@@ -39,6 +37,10 @@ var PlayerState: Dictionary = {
 
 	"is_dashing": false,
 	"can_dash": true,
+	"dash_speed": 1000.0,
+	"dash_duration": 0.15,
+	"dash_cooldown": 0.8,
+	"dash_push_force": 4000.0,
 	"is_attacking": false
 }
 
@@ -46,6 +48,9 @@ func _ready() -> void:
 	add_to_group("Player")
 	swing_melee = SwingMelee.new()
 	add_child(swing_melee)
+	
+	dash_service = DashService.new()
+	add_child(dash_service)
 
 
 func _physics_process(delta):
@@ -66,11 +71,8 @@ func _physics_process(delta):
 	_handle_push_interaction(delta)
 	
 	
-	if PlayerState["is_dashing"]:
-		_handle_dash_physics(delta)
-		var collision = move_and_collide(velocity * delta)
-		if collision:
-			_handle_ricochet(collision)
+	if dash_service.is_dashing:
+		dash_service.process_dash_physics(self, delta)
 	else:
 		_handle_movement_physics(direction, delta)
 		move_and_slide()
@@ -80,8 +82,15 @@ func _physics_process(delta):
 	if Input.is_action_just_pressed("shoot"):
 		attack()
 	
-	if Input.is_action_just_pressed("Dash") and PlayerState["can_dash"]:
-		start_dash(direction)
+	if Input.is_action_just_pressed("Dash") and dash_service.can_dash:
+		dash_service.start_dash(
+			self,
+			direction,
+			PlayerState["dash_speed"],
+			PlayerState["dash_duration"],
+			PlayerState["dash_cooldown"],
+			PlayerState["dash_push_force"]
+		)
 
 func _handle_push_interaction(delta: float) -> void:
 	var space_state = get_world_2d().direct_space_state
@@ -95,22 +104,20 @@ func _handle_push_interaction(delta: float) -> void:
 	for data in result:
 		var collider = data["collider"]
 		
-		if PlayerState["is_dashing"] and collider.is_in_group("Enemy"):
-			if collider in _dash_hit_entities:
-				continue
-			_dash_hit_entities.append(collider)
-			print("Dash Impact Velocity: ", velocity)
+		if dash_service.is_dashing and collider.is_in_group("Enemy"):
+			dash_service.handle_impact(collider)
+			
 			
 		if collider.has_method("push"):
 			var push_dir = (collider.global_position - global_position).normalized()
 			
 			var force_mag = PUSH_FORCE
-			if PlayerState["is_dashing"]:
-				force_mag = DASH_PUSH_FORCE
+			if dash_service.is_dashing:
+				force_mag = dash_service.dash_push_force
 				
 			collider.push(push_dir * force_mag * delta)
 			
-			if not PlayerState["is_dashing"]:
+			if not dash_service.is_dashing:
 				velocity -= push_dir * PLAYER_PUSH_RESISTANCE
 				velocity *= 0.9
 
@@ -120,28 +127,6 @@ func _handle_movement_physics(direction: Vector2, delta: float) -> void:
 	else:
 		velocity = velocity.move_toward(Vector2.ZERO, FRICTION * delta)
 
-func _handle_dash_physics(_delta: float) -> void:
-	pass
-
-func start_dash(direction: Vector2) -> void:
-	if direction == Vector2.ZERO:
-		direction = Vector2.RIGHT.rotated(rotation)
-	
-	PlayerState["is_dashing"] = true
-	PlayerState["can_dash"] = false
-	velocity = direction * DASH_SPEED
-	
-	await get_tree().create_timer(DASH_DURATION).timeout
-	PlayerState["is_dashing"] = false
-	_dash_hit_entities.clear()
-	
-	await get_tree().create_timer(DASH_COOLDOWN).timeout
-	PlayerState["can_dash"] = true
-
-func _handle_ricochet(collision: KinematicCollision2D) -> void:
-	var normal = collision.get_normal()
-	velocity = velocity.bounce(normal)
-	rotation = velocity.angle()
 
 func spawn_bullet(direction: Vector2) -> void:
 	if not PlayerState["can_shoot"]:
