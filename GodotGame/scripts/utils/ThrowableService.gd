@@ -85,8 +85,16 @@ static func explode(radius: float, position: Vector2, damage: int = 0, push_forc
 				is_friendly = true
 		
 		if not is_friendly:
-			if collider.has_method("take_damage") and damage > 0:
-				collider.take_damage(damage)
+			var dist = position.distance_to(collider.global_position)
+			var falloff = clamp(1.0 - (dist / radius), 0.0, 1.0)
+			var final_damage = float(damage)
+			
+			if collider.is_in_group("Enemy") and "EnemyState" in collider:
+				var max_hp = collider.EnemyState.get("max_health", 100)
+				final_damage = max_hp * 0.75
+			
+			if collider.has_method("take_damage") and final_damage > 0:
+				collider.take_damage(int(final_damage * falloff))
 			
 			if push_force > 0:
 				if source_node and source_node is Node2D and collider is Node2D:
