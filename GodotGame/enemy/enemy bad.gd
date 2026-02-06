@@ -148,8 +148,9 @@ func _chase_target(delta: float) -> void:
 	var drive = Vector2.ZERO
 	if dist_to_target > STOPPING_DISTANCE:
 		drive = dir_to_target * move_speed
-	else:
+
 		# TODO: attack range should overlap with stopping distance
+	if dist_to_target <100:
 		swing_melee.swing(self, ENEMY_MELEE_DAMAGE, ENEMY_MELEE_KNOCKBACK, ENEMY_MELEE_DURATION)
 	
 	_apply_movement(drive)
