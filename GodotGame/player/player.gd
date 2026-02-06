@@ -59,8 +59,6 @@ func _physics_process(delta):
 	
 	_handle_push_interaction(delta)
 	
-	if PlayerState["is_attacking"]:
-		pass # handled by SwingMelee
 	
 	if PlayerState["is_dashing"]:
 		_handle_dash_physics(delta)
@@ -157,9 +155,16 @@ func _input(event: InputEvent) -> void:
 func throw_item() -> void:
 	var throwable = THROWABLE_SCENE.instantiate()
 	get_tree().root.add_child(throwable)
-	throwable.global_position = global_position
-	var direction = (get_global_mouse_position() - global_position).normalized()
-	throwable.velocity = direction * THROW_SPEED
+	var dir = (get_global_mouse_position() - global_position).normalized()
+	throwable.direction = dir
+	throwable.speed = THROW_SPEED
+	
+	throwable.add_collision_exception_with(self)
+	
+	throwable.global_position = global_position + (dir * 20.0)
+	
+	var land_pos = await throwable.landed
+	ThrowableService.explode(100.0, land_pos, 30, 1000.0, self)
 
 
 func attack() -> void:
