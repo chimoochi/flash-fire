@@ -1,5 +1,6 @@
 extends CharacterBody2D
 
+
 const MAX_SPEED = 600.0
 const ACCELERATION = 3000.0
 const FRICTION = 2000.0
@@ -30,7 +31,12 @@ var PlayerState: Dictionary = {
 	"passives": [],
 	"is_alive": true,
 	"is_swinging": false,
+
+
 	"can_shoot": false,
+	"can_throw": false,
+
+
 	"is_dashing": false,
 	"can_dash": true,
 	"is_attacking": false
@@ -151,8 +157,11 @@ func spawn_bullet(direction: Vector2) -> void:
 func _input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_SPACE:
 		throw_item()
+		
 
 func throw_item() -> void:
+	if not PlayerState["can_throw"]: # disable for debug
+		return
 	var throwable = THROWABLE_SCENE.instantiate()
 	get_tree().root.add_child(throwable)
 	var dir = (get_global_mouse_position() - global_position).normalized()
