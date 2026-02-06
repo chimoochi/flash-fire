@@ -101,6 +101,8 @@ func _check_hit() -> void:
 				CameraService.shake(0.1)
 		else:
 			if collider.is_in_group("Player"):
+				if collider.has_method("take_damage"):
+					collider.take_damage(current_damage)
 				KnockbackService.apply_knockback(owner_node, collider, current_knockback)
 				hit_targets.append(collider)
 				CameraService.shake(0.1)

@@ -18,6 +18,8 @@ const THROWABLE_SCENE = preload("res://projectiles/throwable.tscn")
 const THROW_SPEED = 600.0
 @onready var melee_pivot: Node2D = $MeleePivot
 @onready var weapon_visuals: Node2D = $MeleePivot/MeleeHitBox
+@onready var health_bar: ProgressBar = $CanvasLayer/HealthBar
+
 var dash_service: DashService
 
 var swing_melee: SwingMelee
@@ -25,6 +27,7 @@ var swing_melee: SwingMelee
 
 var PlayerState: Dictionary = {
 	"health": 100,
+	"max_health": 100,
 	"abilities": [],
 	"passives": [],
 	"is_alive": true,
@@ -51,7 +54,9 @@ func _ready() -> void:
 	
 	dash_service = DashService.new()
 	add_child(dash_service)
-
+	
+	health_bar.max_value = PlayerState["max_health"]
+	health_bar.value = PlayerState["health"]
 
 func _physics_process(delta):
 	var direction = Vector2.ZERO
@@ -195,3 +200,36 @@ func transfer_abilities(enemy_killed) -> void:
 
 	
 	#restart concurrent states, boot up new
+
+func take_damage(amount: int) -> void:
+	if not PlayerState["is_alive"]:
+		return
+
+	PlayerState["health"] -= amount
+	if health_bar:
+		health_bar.set_health(PlayerState["health"])
+	
+	if PlayerState["health"] <= 0:
+		die()
+
+func die() -> void:
+	PlayerState["is_alive"] = false
+	visible = false
+	set_physics_process(false)
+	
+	call_deferred("respawn")
+
+func respawn() -> void:
+	await get_tree().create_timer(2.0).timeout
+	
+	PlayerState["health"] = PlayerState["max_health"]
+	PlayerState["is_alive"] = true
+	
+	if health_bar:
+		health_bar.set_health(PlayerState["health"])
+	
+	global_position = Vector2.ZERO 
+	velocity = Vector2.ZERO
+	
+	visible = true
+	set_physics_process(true)
