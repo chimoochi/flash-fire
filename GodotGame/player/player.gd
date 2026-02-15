@@ -15,6 +15,7 @@ const PUSH_FORCE = 1500.0
 const PLAYER_PUSH_RESISTANCE = 50.0
 const BULLET_SCENE = preload("res://player/bullet.tscn")
 const THROWABLE_SCENE = preload("res://projectiles/throwable.tscn")
+const WALL_PUSH_SCENE = preload("res://abilities/wall_push.tscn")
 const THROW_SPEED = 600.0
 @onready var melee_pivot: Node2D = $MeleePivot
 @onready var weapon_visuals: Node2D = $MeleePivot/MeleeHitBox
@@ -145,9 +146,19 @@ func spawn_bullet(direction: Vector2) -> void:
 	bullet.rotation = rotation
 
 func _input(event: InputEvent) -> void:
-	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_SPACE:
-		throw_item()
-		
+	if event is InputEventKey and event.pressed and not event.echo:
+		if event.keycode == KEY_SPACE:
+			throw_item()
+		elif event.keycode == KEY_R:
+			spawn_wall()
+
+func spawn_wall() -> void:
+	var wall = WALL_PUSH_SCENE.instantiate()
+	get_tree().root.add_child(wall)
+	
+	var dir = Vector2.RIGHT.rotated(rotation)
+	wall.rotation = rotation
+	wall.global_position = global_position + (dir * 40.0)
 
 func throw_item() -> void:
 	if not PlayerState["can_throw"]: # disable for debug

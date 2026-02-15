@@ -1,0 +1,21 @@
+[gd_scene load_steps=4 format=3 uid="uid://b8x7j2q5k3y1p"]
+
+[ext_resource type="Script" path="res://abilities/wallpush.gd" id="1_script"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_wall"]
+size = Vector2(20, 100)
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_wall"]
+size = Vector2(20, 100)
+
+[node name="WallPush" type="Area2D"]
+collision_layer = 0
+collision_mask = 7
+script = ExtResource("1_script")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_wall")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+modulate = Color(0, 0.6, 1, 0.7)
+texture = SubResource("PlaceholderTexture2D_wall")
