@@ -17,7 +17,7 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-CameraService="*res://scripts/utils/CameraService.gd"
+CameraService="*res://scripts/services/CameraService.gd"
 
 [input]
 

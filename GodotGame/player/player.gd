@@ -15,7 +15,7 @@ const PUSH_FORCE = 1500.0
 const PLAYER_PUSH_RESISTANCE = 50.0
 const BULLET_SCENE = preload("res://player/bullet.tscn")
 const THROWABLE_SCENE = preload("res://projectiles/throwable.tscn")
-const WALL_PUSH_SCENE = preload("res://abilities/wall_push.tscn")
+#const WALL_PUSH_SCENE = preload("res://abilities/wall_push.tscn") 
 const THROW_SPEED = 600.0
 @onready var melee_pivot: Node2D = $MeleePivot
 @onready var weapon_visuals: Node2D = $MeleePivot/MeleeHitBox
@@ -24,7 +24,6 @@ const THROW_SPEED = 600.0
 var dash_service: DashService
 
 var swing_melee: SwingMelee
-
 
 var PlayerState: Dictionary = {
 	"health": 100,
@@ -153,12 +152,8 @@ func _input(event: InputEvent) -> void:
 			spawn_wall()
 
 func spawn_wall() -> void:
-	var wall = WALL_PUSH_SCENE.instantiate()
-	get_tree().root.add_child(wall)
-	
 	var dir = Vector2.RIGHT.rotated(rotation)
-	wall.rotation = rotation
-	wall.global_position = global_position + (dir * 40.0)
+	WallPushService.spawn_wall(self, dir)
 
 func throw_item() -> void:
 	if not PlayerState["can_throw"]: # disable for debug
@@ -203,7 +198,7 @@ func use_ability(ability_name: String) -> void:
 	# But grab table of abilities from PlayerState, and use ability
 	return
 	
-
+	
 func transfer_abilities(enemy_killed) -> void:
 	# Placeholder
 	# But grab table of abilities from enemy killed, and add to PlayerState
