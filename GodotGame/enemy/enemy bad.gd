@@ -18,7 +18,7 @@ const ENEMY_MELEE_DAMAGE := 10
 const ENEMY_MELEE_KNOCKBACK := 500.0
 const ENEMY_MELEE_DURATION := 0.5
 
-enum State {IDLE, CHASING, SUSPICIOUS}
+enum State {IDLE, CHASING, SUSPICIOUS, FROZEN}
 
 var EnemyState: Dictionary = {
 	"health": 100,
@@ -27,9 +27,11 @@ var EnemyState: Dictionary = {
 	"behavior": State.IDLE
 }
 var target: Node2D = null
+var last_known_position: Vector2 = Vector2.ZERO
 
 var patience_timer := 0.0
 var scan_angle := 0.0
+var idle_look_angle := 0.0
 
 @onready var ray_cast: RayCast2D = $RayCast2D
 var health_bar_scene = preload("res://enemy/health_bar.tscn")
@@ -46,6 +48,8 @@ func _ready() -> void:
 	_acquire_target()
 	_setup_health_bar()
 	_setup_melee()
+	
+	idle_look_angle = rotation
 
 func _setup_melee() -> void:
 	melee_pivot = Node2D.new()
@@ -116,6 +120,8 @@ func _physics_process(delta: float) -> void:
 				_set_state(State.CHASING)
 			elif _can_hear_target():
 				if _has_clear_line_of_fire(): _set_state(State.CHASING)
+			else:
+				_smooth_rotate(idle_look_angle, delta)
 			_apply_movement(Vector2.ZERO)
 
 		State.CHASING:
@@ -129,7 +135,16 @@ func _physics_process(delta: float) -> void:
 			if can_see_player:
 				_set_state(State.CHASING)
 			else:
-				_perform_search(delta)
+				var dist_to_last_known = global_position.distance_to(last_known_position)
+				if dist_to_last_known > STOPPING_DISTANCE:
+					var dir = global_position.direction_to(last_known_position)
+					_smooth_rotate(dir.angle(), delta)
+					_apply_movement(dir * move_speed)
+				else:
+					_perform_search(delta)
+					_apply_movement(Vector2.ZERO)
+		
+		State.FROZEN:
 			_apply_movement(Vector2.ZERO)
 
 	queue_redraw()
@@ -143,6 +158,9 @@ func _chase_target(delta: float) -> void:
 	var dir_to_target = global_position.direction_to(target.global_position)
 	var dist_to_target = global_position.distance_to(target.global_position)
 	
+	
+	last_known_position = target.global_position
+	
 	_smooth_rotate(dir_to_target.angle(), delta)
 	
 	var drive = Vector2.ZERO
@@ -150,7 +168,7 @@ func _chase_target(delta: float) -> void:
 		drive = dir_to_target * move_speed
 
 		# TODO: attack range should overlap with stopping distance
-	if dist_to_target <100:
+	if dist_to_target < 100:
 		swing_melee.swing(self, ENEMY_MELEE_DAMAGE, ENEMY_MELEE_KNOCKBACK, ENEMY_MELEE_DURATION)
 	
 	_apply_movement(drive)
@@ -225,6 +243,11 @@ func _draw() -> void:
 	#circle
 	draw_arc(Vector2.ZERO, hearing_range, 0, TAU, 32, Color(1, 1, 1, 0.1), 1.0)
 	
+	if EnemyState["behavior"] == State.SUSPICIOUS:
+		var local_last_known = to_local(last_known_position)
+		draw_line(local_last_known - Vector2(10, 10), local_last_known + Vector2(10, 10), Color(1, 1, 0, 0.5), 2)
+		draw_line(local_last_known - Vector2(10, -10), local_last_known + Vector2(10, -10), Color(1, 1, 0, 0.5), 2)
+	
 func take_damage(amount: int) -> void:
 	EnemyState["health"] -= amount
 	if health_bar:
@@ -235,3 +258,31 @@ func take_damage(amount: int) -> void:
 func die() -> void:
 	EnemyState["is_alive"] = false
 	queue_free()
+
+func hear_noise(source_pos: Vector2, range_dist: float) -> void:
+	if EnemyState["behavior"] != State.IDLE:
+		return
+		
+	var dist = global_position.distance_to(source_pos)
+	if dist <= range_dist:
+		# print("Heard noise at ", source_pos)
+		var dir = global_position.direction_to(source_pos)
+		idle_look_angle = dir.angle()
+
+func freeze(duration: float) -> void:
+	if EnemyState["behavior"] == State.FROZEN:
+		return
+		
+	var prev_state = EnemyState["behavior"]
+	EnemyState["behavior"] = State.FROZEN
+	
+	modulate = Color(0.5, 0.5, 1.0) # Blue tint
+	
+	await get_tree().create_timer(duration).timeout
+	
+	if EnemyState["is_alive"]:
+		if prev_state != State.FROZEN:
+			EnemyState["behavior"] = prev_state
+		else:
+			EnemyState["behavior"] = State.CHASING # Default fallback
+		modulate = Color.WHITE

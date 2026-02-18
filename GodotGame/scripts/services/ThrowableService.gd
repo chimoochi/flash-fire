@@ -53,6 +53,8 @@ static func explode(radius: float, position: Vector2, damage: int = 0, push_forc
 	explosion.global_position = position
 	explosion.radius = radius # Set the radius for visualization
 	tree.root.add_child(explosion)
+	
+	NoiseService.emit_noise(tree, position, 1000.0)
 
 	var space_state = tree.root.get_world_2d().direct_space_state
 	

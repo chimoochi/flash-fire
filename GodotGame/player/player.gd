@@ -36,6 +36,7 @@ var PlayerState: Dictionary = {
 
 	"can_shoot": false,
 	"can_throw": true,
+	"can_lightning": true,
 
 
 	"is_dashing": false,
@@ -143,11 +144,16 @@ func spawn_bullet(direction: Vector2) -> void:
 	get_tree().root.add_child(bullet)
 	bullet.global_position = global_position
 	bullet.rotation = rotation
+	
+	NoiseService.emit_noise(get_tree(), global_position, 500.0)
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo:
 		if event.keycode == KEY_SPACE:
-			throw_item()
+			if PlayerState["can_throw"]:
+				throw_item()
+			if PlayerState.get("can_lightning", false):
+				LightningService.activate(self)
 		elif event.keycode == KEY_R:
 			spawn_wall()
 
@@ -234,7 +240,7 @@ func respawn() -> void:
 	if health_bar:
 		health_bar.set_health(PlayerState["health"])
 	
-	global_position = Vector2.ZERO 
+	global_position = Vector2.ZERO
 	velocity = Vector2.ZERO
 	
 	visible = true
