@@ -14,11 +14,13 @@ static func spawn_bullet(caller: Node2D, direction: Vector2, damage: int, speed:
 	
 	bullet.global_position = caller.global_position
 	bullet.rotation = direction.angle()
+	
+	NoiseService.emit_noise(caller.get_tree(), caller.global_position, 500.0)
 
 static func spawn_shotgun(caller: Node2D, direction: Vector2, damage: int, speed: float = 1500.0, spread_angle_deg: float = 45.0) -> void:
 	var bullet_count = 5
 	var angle_step = deg_to_rad(spread_angle_deg) / (bullet_count - 1)
-	var start_angle = -deg_to_rad(spread_angle_deg) / 2.0
+	var start_angle = - deg_to_rad(spread_angle_deg) / 2.0
 	
 	for i in range(bullet_count):
 		var angle = start_angle + (i * angle_step)

@@ -11,6 +11,7 @@ const MELEE_KNOCKBACK = 800.0
 const MELEE_ATTACK_DURATION = 0.25
 
 const BULLET_SPEED = 1500.0
+const BULLET_DAMAGE = 20
 const PUSH_FORCE = 1500.0
 const PLAYER_PUSH_RESISTANCE = 50.0
 const BULLET_SCENE = preload("res://player/bullet.tscn")
@@ -34,7 +35,7 @@ var PlayerState: Dictionary = {
 	"is_swinging": false,
 
 
-	"can_shoot": false,
+	"can_shoot": true,
 	"can_throw": true,
 	"can_lightning": true,
 
@@ -137,15 +138,8 @@ func _handle_movement_physics(direction: Vector2, delta: float) -> void:
 func spawn_bullet(direction: Vector2) -> void:
 	if not PlayerState["can_shoot"]:
 		return
-	var bullet = BULLET_SCENE.instantiate()
-	bullet.direction = direction
-	bullet.speed = BULLET_SPEED
-	bullet.owner_node = self
-	get_tree().root.add_child(bullet)
-	bullet.global_position = global_position
-	bullet.rotation = rotation
-	
-	NoiseService.emit_noise(get_tree(), global_position, 500.0)
+		
+	BulletService.spawn_bullet(self, direction, BULLET_DAMAGE, BULLET_SPEED)
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo:

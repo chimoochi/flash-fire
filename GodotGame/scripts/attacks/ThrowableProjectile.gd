@@ -14,7 +14,8 @@ var _visual_child: Node2D = null
 var _original_visual_pos: Vector2 = Vector2.ZERO
 
 func _ready() -> void:
-	for child in get_children(): #Todo: Make better, maybe even instanate from files isntead of this weird stuff
+	add_to_group("Projectiles")
+	for child in get_children(): # Todo: Make better, maybe even instanate from files isntead of this weird stuff
 		if child is Node2D and not (child is CollisionShape2D):
 			_visual_child = child
 			_original_visual_pos = child.position
