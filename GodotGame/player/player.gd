@@ -11,9 +11,9 @@ const MELEE_KNOCKBACK = 800.0
 const MELEE_ATTACK_DURATION = 0.25
 
 const BULLET_SPEED = 1500.0
+const BULLET_DAMAGE = 25
 const PUSH_FORCE = 1500.0
 const PLAYER_PUSH_RESISTANCE = 50.0
-const BULLET_SCENE = preload("res://player/bullet.tscn")
 const THROWABLE_SCENE = preload("res://projectiles/throwable.tscn")
 #const WALL_PUSH_SCENE = preload("res://abilities/wall_push.tscn") 
 const THROW_SPEED = 600.0
@@ -34,9 +34,8 @@ var PlayerState: Dictionary = {
 	"is_swinging": false,
 
 
-	"can_shoot": false,
-	"can_throw": true,
-
+	"can_shoot": true,
+	"can_throw": false,
 
 	"is_dashing": false,
 	"can_dash": true,
@@ -133,17 +132,6 @@ func _handle_movement_physics(direction: Vector2, delta: float) -> void:
 		velocity = velocity.move_toward(Vector2.ZERO, FRICTION * delta)
 
 
-func spawn_bullet(direction: Vector2) -> void:
-	if not PlayerState["can_shoot"]:
-		return
-	var bullet = BULLET_SCENE.instantiate()
-	bullet.direction = direction
-	bullet.speed = BULLET_SPEED
-	bullet.owner_node = self
-	get_tree().root.add_child(bullet)
-	bullet.global_position = global_position
-	bullet.rotation = rotation
-
 func _input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo:
 		if event.keycode == KEY_SPACE:
@@ -174,7 +162,8 @@ func throw_item() -> void:
 
 func attack() -> void:
 	var shoot_dir = Vector2.RIGHT.rotated(rotation)
-	spawn_bullet(shoot_dir)
+	if PlayerState["can_shoot"]:
+		BulletService.spawn_bullet(self, shoot_dir, BULLET_DAMAGE, BULLET_SPEED)
 	
 	swing()
 
