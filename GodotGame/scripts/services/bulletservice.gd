@@ -9,11 +9,11 @@ static func spawn_bullet(caller: Node2D, direction: Vector2, damage: int, speed:
 	bullet.speed = speed
 	bullet.damage = damage
 	bullet.owner_node = caller
-	
-	caller.get_tree().root.add_child(bullet)
-	
-	bullet.global_position = caller.global_position
+
+	bullet.global_position = caller.global_position + direction * 40.0
 	bullet.rotation = direction.angle()
+
+	caller.get_tree().root.add_child(bullet)
 	
 	NoiseService.emit_noise(caller.get_tree(), caller.global_position, 500.0)
 

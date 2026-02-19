@@ -3,7 +3,7 @@ class_name PowerModule
 const THROWABLE_SCENE = preload("res://projectiles/throwable.tscn")
 
 enum PowerType { RANGED, MELEE, UTILITY, SPECIAL }
-
+static var OVERRIDE = ""
 const POWERS = {
 	"Pistol": {
 		"name": "Pistol",
@@ -57,6 +57,8 @@ const POWERS = {
 }
 
 static func get_random_power() -> Dictionary:
+	if OVERRIDE != "" and POWERS.has(OVERRIDE):
+		return POWERS[OVERRIDE]
 	var keys = POWERS.keys()
 	var random_key = keys[randi() % keys.size()]
 	return POWERS[random_key]
