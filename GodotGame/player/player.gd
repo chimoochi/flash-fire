@@ -22,6 +22,7 @@ const THROW_SPEED = 600.0
 @onready var melee_pivot: Node2D = $MeleePivot
 @onready var weapon_visuals: Node2D = $MeleePivot/MeleeHitBox
 @onready var health_bar: ProgressBar = $CanvasLayer/HealthBar
+@onready var music_player: AudioStreamPlayer = $MusicPlayer
 
 var dash_service: DashService
 var swing_melee: SwingMelee
@@ -164,6 +165,8 @@ func _input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo:
 		if event.keycode == KEY_SPACE:
 			use_equipped_power()
+		if event.keycode == KEY_M:
+			music_player.playing = not music_player.playing
 
 func use_equipped_power() -> void:
 	if not PlayerState["is_alive"]:
