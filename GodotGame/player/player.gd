@@ -14,17 +14,22 @@ const BULLET_SPEED = 1500.0
 const BULLET_DAMAGE = 20
 const PUSH_FORCE = 1500.0
 const PLAYER_PUSH_RESISTANCE = 50.0
-const BULLET_SCENE = preload("res://player/bullet.tscn")
-const THROWABLE_SCENE = preload("res://projectiles/throwable.tscn")
-#const WALL_PUSH_SCENE = preload("res://abilities/wall_push.tscn") 
+const PUSH_DECAY = 3000.0
+const MAX_PUSH_VELOCITY = 400.0
+
 const THROW_SPEED = 600.0
+
 @onready var melee_pivot: Node2D = $MeleePivot
 @onready var weapon_visuals: Node2D = $MeleePivot/MeleeHitBox
 @onready var health_bar: ProgressBar = $CanvasLayer/HealthBar
 
 var dash_service: DashService
-
 var swing_melee: SwingMelee
+
+var equipped_power: Dictionary
+var last_power_time: int = 0
+var power_label: Label
+var push_velocity: Vector2 = Vector2.ZERO
 
 var PlayerState: Dictionary = {
 	"health": 100,
@@ -34,11 +39,9 @@ var PlayerState: Dictionary = {
 	"is_alive": true,
 	"is_swinging": false,
 
-
 	"can_shoot": true,
 	"can_throw": true,
 	"can_lightning": true,
-
 
 	"is_dashing": false,
 	"can_dash": true,
@@ -59,6 +62,20 @@ func _ready() -> void:
 	
 	health_bar.max_value = PlayerState["max_health"]
 	health_bar.value = PlayerState["health"]
+	
+	equipped_power = PowerModule.get_random_power()
+	_setup_power_ui()
+
+func _setup_power_ui() -> void:
+	power_label = Label.new()
+	power_label.text = "Power: " + equipped_power.name
+	power_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	
+	# Position it somewhere visible. 
+	# CanvasLayer coordinates. HealthBar is likely top left.
+	power_label.position = Vector2(20, 60) 
+	$CanvasLayer.add_child(power_label)
+
 
 func _physics_process(delta):
 	var direction = Vector2.ZERO
@@ -78,16 +95,19 @@ func _physics_process(delta):
 	_handle_push_interaction(delta)
 	
 	
+	push_velocity = push_velocity.move_toward(Vector2.ZERO, PUSH_DECAY * delta)
+	
 	if dash_service.is_dashing:
 		dash_service.process_dash_physics(self, delta)
 	else:
 		_handle_movement_physics(direction, delta)
+		velocity += push_velocity
 		move_and_slide()
+		# Zero out push after applying — don't let it persist
+		# The decay above handles the gradual fade
 	
 	look_at(get_global_mouse_position())
 
-	if Input.is_action_just_pressed("shoot"):
-		attack()
 	
 	if Input.is_action_just_pressed("Dash") and dash_service.can_dash:
 		dash_service.start_dash(
@@ -98,6 +118,11 @@ func _physics_process(delta):
 			PlayerState["dash_cooldown"],
 			PlayerState["dash_push_force"]
 		)
+		
+func push(force: Vector2) -> void:
+	push_velocity += force
+	if push_velocity.length() > MAX_PUSH_VELOCITY:
+		push_velocity = push_velocity.limit_length(MAX_PUSH_VELOCITY)
 
 func _handle_push_interaction(delta: float) -> void:
 	var space_state = get_world_2d().direct_space_state
@@ -135,62 +160,25 @@ func _handle_movement_physics(direction: Vector2, delta: float) -> void:
 		velocity = velocity.move_toward(Vector2.ZERO, FRICTION * delta)
 
 
-func spawn_bullet(direction: Vector2) -> void:
-	if not PlayerState["can_shoot"]:
-		return
-		
-	BulletService.spawn_bullet(self, direction, BULLET_DAMAGE, BULLET_SPEED)
-
 func _input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo:
 		if event.keycode == KEY_SPACE:
-			if PlayerState["can_throw"]:
-				throw_item()
-			if PlayerState.get("can_lightning", false):
-				LightningService.activate(self)
-		elif event.keycode == KEY_R:
-			spawn_wall()
+			use_equipped_power()
 
-func spawn_wall() -> void:
-	var dir = Vector2.RIGHT.rotated(rotation)
-	WallPushService.spawn_wall(self, dir)
-
-func throw_item() -> void:
-	if not PlayerState["can_throw"]: # disable for debug
-		return
-	var throwable = THROWABLE_SCENE.instantiate()
-	get_tree().root.add_child(throwable)
-	var dir = (get_global_mouse_position() - global_position).normalized()
-	throwable.direction = dir
-	throwable.speed = THROW_SPEED
-	
-	throwable.add_collision_exception_with(self)
-	
-	throwable.global_position = global_position + (dir * 20.0)
-	
-	var land_pos = await throwable.landed
-	ThrowableService.explode(100.0, land_pos, 30, 1000.0, self)
-
-
-func attack() -> void:
-	var shoot_dir = Vector2.RIGHT.rotated(rotation)
-	spawn_bullet(shoot_dir)
-	
-	swing()
-
-
-func swing() -> void:
-	if swing_melee.is_swinging:
+func use_equipped_power() -> void:
+	if not PlayerState["is_alive"]:
 		return
 		
-	PlayerState["is_swinging"] = true
-	PlayerState["is_attacking"] = true
+	var now = Time.get_ticks_msec()
+	var cooldown_ms = equipped_power.settings.get("cooldown", 0.5) * 1000
 	
-	swing_melee.swing(self, MELEE_DAMAGE, MELEE_KNOCKBACK, MELEE_ATTACK_DURATION)
-	await swing_melee.attack_finished
-	
-	PlayerState["is_swinging"] = false
-	PlayerState["is_attacking"] = false
+	if now - last_power_time < cooldown_ms:
+		return
+		
+	last_power_time = now
+	PowerModule.execute_power(equipped_power, self, get_global_mouse_position())
+
+
 
 			
 func use_ability(ability_name: String) -> void:
@@ -207,7 +195,7 @@ func transfer_abilities(enemy_killed) -> void:
 	
 	#restart concurrent states, boot up new
 
-func take_damage(amount: int) -> void:
+func take_damage(amount: int, source_pos: Vector2 = Vector2.ZERO) -> void:
 	if not PlayerState["is_alive"]:
 		return
 

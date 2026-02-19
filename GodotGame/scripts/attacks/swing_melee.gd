@@ -95,14 +95,14 @@ func _check_hit() -> void:
 			
 		if is_player:
 			if collider.is_in_group("Enemy") and collider.has_method("take_damage"):
-				collider.take_damage(current_damage)
+				collider.take_damage(current_damage, owner_node.global_position)
 				KnockbackService.apply_knockback(owner_node, collider, current_knockback)
 				hit_targets.append(collider)
 				CameraService.shake(0.1)
 		else:
 			if collider.is_in_group("Player"):
 				if collider.has_method("take_damage"):
-					collider.take_damage(current_damage)
+					collider.take_damage(current_damage, owner_node.global_position)
 				KnockbackService.apply_knockback(owner_node, collider, current_knockback)
 				hit_targets.append(collider)
 				CameraService.shake(0.1)

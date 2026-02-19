@@ -4,7 +4,12 @@ extends Object
 ## Activates the chain lightning effect from the player
 static func activate(player: Node2D, range_dist: float = 400.0, fov: float = 70.0, max_chain: float = 400.0, max_targets: int = 10) -> void:
 	var tree = player.get_tree()
-	var enemies = tree.get_nodes_in_group("Enemy")
+	
+	var target_group = "Enemy"
+	if player.is_in_group("Enemy"):
+		target_group = "Player"
+		
+	var enemies = tree.get_nodes_in_group(target_group)
 	
 	if enemies.is_empty():
 		return
@@ -42,6 +47,9 @@ static func activate(player: Node2D, range_dist: float = 400.0, fov: float = 70.
 			var width = 4.0 if i == 0 else 2.0
 			var parent = player.get_parent()
 			_create_lightning(parent, current_position, best_candidate.global_position, width)
+			
+			if best_candidate.has_method("take_damage"):
+				best_candidate.take_damage(20, current_position)
 			
 			if best_candidate.has_method("freeze"):
 				best_candidate.freeze(0.5)

@@ -43,6 +43,9 @@ var swing_melee: SwingMelee
 var melee_pivot: Node2D
 var melee_visual: CollisionShape2D
 
+var equipped_power: Dictionary
+var last_power_time: int = 0
+
 func _ready() -> void:
 	add_to_group("Enemy")
 	_acquire_target()
@@ -50,6 +53,8 @@ func _ready() -> void:
 	_setup_melee()
 	
 	idle_look_angle = rotation
+	
+	equipped_power = PowerModule.get_random_power()
 
 func _setup_melee() -> void:
 	melee_pivot = Node2D.new()
@@ -164,12 +169,18 @@ func _chase_target(delta: float) -> void:
 	_smooth_rotate(dir_to_target.angle(), delta)
 	
 	var drive = Vector2.ZERO
-	if dist_to_target > STOPPING_DISTANCE:
+	var attack_range = equipped_power.settings.get("range", 100.0)
+	
+	if dist_to_target > attack_range * 0.8: # Close enough to use power
 		drive = dir_to_target * move_speed
-
-		# TODO: attack range should overlap with stopping distance
-	if dist_to_target < 100:
-		swing_melee.swing(self, ENEMY_MELEE_DAMAGE, ENEMY_MELEE_KNOCKBACK, ENEMY_MELEE_DURATION)
+	
+	var now = Time.get_ticks_msec()
+	var cooldown_ms = equipped_power.settings.get("cooldown", 1.0) * 1000
+	
+	if dist_to_target <= attack_range:
+		if now - last_power_time >= cooldown_ms:
+			last_power_time = now
+			PowerModule.execute_power(equipped_power, self, target.global_position)
 	
 	_apply_movement(drive)
 
@@ -248,10 +259,22 @@ func _draw() -> void:
 		draw_line(local_last_known - Vector2(10, 10), local_last_known + Vector2(10, 10), Color(1, 1, 0, 0.5), 2)
 		draw_line(local_last_known - Vector2(10, -10), local_last_known + Vector2(10, -10), Color(1, 1, 0, 0.5), 2)
 	
-func take_damage(amount: int) -> void:
+func take_damage(amount: int, source_pos: Vector2 = Vector2.ZERO) -> void:
 	EnemyState["health"] -= amount
 	if health_bar:
 		health_bar.value = EnemyState["health"]
+	
+	if source_pos != Vector2.ZERO:
+		var dir_to_source = global_position.direction_to(source_pos)
+		var angle_to_source = dir_to_source.angle()
+		rotation = angle_to_source
+		idle_look_angle = angle_to_source
+		
+		if EnemyState["behavior"] == State.IDLE:
+			EnemyState["behavior"] = State.SUSPICIOUS
+			patience_timer = search_duration
+			scan_angle = rotation
+			
 	if EnemyState["health"] <= 0:
 		die()
 
@@ -276,7 +299,7 @@ func freeze(duration: float) -> void:
 	var prev_state = EnemyState["behavior"]
 	EnemyState["behavior"] = State.FROZEN
 	
-	modulate = Color(0.5, 0.5, 1.0) # Blue tint
+	modulate = Color(0.5, 0.5, 1.0)
 	
 	await get_tree().create_timer(duration).timeout
 	

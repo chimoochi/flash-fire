@@ -96,7 +96,7 @@ static func explode(radius: float, position: Vector2, damage: int = 0, push_forc
 				final_damage = max_hp * 0.75
 			
 			if collider.has_method("take_damage") and final_damage > 0:
-				collider.take_damage(int(final_damage * falloff))
+				collider.take_damage(int(final_damage * falloff), position)
 			
 			if push_force > 0:
 				if source_node and source_node is Node2D and collider is Node2D:
@@ -110,4 +110,3 @@ static func explode(radius: float, position: Vector2, damage: int = 0, push_forc
 static func lingering(duration, radius, position):
 	pass
 	
-	## Ricochet, Rotate Item in Air, Arc, Velocity (start fast slow near end), Duration

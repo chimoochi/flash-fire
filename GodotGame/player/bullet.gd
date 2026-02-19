@@ -21,9 +21,22 @@ func _on_body_entered(body: Node2D) -> void:
 		return
 	if body.is_in_group("Projectiles"):
 		return
+		
+		
+	if owner_node:
+		var is_owner_player = owner_node.is_in_group("Player")
+		var is_target_player = body.is_in_group("Player")
+		var is_owner_enemy = owner_node.is_in_group("Enemy")
+		var is_target_enemy = body.is_in_group("Enemy")
+		
+		# Prevent Team Damage
+		if is_owner_player and is_target_player:
+			return
+		if is_owner_enemy and is_target_enemy:
+			return
 	
 	if body.has_method("take_damage"):
-		body.take_damage(damage)
+		body.take_damage(damage, global_position)
 		
 	print("Bullet hit: ", body.name, " at ", global_position)
 	queue_free()

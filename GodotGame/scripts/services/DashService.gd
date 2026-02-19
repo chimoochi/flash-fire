@@ -22,7 +22,6 @@ func start_dash(body: CharacterBody2D, direction: Vector2, speed: float, duratio
 	if direction == Vector2.ZERO:
 		direction = Vector2.RIGHT.rotated(body.rotation)
 	
-	# Update internal params with passed values
 	dash_speed = speed
 	dash_duration = duration
 	dash_cooldown = cooldown
@@ -64,4 +63,3 @@ func handle_impact(collider: Node) -> void:
 		if collider in _hit_entities:
 			return
 		_hit_entities.append(collider)
-		# print("Dash Impact Velocity") - Optional debug
