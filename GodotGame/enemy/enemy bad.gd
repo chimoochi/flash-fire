@@ -26,6 +26,8 @@ var EnemyState: Dictionary = {
 	"is_alive": true,
 	"behavior": State.IDLE
 }
+var is_execution_ready: bool = false
+const LOW_HEALTH_THRESHOLD: int = 40
 var target: Node2D = null
 var last_known_position: Vector2 = Vector2.ZERO
 
@@ -273,10 +275,20 @@ func take_damage(amount: int, source_pos: Vector2 = Vector2.ZERO) -> void:
 		if EnemyState["behavior"] == State.IDLE:
 			EnemyState["behavior"] = State.SUSPICIOUS
 			patience_timer = search_duration
+			patience_timer = search_duration
 			scan_angle = rotation
+			
+	if EnemyState["health"] <= LOW_HEALTH_THRESHOLD and not is_execution_ready:
+		start_low_health_pulse()
 			
 	if EnemyState["health"] <= 0:
 		die()
+
+func start_low_health_pulse() -> void:
+	is_execution_ready = true
+	var tween = create_tween().set_loops()
+	tween.tween_property(self, "modulate", Color.CYAN, 0.5)
+	tween.tween_property(self, "modulate", Color.WHITE, 0.5)
 
 func die() -> void:
 	EnemyState["is_alive"] = false

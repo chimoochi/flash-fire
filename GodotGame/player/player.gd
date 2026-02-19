@@ -50,7 +50,8 @@ var PlayerState: Dictionary = {
 	"dash_duration": 0.15,
 	"dash_cooldown": 0.8,
 	"dash_push_force": 4000.0,
-	"is_attacking": false
+	"is_attacking": false,
+	"is_invincible": false
 }
 
 func _ready() -> void:
@@ -167,6 +168,11 @@ func _input(event: InputEvent) -> void:
 			use_equipped_power()
 		if event.keycode == KEY_M:
 			music_player.playing = not music_player.playing
+			
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+		var target = _get_enemy_under_mouse()
+		if target and target.get("is_execution_ready"):
+			_perform_glory_kill(target)
 
 func use_equipped_power() -> void:
 	if not PlayerState["is_alive"]:
@@ -199,7 +205,7 @@ func transfer_abilities(enemy_killed) -> void:
 	#restart concurrent states, boot up new
 
 func take_damage(amount: int, source_pos: Vector2 = Vector2.ZERO) -> void:
-	if not PlayerState["is_alive"]:
+	if not PlayerState["is_alive"] or PlayerState.get("is_invincible", false):
 		return
 
 	PlayerState["health"] -= amount
@@ -230,3 +236,40 @@ func respawn() -> void:
 	
 	visible = true
 	set_physics_process(true)
+
+func _get_enemy_under_mouse() -> Node2D:
+	var space_state = get_world_2d().direct_space_state
+	var query = PhysicsPointQueryParameters2D.new()
+	query.position = get_global_mouse_position()
+	query.collide_with_areas = true
+	query.collide_with_bodies = true
+	query.collision_mask = 4 # Layer 3 (Enemies) if following standard
+	
+	# Actually standard mask might be different. Let's check collision mask of enemies.
+	# Enemy usually on Layer 3 (value 4).
+	
+	var result = space_state.intersect_point(query)
+	for data in result:
+		var collider = data["collider"]
+		if collider.is_in_group("Enemy"):
+			return collider
+	return null
+
+func _perform_glory_kill(target: Node2D) -> void:
+	PlayerState["is_invincible"] = true
+	
+	# Tween to target
+	var tween = create_tween()
+	tween.tween_property(self, "global_position", target.global_position, 0.2).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	
+	await tween.finished
+	
+	# Explosion
+	# Radius 250, Damage 150 (huge), Push 2000
+	ThrowableService.explode(250.0, global_position, 150, 2000.0, self)
+	
+	# Ensure target is dead specifically
+	if is_instance_valid(target) and target.has_method("die"):
+		target.die()
+		
+	PlayerState["is_invincible"] = false
