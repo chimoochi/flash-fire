@@ -3,7 +3,7 @@ class_name PowerModule
 const THROWABLE_SCENE = preload("res://projectiles/throwable.tscn")
 
 enum PowerType { RANGED, MELEE, UTILITY, SPECIAL }
-static var OVERRIDE = "Lightning"
+static var OVERRIDE = ""
 const POWERS = {
 	"Pistol": {
 		"name": "Pistol",
