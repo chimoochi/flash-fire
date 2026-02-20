@@ -167,6 +167,9 @@ func _physics_process(delta):
 			PlayerState["dash_push_force"]
 		)
 		
+	if Input.is_action_pressed("shoot") or Input.is_key_pressed(KEY_SPACE):
+		use_equipped_power()
+		
 func push(force: Vector2) -> void:
 	if dash_service.is_dashing:
 		return
@@ -212,8 +215,6 @@ func _handle_movement_physics(direction: Vector2, delta: float) -> void:
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo:
-		if event.keycode == KEY_SPACE:
-			use_equipped_power()
 		if event.keycode == KEY_M:
 			music_player.playing = not music_player.playing
 		if event.keycode == KEY_E:
@@ -224,6 +225,8 @@ func _input(event: InputEvent) -> void:
 	if event is InputEventKey and not event.pressed:
 		if event.keycode == KEY_SPACE:
 			_stop_stream()
+	if event.is_action_released("shoot"):
+		_stop_stream()
 
 func _stop_stream() -> void:
 	if lightning_stream:
@@ -254,8 +257,6 @@ func use_equipped_power() -> void:
 	PowerModule.execute_power(equipped_power, self, get_global_mouse_position())
 
 
-
-			
 func absorb_loadout(power: Dictionary, passive_name: String) -> void:
 	if kill_sound_player:
 		kill_sound_player.play()
@@ -350,6 +351,12 @@ func _perform_glory_kill(target: Node2D) -> void:
 		return
 	
 	ThrowableService.explode(GLORY_KILL_RADIUS, global_position, GLORY_KILL_DAMAGE, GLORY_KILL_PUSH_FORCE, self)
+	
+	var missing_health = PlayerState.get("max_health", 100) - PlayerState["health"]
+	var heal_amount = ceil(missing_health * 0.15)
+	PlayerState["health"] = min(PlayerState["health"] + heal_amount, PlayerState.get("max_health", 100))
+	if health_bar:
+		health_bar.set_health(PlayerState["health"])
 	
 	if target.has_method("take_damage"):
 		target.take_damage(9999, global_position, self)

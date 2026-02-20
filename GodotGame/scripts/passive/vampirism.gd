@@ -52,9 +52,9 @@ func _heal_player() -> void:
 	if not state:
 		return
 
-	var missing_health = state.get("max_health", 100) - state["health"]
-	var heal_amount = ceil(missing_health * 0.10)
-	state["health"] = min(state["health"] + heal_amount, state.get("max_health", 100))
+	var max_h = state.get("max_health", 100)
+	var heal_amount = ceil(max_h * 0.80)
+	state["health"] = min(state["health"] + heal_amount, max_h)
 
 	if source_node.get("health_bar"):
 		source_node.health_bar.set_health(state["health"])

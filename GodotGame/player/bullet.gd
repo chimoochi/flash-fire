@@ -36,7 +36,7 @@ func _on_body_entered(body: Node2D) -> void:
 			return
 	
 	if body.has_method("take_damage"):
-		body.take_damage(damage, global_position, owner_node if is_instance_valid(owner_node) else null)
+		body.take_damage(damage, start_position, owner_node if is_instance_valid(owner_node) else null)
 		
 	print("Bullet hit: ", body.name, " at ", global_position)
 	queue_free()

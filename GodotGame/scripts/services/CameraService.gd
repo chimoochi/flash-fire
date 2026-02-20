@@ -2,7 +2,7 @@ extends Node
 
 
 var trauma: float = 0.0
-var target_zoom: Vector2 = Vector2(1, 1)
+var target_zoom: Vector2 = Vector2(1.75, 1.75)
 var current_camera: Camera2D
 
 var decay: float = 1.5

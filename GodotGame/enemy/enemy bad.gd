@@ -283,10 +283,10 @@ func take_damage(amount: int, source_pos: Vector2 = Vector2.ZERO, source: Node2D
 		var angle_to_source = dir_to_source.angle()
 		rotation = angle_to_source
 		idle_look_angle = angle_to_source
+		last_known_position = source_pos
 		
-		if EnemyState["behavior"] == State.IDLE:
+		if EnemyState["behavior"] == State.IDLE or EnemyState["behavior"] == State.SUSPICIOUS:
 			EnemyState["behavior"] = State.SUSPICIOUS
-			patience_timer = search_duration
 			patience_timer = search_duration
 			scan_angle = rotation
 			
