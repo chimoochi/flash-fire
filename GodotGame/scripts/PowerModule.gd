@@ -3,7 +3,7 @@ class_name PowerModule
 const THROWABLE_SCENE = preload("res://projectiles/throwable.tscn")
 
 enum PowerType { RANGED, MELEE, UTILITY, SPECIAL }
-static var OVERRIDE = ""
+static var OVERRIDE = "Lightning"
 const POWERS = {
 	"Pistol": {
 		"name": "Pistol",
@@ -50,8 +50,8 @@ const POWERS = {
 		"name": "Lightning",
 		"type": PowerType.SPECIAL,
 		"settings": {
-			"cooldown": 3.0,
-			"range": 400.0
+			"cooldown": 0.5,
+			"range": 700.0
 		}
 	}
 }

@@ -1,7 +1,7 @@
 extends CharacterBody2D
 
 
-const MAX_SPEED = 600.0
+var MAX_SPEED = 600.0
 const ACCELERATION = 3000.0
 const FRICTION = 2000.0
 
@@ -16,6 +16,7 @@ const PUSH_FORCE = 1500.0
 const PLAYER_PUSH_RESISTANCE = 50.0
 const PUSH_DECAY = 3000.0
 const MAX_PUSH_VELOCITY = 400.0
+const MAX_VELOCITY = 1200.0
 
 const THROW_SPEED = 600.0
 
@@ -30,7 +31,9 @@ var swing_melee: SwingMelee
 var equipped_power: Dictionary
 var last_power_time: int = 0
 var power_label: Label
+var passive_label: Label
 var push_velocity: Vector2 = Vector2.ZERO
+var lightning_stream: Node = null
 
 var PlayerState: Dictionary = {
 	"health": 100,
@@ -59,6 +62,8 @@ func _ready() -> void:
 	swing_melee = SwingMelee.new()
 	add_child(swing_melee)
 	
+	melee_pivot.visible = false
+	
 	dash_service = DashService.new()
 	add_child(dash_service)
 	
@@ -67,16 +72,39 @@ func _ready() -> void:
 	
 	equipped_power = PowerModule.get_random_power()
 	_setup_power_ui()
+	
+	var random_passive = PassiveService.get_random_passive_name()
+	if random_passive != "":
+		PassiveService.add_passive(self, random_passive)
 
 func _setup_power_ui() -> void:
 	power_label = Label.new()
 	power_label.text = "Power: " + equipped_power.name
 	power_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
-	
-	# Position it somewhere visible. 
-	# CanvasLayer coordinates. HealthBar is likely top left.
-	power_label.position = Vector2(20, 60) 
+	power_label.position = Vector2(41, 115)
 	$CanvasLayer.add_child(power_label)
+	
+	passive_label = Label.new()
+	passive_label.text = "Active Passives: None"
+	passive_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	passive_label.position = Vector2(41, 140)
+	$CanvasLayer.add_child(passive_label)
+
+func on_passive_added(passive_name: String) -> void:
+	if not PlayerState["passives"].has(passive_name):
+		PlayerState["passives"].append(passive_name)
+		_update_passive_ui()
+
+func on_passive_removed(passive_name: String) -> void:
+	if PlayerState["passives"].has(passive_name):
+		PlayerState["passives"].erase(passive_name)
+		_update_passive_ui()
+
+func _update_passive_ui() -> void:
+	if PlayerState["passives"].is_empty():
+		passive_label.text = "Active Passives: None"
+	else:
+		passive_label.text = "Active Passives: " + ", ".join(PlayerState["passives"])
 
 
 func _physics_process(delta):
@@ -104,9 +132,9 @@ func _physics_process(delta):
 	else:
 		_handle_movement_physics(direction, delta)
 		velocity += push_velocity
+		velocity = velocity.limit_length(MAX_VELOCITY)
 		move_and_slide()
-		# Zero out push after applying — don't let it persist
-		# The decay above handles the gradual fade
+
 	
 	look_at(get_global_mouse_position())
 
@@ -122,6 +150,8 @@ func _physics_process(delta):
 		)
 		
 func push(force: Vector2) -> void:
+	if dash_service.is_dashing:
+		return
 	push_velocity += force
 	if push_velocity.length() > MAX_PUSH_VELOCITY:
 		push_velocity = push_velocity.limit_length(MAX_PUSH_VELOCITY)
@@ -168,11 +198,20 @@ func _input(event: InputEvent) -> void:
 			use_equipped_power()
 		if event.keycode == KEY_M:
 			music_player.playing = not music_player.playing
-			
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-		var target = _get_enemy_under_mouse()
-		if target and target.get("is_execution_ready"):
-			_perform_glory_kill(target)
+		if event.keycode == KEY_E:
+			var target = _get_nearest_execution_enemy()
+			if target:
+				_perform_glory_kill(target)
+	
+	if event is InputEventKey and not event.pressed:
+		if event.keycode == KEY_SPACE:
+			_stop_stream()
+
+func _stop_stream() -> void:
+	if lightning_stream:
+		lightning_stream.stop()
+		lightning_stream.queue_free()
+		lightning_stream = null
 
 func use_equipped_power() -> void:
 	if not PlayerState["is_alive"]:
@@ -184,6 +223,15 @@ func use_equipped_power() -> void:
 	if now - last_power_time < cooldown_ms:
 		return
 		
+	if equipped_power.name == "Lightning":
+		if not lightning_stream:
+			last_power_time = now
+			var stream_script = load("res://scripts/attacks/lightning_stream.gd")
+			lightning_stream = stream_script.new()
+			add_child(lightning_stream)
+			lightning_stream.start(self)
+		return
+	
 	last_power_time = now
 	PowerModule.execute_power(equipped_power, self, get_global_mouse_position())
 
@@ -208,7 +256,8 @@ func take_damage(amount: int, source_pos: Vector2 = Vector2.ZERO) -> void:
 	if not PlayerState["is_alive"] or PlayerState.get("is_invincible", false):
 		return
 
-	PlayerState["health"] -= amount
+	var reduced = int(amount * 0.6)
+	PlayerState["health"] -= reduced
 	if health_bar:
 		health_bar.set_health(PlayerState["health"])
 	
@@ -237,39 +286,46 @@ func respawn() -> void:
 	visible = true
 	set_physics_process(true)
 
-func _get_enemy_under_mouse() -> Node2D:
-	var space_state = get_world_2d().direct_space_state
-	var query = PhysicsPointQueryParameters2D.new()
-	query.position = get_global_mouse_position()
-	query.collide_with_areas = true
-	query.collide_with_bodies = true
-	query.collision_mask = 4 # Layer 3 (Enemies) if following standard
+func _get_nearest_execution_enemy() -> Node2D:
+	var enemies = get_tree().get_nodes_in_group("Enemy")
+	var closest = null
+	var closest_dist = INF
 	
-	# Actually standard mask might be different. Let's check collision mask of enemies.
-	# Enemy usually on Layer 3 (value 4).
-	
-	var result = space_state.intersect_point(query)
-	for data in result:
-		var collider = data["collider"]
-		if collider.is_in_group("Enemy"):
-			return collider
-	return null
+	for enemy in enemies:
+		if not is_instance_valid(enemy):
+			continue
+		if not enemy.get("is_execution_ready"):
+			continue
+		var dist = global_position.distance_to(enemy.global_position)
+		if dist < closest_dist:
+			closest_dist = dist
+			closest = enemy
+	return closest
 
 func _perform_glory_kill(target: Node2D) -> void:
 	PlayerState["is_invincible"] = true
 	
-	# Tween to target
+	var dash_dir = (target.global_position - global_position).normalized()
+	var dist = global_position.distance_to(target.global_position)
+	var max_dash_dist = 300.0
+	var capped_pos = target.global_position if dist <= max_dash_dist else global_position + dash_dir * max_dash_dist
+	
 	var tween = create_tween()
-	tween.tween_property(self, "global_position", target.global_position, 0.2).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	tween.tween_property(self, "global_position", capped_pos, 0.2).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	
 	await tween.finished
 	
-	# Explosion
-	# Radius 250, Damage 150 (huge), Push 2000
+	if not is_instance_valid(target) or global_position.distance_to(target.global_position) > 80.0:
+		await get_tree().create_timer(1).timeout
+		PlayerState["is_invincible"] = false
+		return
+	
 	ThrowableService.explode(250.0, global_position, 150, 2000.0, self)
 	
-	# Ensure target is dead specifically
-	if is_instance_valid(target) and target.has_method("die"):
+	if target.has_method("die"):
 		target.die()
-		
+	
+	push_velocity = dash_dir * 800.0
+	await get_tree().create_timer(1).timeout
 	PlayerState["is_invincible"] = false
+w 

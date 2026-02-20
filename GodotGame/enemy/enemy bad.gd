@@ -57,6 +57,10 @@ func _ready() -> void:
 	idle_look_angle = rotation
 	
 	equipped_power = PowerModule.get_random_power()
+	
+	var random_passive = PassiveService.get_random_passive_name()
+	if random_passive != "":
+		PassiveService.add_passive(self, random_passive)
 
 func _setup_melee() -> void:
 	melee_pivot = Node2D.new()
@@ -79,6 +83,7 @@ func _setup_melee() -> void:
 	
 	melee_pivot.add_child(melee_visual)
 	melee_pivot.position = Vector2(16, 16)
+	melee_pivot.visible = false
 	
 	swing_melee = SwingMelee.new()
 	add_child(swing_melee)

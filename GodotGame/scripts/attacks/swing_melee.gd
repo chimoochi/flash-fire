@@ -40,6 +40,7 @@ func swing(caller: Node2D, damage: int, knockback: float, duration: float) -> vo
 	var peak_dist = 50.0
 	
 
+	pivot.visible = true
 	pivot.rotation = start_angle
 	visual.position.x = start_dist
 	visual.visible = true
@@ -58,7 +59,8 @@ func swing(caller: Node2D, damage: int, knockback: float, duration: float) -> vo
 	await return_tween.finished
 	
 	
-	visual.visible = true
+	visual.visible = false
+	pivot.visible = false
 	
 	await get_tree().create_timer(0.1).timeout
 	is_swinging = false
