@@ -18,6 +18,10 @@ const PUSH_DECAY = 3000.0
 const MAX_PUSH_VELOCITY = 400.0
 const MAX_VELOCITY = 1200.0
 
+const GLORY_KILL_DAMAGE = 20
+const GLORY_KILL_RADIUS = 75.0
+const GLORY_KILL_PUSH_FORCE = 2000.0
+
 const THROW_SPEED = 600.0
 
 @onready var melee_pivot: Node2D = $MeleePivot
@@ -34,6 +38,8 @@ var power_label: Label
 var passive_label: Label
 var push_velocity: Vector2 = Vector2.ZERO
 var lightning_stream: Node = null
+
+var kill_sound_player: AudioStreamPlayer
 
 var PlayerState: Dictionary = {
 	"health": 100,
@@ -67,6 +73,10 @@ func _ready() -> void:
 	dash_service = DashService.new()
 	add_child(dash_service)
 	
+	kill_sound_player = AudioStreamPlayer.new()
+	kill_sound_player.stream = load("res://gameassets/kill.mp3")
+	add_child(kill_sound_player)
+	
 	health_bar.max_value = PlayerState["max_health"]
 	health_bar.value = PlayerState["health"]
 	
@@ -76,6 +86,14 @@ func _ready() -> void:
 	var random_passive = PassiveService.get_random_passive_name()
 	if random_passive != "":
 		PassiveService.add_passive(self, random_passive)
+	
+	get_tree().node_added.connect(_on_node_added)
+	
+	call_deferred("_connect_existing_enemies")
+
+func _connect_existing_enemies() -> void:
+	for enemy in get_tree().get_nodes_in_group("Enemy"):
+		_try_connect_enemy(enemy)
 
 func _setup_power_ui() -> void:
 	power_label = Label.new()
@@ -238,21 +256,30 @@ func use_equipped_power() -> void:
 
 
 			
-func use_ability(ability_name: String) -> void:
-	# Placeholder
-	# But grab table of abilities from PlayerState, and use ability
-	return
+func absorb_loadout(power: Dictionary, passive_name: String) -> void:
+	if kill_sound_player:
+		kill_sound_player.play()
+	_stop_stream()
+	equipped_power = power
+	last_power_time = 0
+	if power_label:
+		power_label.text = "Power: " + power.name
 	
-	
-func transfer_abilities(enemy_killed) -> void:
-	# Placeholder
-	# But grab table of abilities from enemy killed, and add to PlayerState
-	return
+	PassiveService.remove_all_passives(self)
+	if passive_name != "":
+		PassiveService.add_passive(self, passive_name)
 
-	
-	#restart concurrent states, boot up new
+func _on_node_added(node: Node) -> void:
+	call_deferred("_try_connect_enemy", node)
 
-func take_damage(amount: int, source_pos: Vector2 = Vector2.ZERO) -> void:
+func _try_connect_enemy(node: Node) -> void:
+	if not is_instance_valid(node):
+		return
+	if node.is_in_group("Enemy") and node.has_signal("killed_by_player"):
+		if not node.killed_by_player.is_connected(absorb_loadout):
+			node.killed_by_player.connect(absorb_loadout)
+
+func take_damage(amount: int, source_pos: Vector2 = Vector2.ZERO, source: Node2D = null) -> void:
 	if not PlayerState["is_alive"] or PlayerState.get("is_invincible", false):
 		return
 
@@ -303,6 +330,8 @@ func _get_nearest_execution_enemy() -> Node2D:
 	return closest
 
 func _perform_glory_kill(target: Node2D) -> void:
+	if not PlayerState["is_alive"]:
+		return
 	PlayerState["is_invincible"] = true
 	
 	var dash_dir = (target.global_position - global_position).normalized()
@@ -320,12 +349,13 @@ func _perform_glory_kill(target: Node2D) -> void:
 		PlayerState["is_invincible"] = false
 		return
 	
-	ThrowableService.explode(250.0, global_position, 150, 2000.0, self)
+	ThrowableService.explode(GLORY_KILL_RADIUS, global_position, GLORY_KILL_DAMAGE, GLORY_KILL_PUSH_FORCE, self)
 	
-	if target.has_method("die"):
+	if target.has_method("take_damage"):
+		target.take_damage(9999, global_position, self)
+	elif target.has_method("die"):
 		target.die()
 	
 	push_velocity = dash_dir * 800.0
 	await get_tree().create_timer(1).timeout
 	PlayerState["is_invincible"] = false
-w 

@@ -61,5 +61,5 @@ func _physics_process(delta):
 			# Debounce check
 			var id = body.get_instance_id()
 			if not hit_cooldowns.has(id):
-				body.take_damage(DAMAGE, position)
+				body.take_damage(DAMAGE, position, owner_node if is_instance_valid(owner_node) else null)
 				hit_cooldowns[id] = now + (DAMAGE_INTERVAL * 1000)

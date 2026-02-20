@@ -1,5 +1,6 @@
 extends CharacterBody2D
 
+signal killed_by_player(power: Dictionary, passive_name: String)
 
 @export var move_speed := 250.0
 @export var turn_speed := 8.0
@@ -46,7 +47,10 @@ var melee_pivot: Node2D
 var melee_visual: CollisionShape2D
 
 var equipped_power: Dictionary
+var equipped_passive: String = ""
 var last_power_time: int = 0
+var _frozen_until: int = 0
+var _last_damage_source: Node2D = null
 
 func _ready() -> void:
 	add_to_group("Enemy")
@@ -61,6 +65,7 @@ func _ready() -> void:
 	var random_passive = PassiveService.get_random_passive_name()
 	if random_passive != "":
 		PassiveService.add_passive(self, random_passive)
+		equipped_passive = random_passive
 
 func _setup_melee() -> void:
 	melee_pivot = Node2D.new()
@@ -184,7 +189,7 @@ func _chase_target(delta: float) -> void:
 	var now = Time.get_ticks_msec()
 	var cooldown_ms = equipped_power.settings.get("cooldown", 1.0) * 1000
 	
-	if dist_to_target <= attack_range:
+	if dist_to_target <= attack_range and Time.get_ticks_msec() >= _frozen_until:
 		if now - last_power_time >= cooldown_ms:
 			last_power_time = now
 			PowerModule.execute_power(equipped_power, self, target.global_position)
@@ -266,7 +271,9 @@ func _draw() -> void:
 		draw_line(local_last_known - Vector2(10, 10), local_last_known + Vector2(10, 10), Color(1, 1, 0, 0.5), 2)
 		draw_line(local_last_known - Vector2(10, -10), local_last_known + Vector2(10, -10), Color(1, 1, 0, 0.5), 2)
 	
-func take_damage(amount: int, source_pos: Vector2 = Vector2.ZERO) -> void:
+func take_damage(amount: int, source_pos: Vector2 = Vector2.ZERO, source: Node2D = null) -> void:
+	if source:
+		_last_damage_source = source
 	EnemyState["health"] -= amount
 	if health_bar:
 		health_bar.value = EnemyState["health"]
@@ -295,8 +302,20 @@ func start_low_health_pulse() -> void:
 	tween.tween_property(self, "modulate", Color.CYAN, 0.5)
 	tween.tween_property(self, "modulate", Color.WHITE, 0.5)
 
+func stun(duration: float) -> void:
+	_frozen_until = Time.get_ticks_msec() + int(duration * 1000)
+	var prev_state = EnemyState["behavior"]
+	EnemyState["behavior"] = State.FROZEN
+	
+	await get_tree().create_timer(duration).timeout
+	
+	if is_instance_valid(self) and EnemyState["behavior"] == State.FROZEN:
+		EnemyState["behavior"] = prev_state
+
 func die() -> void:
 	EnemyState["is_alive"] = false
+	if is_instance_valid(_last_damage_source) and _last_damage_source.is_in_group("Player"):
+		killed_by_player.emit(equipped_power, equipped_passive)
 	queue_free()
 
 func hear_noise(source_pos: Vector2, range_dist: float) -> void:

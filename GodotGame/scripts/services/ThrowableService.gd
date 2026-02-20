@@ -15,7 +15,7 @@ static func throwing(startpos: Vector2, endpos: Vector2, speed: float, scene: Pa
 		
 		
 		projectile.collision_layer = 0
-		projectile.collision_mask = 1
+		projectile.collision_mask = 7
 		
 		if owner_node and owner_node is CollisionObject2D:
 			projectile.add_collision_exception_with(owner_node)
@@ -96,7 +96,7 @@ static func explode(radius: float, position: Vector2, damage: int = 0, push_forc
 				final_damage = max_hp * 0.75
 			
 			if collider.has_method("take_damage") and final_damage > 0:
-				collider.take_damage(int(final_damage * falloff), position)
+				collider.take_damage(int(final_damage * falloff), position, source_node if is_instance_valid(source_node) else null)
 			
 			if push_force > 0:
 				if source_node and source_node is Node2D and collider is Node2D:

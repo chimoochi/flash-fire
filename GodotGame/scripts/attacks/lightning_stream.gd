@@ -60,24 +60,32 @@ func _fire() -> void:
 		target_group = "Player"
 
 	var targets = tree.get_nodes_in_group(target_group)
-	var hit_target = null
+	var hit_targets: Array = []
 
 	for t in targets:
 		if not is_instance_valid(t):
 			continue
-		if bolt_end.distance_to(t.global_position) <= HIT_RADIUS:
-			hit_target = t
-			break
+		if _dist_to_line(t.global_position, origin, bolt_end) <= HIT_RADIUS:
+			hit_targets.append(t)
 
-	if hit_target:
+	for hit_target in hit_targets:
 		if hit_target.has_method("take_damage"):
-			hit_target.take_damage(STREAM_DAMAGE, origin)
+			hit_target.take_damage(STREAM_DAMAGE, origin, source_node if is_instance_valid(source_node) else null)
 
-		if hit_target.has_method("freeze"):
-			hit_target.freeze(FREEZE_DURATION)
+		if hit_target.has_method("stun"):
+			hit_target.stun(FREEZE_DURATION)
 
 		if randf() < CHAIN_CHANCE:
 			_do_chain(hit_target, targets, parent)
+
+func _dist_to_line(point: Vector2, line_start: Vector2, line_end: Vector2) -> float:
+	var line_vec = line_end - line_start
+	var len_sq = line_vec.length_squared()
+	if len_sq == 0.0:
+		return point.distance_to(line_start)
+	var t = clamp((point - line_start).dot(line_vec) / len_sq, 0.0, 1.0)
+	var projection = line_start + line_vec * t
+	return point.distance_to(projection)
 
 func _do_chain(start_target: Node2D, all_targets: Array, parent: Node) -> void:
 	var hit = [start_target]
@@ -105,10 +113,10 @@ func _do_chain(start_target: Node2D, all_targets: Array, parent: Node) -> void:
 		LightningService.create_bolt(parent, current_pos, best.global_position, 1.8, 6, 12.0, 0.1)
 
 		if best.has_method("take_damage"):
-			best.take_damage(STREAM_DAMAGE, current_pos)
+			best.take_damage(STREAM_DAMAGE, current_pos, source_node if is_instance_valid(source_node) else null)
 
-		if best.has_method("freeze"):
-			best.freeze(FREEZE_DURATION)
+		if best.has_method("stun"):
+			best.stun(FREEZE_DURATION)
 
 		hit.append(best)
 		current_pos = best.global_position

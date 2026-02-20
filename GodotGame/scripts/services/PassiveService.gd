@@ -7,9 +7,12 @@ const PASSIVE_SCRIPTS = {
 	"Vampirism": "res://scripts/passive/vampirism.gd"
 }
 
+static var OVERRIDE = ""
 static var _saved_stats: Dictionary = {}
 
 static func get_random_passive_name() -> String:
+	if OVERRIDE != "" and PASSIVE_SCRIPTS.has(OVERRIDE):
+		return OVERRIDE
 	var keys = PASSIVE_SCRIPTS.keys()
 	if keys.size() == 0:
 		return ""
@@ -41,12 +44,16 @@ static func add_passive(node: Node2D, passive_name: String) -> Node:
 	return instance
 
 static func remove_passive(node: Node2D, passive_name: String) -> void:
-	var passive_node_name = passive_name + "_Passive"
-	var instance = node.get_node_or_null(passive_node_name)
-
-	if instance:
-		instance.queue_free()
-
+	var prefix = passive_name + "_Passive"
+	var found = false
+	
+	for child in node.get_children():
+		if child.name.begins_with(prefix):
+			node.remove_child(child)
+			child.queue_free()
+			found = true
+			
+	if found:
 		if node.has_method("on_passive_removed"):
 			node.on_passive_removed(passive_name)
 	else:
@@ -54,12 +61,16 @@ static func remove_passive(node: Node2D, passive_name: String) -> void:
 
 static func remove_all_passives(node: Node2D) -> void:
 	for key in PASSIVE_SCRIPTS.keys():
-		var passive_node_name = key + "_Passive"
-		var instance = node.get_node_or_null(passive_node_name)
-		if instance:
-			instance.queue_free()
-			if node.has_method("on_passive_removed"):
-				node.on_passive_removed(key)
+		var prefix = key + "_Passive"
+		var found = false
+		for child in node.get_children():
+			if child.name.begins_with(prefix):
+				node.remove_child(child)
+				child.queue_free()
+				found = true
+		
+		if found and node.has_method("on_passive_removed"):
+			node.on_passive_removed(key)
 
 static func save_stats(instance_id: int, stats: Dictionary) -> void:
 	_saved_stats[instance_id] = stats

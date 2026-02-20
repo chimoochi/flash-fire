@@ -33,7 +33,7 @@ func _is_valid_target(body: Node2D) -> bool:
 		return false
 	if body == source_node:
 		return false
-	# Prevent friendly fire
+		
 	if is_instance_valid(source_node):
 		if source_node.is_in_group("Enemy") and body.is_in_group("Enemy"):
 			return false
@@ -54,7 +54,7 @@ func _physics_process(_delta: float) -> void:
 		var next_tick = _victims[victim]
 		if now >= next_tick:
 			var damage_pos = source_node.global_position if is_instance_valid(source_node) else global_position
-			victim.take_damage(BURN_DAMAGE, damage_pos)
+			victim.take_damage(BURN_DAMAGE, damage_pos, source_node if is_instance_valid(source_node) else null)
 			_victims[victim] = now + int(BURN_INTERVAL * 1000)
 
 	for invalid in to_remove:
@@ -66,7 +66,7 @@ func _on_body_entered(body: Node2D) -> void:
 
 	var now = Time.get_ticks_msec()
 	var damage_pos = source_node.global_position if is_instance_valid(source_node) else global_position
-	body.take_damage(BURN_DAMAGE, damage_pos)
+	body.take_damage(BURN_DAMAGE, damage_pos, source_node if is_instance_valid(source_node) else null)
 	_victims[body] = now + int(BURN_INTERVAL * 1000)
 
 func _on_body_exited(body: Node2D) -> void:

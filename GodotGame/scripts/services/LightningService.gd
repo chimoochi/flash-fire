@@ -1,7 +1,7 @@
 class_name LightningService
 extends Object
 
-static func activate(player: Node2D, range_dist: float = 400.0, fov: float = 70.0, max_chain: float = 400.0, max_targets: int = 10) -> void:
+static func activate(player: Node2D, range_dist: float = 400.0, fov: float = 70.0, max_chain: float = 400.0, max_targets: int = 3) -> void:
 	var tree = player.get_tree()
 	
 	var target_group = "Enemy"
@@ -45,10 +45,10 @@ static func activate(player: Node2D, range_dist: float = 400.0, fov: float = 70.
 			create_bolt(parent, current_position, best_candidate.global_position, width)
 			
 			if best_candidate.has_method("take_damage"):
-				best_candidate.take_damage(20, current_position)
+				best_candidate.take_damage(8, current_position)
 			
-			if best_candidate.has_method("freeze"):
-				best_candidate.freeze(0.5)
+			if best_candidate.has_method("stun"):
+				best_candidate.stun(0.2)
 				
 			hit_enemies.append(best_candidate)
 			current_position = best_candidate.global_position

@@ -11,7 +11,7 @@ const POWERS = {
 		"settings": {
 			"damage": 20,
 			"speed": 1500.0,
-			"cooldown": 0.5,
+			"cooldown": 0.25,
 			"range": 600.0
 		}
 	},
@@ -50,7 +50,7 @@ const POWERS = {
 		"name": "Lightning",
 		"type": PowerType.SPECIAL,
 		"settings": {
-			"cooldown": 0.5,
+			"cooldown": 0.25,
 			"range": 700.0
 		}
 	}

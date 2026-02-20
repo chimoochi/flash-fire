@@ -10,7 +10,7 @@ func _ready() -> void:
 	if not is_instance_valid(source_node):
 		return
 
-	# Save original stats before modifying
+
 	var saved = {}
 
 	if source_node.is_in_group("Player") and source_node.get("PlayerState"):
