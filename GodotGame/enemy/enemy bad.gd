@@ -25,7 +25,8 @@ var EnemyState: Dictionary = {
 	"health": 100,
 	"max_health": 100,
 	"is_alive": true,
-	"behavior": State.IDLE
+	"behavior": State.IDLE,
+	"Weapon_type": null
 }
 var is_execution_ready: bool = false
 const LOW_HEALTH_THRESHOLD: int = 40
@@ -61,7 +62,9 @@ func _ready() -> void:
 	idle_look_angle = rotation
 	
 	equipped_power = PowerModule.get_random_power()
-	
+	print(equipped_power)
+	print(equipped_power.type)
+	EnemyState["Weapon_type"] = equipped_power.type
 	var random_passive = PassiveService.get_random_passive_name()
 	if random_passive != "":
 		PassiveService.add_passive(self, random_passive)
