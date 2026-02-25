@@ -43,7 +43,7 @@ var health_bar: ProgressBar
 
 var push_velocity: Vector2 = Vector2.ZERO
 
-var swing_melee: SwingMelee
+var swing_melee: WaterPopper
 var melee_pivot: Node2D
 var melee_visual: CollisionShape2D
 
@@ -92,7 +92,7 @@ func _setup_melee() -> void:
 	melee_pivot.position = Vector2(16, 16)
 	melee_pivot.visible = false
 	
-	swing_melee = SwingMelee.new()
+	swing_melee = WaterPopper.new()
 	add_child(swing_melee)
 
 func _setup_health_bar() -> void:

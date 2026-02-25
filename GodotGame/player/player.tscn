@@ -1,8 +1,9 @@
-[gd_scene load_steps=5 format=3 uid="uid://bq3nv1n2jji1h"]
+[gd_scene load_steps=7 format=3 uid="uid://bq3nv1n2jji1h"]
 
 [ext_resource type="Script" uid="uid://c4af162fdb6yc" path="res://player/player.gd" id="1_player"]
 [ext_resource type="PackedScene" uid="uid://c6jlkk74smucx" path="res://player/health_bar.tscn" id="2_healthbar"]
-[ext_resource type="AudioStream" path="res://gameassets/music.mp3" id="3_music"]
+[ext_resource type="AudioStream" uid="uid://bxoil7vbca6q8" path="res://gameassets/music.mp3" id="3_music"]
+[ext_resource type="PackedScene" uid="uid://cmp4w04lim2bp" path="res://tidepopper.tscn" id="4_yw30f"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_player"]
 size = Vector2(32, 32)
@@ -61,4 +62,7 @@ offset_bottom = 107.0
 [node name="MusicPlayer" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("3_music")
 volume_db = -6.0
-bus = &"Master"
+
+[node name="Tidepopper" parent="." instance=ExtResource("4_yw30f")]
+position = Vector2(6, 7)
+rotation = 0.324631

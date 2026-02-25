@@ -30,7 +30,7 @@ const THROW_SPEED = 600.0
 @onready var music_player: AudioStreamPlayer = $MusicPlayer
 
 var dash_service: DashService
-var swing_melee: SwingMelee
+var swing_melee: WaterPopper
 
 var equipped_power: Dictionary
 var last_power_time: int = 0
@@ -65,7 +65,7 @@ var PlayerState: Dictionary = {
 
 func _ready() -> void:
 	add_to_group("Player")
-	swing_melee = SwingMelee.new()
+	swing_melee = WaterPopper.new()
 	add_child(swing_melee)
 	
 	melee_pivot.visible = false
