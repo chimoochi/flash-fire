@@ -62,9 +62,8 @@ func _ready() -> void:
 	idle_look_angle = rotation
 	
 	equipped_power = PowerModule.get_random_power()
-	print(equipped_power)
-	print(equipped_power.type)
 	EnemyState["Weapon_type"] = equipped_power.type
+	print(PowerModule.PowerType.keys()[EnemyState["Weapon_type"]])
 	var random_passive = PassiveService.get_random_passive_name()
 	if random_passive != "":
 		PassiveService.add_passive(self, random_passive)
