@@ -14,7 +14,7 @@ func swing(caller: Node2D, damage: int, knockback: float, duration: float) -> vo
 	var pivot = caller.get_node("MeleePivot")
 	var visual = pivot.get_node("MeleeHitBox")
 	
-	# Use the generic service for the swing motion and melee hit detection
+	
 	_swing_instance = SwingMeleeService.swing(
 		caller,
 		pivot,
@@ -22,20 +22,18 @@ func swing(caller: Node2D, damage: int, knockback: float, duration: float) -> vo
 		damage,
 		knockback,
 		duration,
-		90.0, # angle range (approx 45 to -45 degrees)
-		10.0, # start dist
-		50.0, # peak dist
-		0.1   # shake amount
+		90.0,
+		10.0,
+		50.0,
+		0.1
 	)
 	
-	# Spawn the specific projectile for this weapon
 	_spawn_projectile(caller, damage, knockback)
 	
 	if _swing_instance:
 		await _swing_instance.finished
 		_swing_instance = null
 	
-	# Small cooldown or cleanup buffer as in original script
 	await get_tree().create_timer(0.1).timeout
 	
 	is_swinging = false
@@ -73,7 +71,7 @@ class WaterSlashProjectile extends Area2D:
 		add_child(collision)
 		
 		var visual = Polygon2D.new()
-		visual.color = Color(0.4, 0.6, 1.0, 0.6) # Water-like color
+		visual.color = Color(0.4, 0.6, 1.0, 0.6)
 		visual.polygon = PackedVector2Array([
 			Vector2(20, 0), Vector2(10, -30), Vector2(-10, -30),
 			Vector2(-20, 0), Vector2(-10, 30), Vector2(10, 30)
@@ -81,10 +79,10 @@ class WaterSlashProjectile extends Area2D:
 		add_child(visual)
 		
 		collision_layer = 0
-		collision_mask = 6 # Player(2) + Enemy(4) usually
+		collision_mask = 6
 		
 		var tween = create_tween()
-		tween.tween_property(self, "modulate:a", 0.0, lifetime).set_trans(Tween.TRANS_SINE)
+		tween.tween_property(self , "modulate:a", 0.0, lifetime).set_trans(Tween.TRANS_SINE)
 
 	func _physics_process(delta: float) -> void:
 		_timer += delta
@@ -107,7 +105,6 @@ class WaterSlashProjectile extends Area2D:
 			if body.has_method("take_damage"):
 				body.take_damage(damage, global_position, owner_node if is_instance_valid(owner_node) else null)
 			
-			# Use KnockbackService like original
 			if is_instance_valid(owner_node) and is_instance_valid(body):
 				KnockbackService.apply_knockback(owner_node, body, push_force)
 			elif body.has_method("push"):

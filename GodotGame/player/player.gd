@@ -38,6 +38,7 @@ var power_label: Label
 var passive_label: Label
 var push_velocity: Vector2 = Vector2.ZERO
 var lightning_stream: Node = null
+var weapon_visual: WeaponVisual = null
 
 var kill_sound_player: AudioStreamPlayer
 
@@ -81,11 +82,12 @@ func _ready() -> void:
 	health_bar.value = PlayerState["health"]
 	
 	equipped_power = PowerModule.get_random_power()
+	_equip_weapon_visual()
 	_setup_power_ui()
 	
 	var random_passive = PassiveService.get_random_passive_name()
 	if random_passive != "":
-		PassiveService.add_passive(self, random_passive)
+		PassiveService.add_passive(self , random_passive)
 	
 	get_tree().node_added.connect(_on_node_added)
 	
@@ -146,7 +148,7 @@ func _physics_process(delta):
 	push_velocity = push_velocity.move_toward(Vector2.ZERO, PUSH_DECAY * delta)
 	
 	if dash_service.is_dashing:
-		dash_service.process_dash_physics(self, delta)
+		dash_service.process_dash_physics(self , delta)
 	else:
 		_handle_movement_physics(direction, delta)
 		velocity += push_velocity
@@ -159,7 +161,7 @@ func _physics_process(delta):
 	
 	if Input.is_action_just_pressed("Dash") and dash_service.can_dash:
 		dash_service.start_dash(
-			self,
+			self ,
 			direction,
 			PlayerState["dash_speed"],
 			PlayerState["dash_duration"],
@@ -183,7 +185,7 @@ func _handle_push_interaction(delta: float) -> void:
 	query.shape = $CollisionShape2D.shape
 	query.transform = global_transform
 	query.collision_mask = 4
-	query.exclude = [self.get_rid()]
+	query.exclude = [ self.get_rid()]
 	
 	var result = space_state.intersect_shape(query)
 	for data in result:
@@ -250,11 +252,11 @@ func use_equipped_power() -> void:
 			var stream_script = load("res://scripts/attacks/lightning_stream.gd")
 			lightning_stream = stream_script.new()
 			add_child(lightning_stream)
-			lightning_stream.start(self)
+			lightning_stream.start(self )
 		return
 	
 	last_power_time = now
-	PowerModule.execute_power(equipped_power, self, get_global_mouse_position())
+	PowerModule.execute_power(equipped_power, self , get_global_mouse_position())
 
 
 func absorb_loadout(power: Dictionary, passive_name: String) -> void:
@@ -263,12 +265,20 @@ func absorb_loadout(power: Dictionary, passive_name: String) -> void:
 	_stop_stream()
 	equipped_power = power
 	last_power_time = 0
+	_equip_weapon_visual()
 	if power_label:
 		power_label.text = "Power: " + power.name
 	
-	PassiveService.remove_all_passives(self)
+	PassiveService.remove_all_passives(self )
 	if passive_name != "":
-		PassiveService.add_passive(self, passive_name)
+		PassiveService.add_passive(self , passive_name)
+
+func _equip_weapon_visual() -> void:
+	if weapon_visual:
+		weapon_visual.remove()
+		weapon_visual = null
+	if equipped_power.has("image"):
+		weapon_visual = WeaponVisual.attach_from_config(weapon_visuals, equipped_power["image"])
 
 func _on_node_added(node: Node) -> void:
 	call_deferred("_try_connect_enemy", node)
@@ -341,7 +351,7 @@ func _perform_glory_kill(target: Node2D) -> void:
 	var capped_pos = target.global_position if dist <= max_dash_dist else global_position + dash_dir * max_dash_dist
 	
 	var tween = create_tween()
-	tween.tween_property(self, "global_position", capped_pos, 0.2).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	tween.tween_property(self , "global_position", capped_pos, 0.2).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	
 	await tween.finished
 	
@@ -350,7 +360,7 @@ func _perform_glory_kill(target: Node2D) -> void:
 		PlayerState["is_invincible"] = false
 		return
 	
-	ThrowableService.explode(GLORY_KILL_RADIUS, global_position, GLORY_KILL_DAMAGE, GLORY_KILL_PUSH_FORCE, self)
+	ThrowableService.explode(GLORY_KILL_RADIUS, global_position, GLORY_KILL_DAMAGE, GLORY_KILL_PUSH_FORCE, self )
 	
 	var missing_health = PlayerState.get("max_health", 100) - PlayerState["health"]
 	var heal_amount = ceil(missing_health * 0.15)
@@ -359,7 +369,7 @@ func _perform_glory_kill(target: Node2D) -> void:
 		health_bar.set_health(PlayerState["health"])
 	
 	if target.has_method("take_damage"):
-		target.take_damage(9999, global_position, self)
+		target.take_damage(9999, global_position, self )
 	elif target.has_method("die"):
 		target.die()
 	

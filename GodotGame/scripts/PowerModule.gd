@@ -2,7 +2,7 @@ class_name PowerModule
 
 const THROWABLE_SCENE = preload("res://projectiles/throwable.tscn")
 
-enum PowerType { RANGED, MELEE, UTILITY, SPECIAL }
+enum PowerType {RANGED, MELEE, UTILITY, SPECIAL}
 static var OVERRIDE = ""
 const POWERS = {
 	"Pistol": {
@@ -44,6 +44,12 @@ const POWERS = {
 			"duration": 0.25,
 			"cooldown": 0.5,
 			"range": 80.0
+		},
+		"image": {
+			"texture": "res://gameassets/tidepopper (1).png",
+			"offset": Vector2(0, 0),
+			"rotation": 70.0,
+			"scale": Vector2(1, 1)
 		}
 	},
 	"Lightning": {
@@ -89,19 +95,19 @@ static func execute_power(power: Dictionary, caller: Node2D, target: Vector2) ->
 			var source = caller_ref.get_ref()
 			if source:
 				ThrowableService.explode(
-					power.settings.radius, 
-					land_pos, 
-					power.settings.damage, 
-					power.settings.push, 
+					power.settings.radius,
+					land_pos,
+					power.settings.damage,
+					power.settings.push,
 					source
 				)
 			
 		"Sword":
 			if caller.get("swing_melee"):
 				caller.swing_melee.swing(
-					caller, 
-					power.settings.damage, 
-					power.settings.knockback, 
+					caller,
+					power.settings.damage,
+					power.settings.knockback,
 					power.settings.duration
 				)
 				
