@@ -41,8 +41,7 @@ func _fire() -> void:
 	var mouse_pos = source_node.get_global_mouse_position()
 
 	var aim_dir = (mouse_pos - origin).normalized()
-	var aim_dist = min(origin.distance_to(mouse_pos), STREAM_RANGE)
-	var bolt_end = origin + aim_dir * aim_dist
+	var bolt_end = origin + aim_dir * STREAM_RANGE
 
 	var jitter = Vector2(randf_range(-8, 8), randf_range(-8, 8))
 	bolt_end += jitter
@@ -50,7 +49,7 @@ func _fire() -> void:
 	LightningService.create_bolt(parent, origin, bolt_end, 2.5, 8, 15.0, 0.1)
 
 	var spray_jitter = randf_range(-0.3, 0.3)
-	var spray_len = randf_range(aim_dist * 0.4, aim_dist * 0.9)
+	var spray_len = randf_range(STREAM_RANGE * 0.4, STREAM_RANGE * 0.9)
 	var spray_end = origin + aim_dir.rotated(spray_jitter) * spray_len
 	LightningService.create_bolt(parent, origin, spray_end, 1.2, 6, 12.0, 0.08)
 
