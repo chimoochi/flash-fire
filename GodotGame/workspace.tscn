@@ -3,6 +3,7 @@
 [ext_resource type="PackedScene" uid="uid://bq3nv1n2jji1h" path="res://player/player.tscn" id="1_nf4vs"]
 [ext_resource type="PackedScene" uid="uid://buq31qg2ywauu" path="res://gameassets/wall.tscn" id="2_cn5mv"]
 [ext_resource type="PackedScene" uid="uid://b1u2ycrngix7o" path="res://enemy/enemy bad.tscn" id="3_enemy"]
+[ext_resource type="PackedScene" path="res://gameassets/explosive_barrel.tscn" id="4_barrel"]
 
 [node name="Workspace" type="Node2D"]
 
@@ -126,3 +127,9 @@ scale = Vector2(2.8695867, -3.447475)
 position = Vector2(469.00003, 469)
 rotation = 8.176359
 scale = Vector2(2.8695867, -3.447475)
+
+[node name="ExplosiveBarrel1" parent="." instance=ExtResource("4_barrel")]
+position = Vector2(100, 500)
+
+[node name="ExplosiveBarrel2" parent="." instance=ExtResource("4_barrel")]
+position = Vector2(-200, 800)

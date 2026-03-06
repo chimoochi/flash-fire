@@ -1,0 +1,20 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://gameassets/explosive_barrel.gd" id="1_script"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_barrel"]
+size = Vector2(32, 32)
+
+[node name="ExplosiveBarrel" type="StaticBody2D"]
+collision_layer = 1
+script = ExtResource("1_script")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_barrel")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+offset_left = -16.0
+offset_top = -16.0
+offset_right = 16.0
+offset_bottom = 16.0
+color = Color(0.9, 0.4, 0.1, 1)
