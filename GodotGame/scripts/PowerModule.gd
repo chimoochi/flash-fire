@@ -61,6 +61,22 @@ const POWERS = {
 		}
 	}
 }
+const ENEMY_LEVELS = {
+"level1": { 
+	"basespeed":1,
+	"damagemult":.3,
+	"allowedweapons": [PowerType.MELEE],
+	"allowedpowers": [],
+	},
+"level2heavy": {
+	"basespeed": .7,
+	"damagemult": .6,
+	"allowedweapons":[PowerType.RANGED,PowerType.SPECIAL,PowerType.UTILITY],
+	"allowedpowers":[],
+	
+},
+"level3": {},
+}
 
 static func get_random_power() -> Dictionary:
 	if OVERRIDE != "" and POWERS.has(OVERRIDE):
