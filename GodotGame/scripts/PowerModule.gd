@@ -66,24 +66,50 @@ const ENEMY_LEVELS = {
 	"basespeed":1,
 	"damagemult":.3,
 	"allowedweapons": [PowerType.MELEE],
-	"allowedpowers": [],
+	"allowedpowers": [], # empty means any (for now)
 	},
 "level2heavy": {
 	"basespeed": .7,
-	"damagemult": .6,
+	"damagemult": 1,
 	"allowedweapons":[PowerType.RANGED,PowerType.SPECIAL,PowerType.UTILITY],
 	"allowedpowers":[],
 	
 },
-"level3": {},
 }
 
 static func get_random_power() -> Dictionary:
+	return get_random_power_for_level("")
+
+static func get_random_power_for_level(level: String) -> Dictionary:
 	if OVERRIDE != "" and POWERS.has(OVERRIDE):
 		return POWERS[OVERRIDE]
+		
+	var valid_powers = []
+	var allowed_weapons = []
+	var allowed_powers = []
+	
+	if level != "" and ENEMY_LEVELS.has(level):
+		var level_data = ENEMY_LEVELS[level]
+		allowed_weapons = level_data.get("allowedweapons", [])
+		allowed_powers = level_data.get("allowedpowers", [])
+		
+	for key in POWERS.keys():
+		var power = POWERS[key]
+		var power_allowed = true
+		
+		if allowed_powers.size() > 0 and not (power.name in allowed_powers):
+			power_allowed = false
+		if allowed_weapons.size() > 0 and not (power.type in allowed_weapons):
+			power_allowed = false
+			
+		if power_allowed:
+			valid_powers.append(power)
+			
+	if valid_powers.size() > 0:
+		return valid_powers[randi() % valid_powers.size()]
+		
 	var keys = POWERS.keys()
-	var random_key = keys[randi() % keys.size()]
-	return POWERS[random_key]
+	return POWERS[keys[randi() % keys.size()]]
 
 static func execute_power(power: Dictionary, caller: Node2D, target: Vector2) -> void:
 	var dir = (target - caller.global_position).normalized()

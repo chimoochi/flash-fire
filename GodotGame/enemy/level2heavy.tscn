@@ -1,11 +1,12 @@
-[gd_scene load_steps=3 format=3 uid="uid://bguofiqvtwbmp"]
+[gd_scene load_steps=3 format=3]
 
-[ext_resource type="Script" path="res://enemy/enemy bad.gd" id="1_7643s"]
+[ext_resource type="Script" path="res://enemy/level2heavy.gd" id="1_7643s"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_enemy"]
 size = Vector2(32, 32)
 
-[node name="Enemy bad" type="CharacterBody2D"]
+[node name="Level2Heavy" type="CharacterBody2D"]
+scale = Vector2(1.5, 1.5)
 collision_layer = 4
 script = ExtResource("1_7643s")
 

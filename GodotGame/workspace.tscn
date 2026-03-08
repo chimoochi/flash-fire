@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=3 uid="uid://hmhsgxomj3kw"]
+[gd_scene load_steps=6 format=3 uid="uid://hmhsgxomj3kw"]
 
 [ext_resource type="PackedScene" uid="uid://bq3nv1n2jji1h" path="res://player/player.tscn" id="1_nf4vs"]
 [ext_resource type="PackedScene" uid="uid://buq31qg2ywauu" path="res://gameassets/wall.tscn" id="2_cn5mv"]
-[ext_resource type="PackedScene" uid="uid://b1u2ycrngix7o" path="res://enemy/enemy bad.tscn" id="3_enemy"]
+[ext_resource type="PackedScene" path="res://enemy/level1.tscn" id="3_enemy"]
 [ext_resource type="PackedScene" path="res://gameassets/explosive_barrel.tscn" id="4_barrel"]
+[ext_resource type="PackedScene" path="res://enemy/level2heavy.tscn" id="5_j8etk"]
 
 [node name="Workspace" type="Node2D"]
 
@@ -133,3 +134,9 @@ position = Vector2(100, 500)
 
 [node name="ExplosiveBarrel2" parent="." instance=ExtResource("4_barrel")]
 position = Vector2(-200, 800)
+
+[node name="Enemy bad10" parent="." instance=ExtResource("3_enemy")]
+position = Vector2(-746, 1059)
+
+[node name="Level2Heavy" parent="." instance=ExtResource("5_j8etk")]
+position = Vector2(-893, 1084)

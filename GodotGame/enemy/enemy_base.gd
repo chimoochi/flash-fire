@@ -1,9 +1,11 @@
+class_name EnemyBase
 extends CharacterBody2D
 
 signal killed_by_player(power: Dictionary, passive_name: String)
 
 @export var move_speed := 250.0
 @export var turn_speed := 8.0
+@export var enemy_level: String = "level1"
 
 @export var vision_range := 400.0
 @export var fov_angle := 70.0
@@ -62,14 +64,22 @@ func _ready() -> void:
 	
 	idle_look_angle = rotation
 	
-	equipped_power = PowerModule.get_random_power()
+	equipped_power = PowerModule.get_random_power_for_level(enemy_level).duplicate(true)
+	
+	if PowerModule.ENEMY_LEVELS.has(enemy_level):
+		var stats = PowerModule.ENEMY_LEVELS[enemy_level]
+		move_speed *= stats.get("basespeed", 1.0)
+		var dmg_mult = stats.get("damagemult", 1.0)
+		if equipped_power.has("settings") and equipped_power.settings.has("damage"):
+			equipped_power.settings.damage = int(equipped_power.settings.damage * dmg_mult)
+	
 	EnemyState["Weapon_type"] = equipped_power.type
-	print(PowerModule.PowerType.keys()[EnemyState["Weapon_type"]])
+	# print(PowerModule.PowerType.keys()[EnemyState["Weapon_type"]])
 	if equipped_power.has("image"):
 		weapon_visual = WeaponVisual.attach_from_config(melee_visual, equipped_power["image"])
 	var random_passive = PassiveService.get_random_passive_name()
 	if random_passive != "":
-		PassiveService.add_passive(self , random_passive)
+		PassiveService.add_passive(self, random_passive)
 		equipped_passive = random_passive
 
 func _setup_melee() -> void:
@@ -85,7 +95,7 @@ func _setup_melee() -> void:
 	
 	var vis = ColorRect.new()
 	vis.size = shape.size
-	vis.position = - shape.size / 2
+	vis.position = -shape.size / 2
 	vis.color = Color(1, 0, 0, 0.5)
 	melee_visual.add_child(vis)
 	
@@ -115,7 +125,7 @@ func _handle_soft_collision(delta: float) -> void:
 	query.shape = $CollisionShape2D.shape
 	query.transform = global_transform
 	query.collision_mask = 4
-	query.exclude = [ self.get_rid()]
+	query.exclude = [self.get_rid()]
 	
 	var result = space_state.intersect_shape(query)
 	for data in result:
@@ -197,7 +207,7 @@ func _chase_target(delta: float) -> void:
 	if dist_to_target <= attack_range and Time.get_ticks_msec() >= _frozen_until:
 		if now - last_power_time >= cooldown_ms:
 			last_power_time = now
-			PowerModule.execute_power(equipped_power, self , target.global_position)
+			PowerModule.execute_power(equipped_power, self, target.global_position)
 	
 	_apply_movement(drive)
 
@@ -261,20 +271,24 @@ func _draw() -> void:
 	var half_fov = deg_to_rad(fov_angle / 2.0)
 	var segments = 20
 	
+	var scaled_vision = vision_range / scale.x
+	
 	for i in range(segments + 1):
 		var angle = lerp(-half_fov, half_fov, float(i) / segments)
-		points.append(Vector2.RIGHT.rotated(angle) * vision_range)
+		points.append(Vector2.RIGHT.rotated(angle) * scaled_vision)
 	
 	draw_polygon(points, [cone_color])
 	draw_polyline(points, cone_color.darkened(0.2), 1.5)
 	
 	#circle
-	draw_arc(Vector2.ZERO, hearing_range, 0, TAU, 32, Color(1, 1, 1, 0.1), 1.0)
+	var scaled_hearing = hearing_range / scale.x
+	draw_arc(Vector2.ZERO, scaled_hearing, 0, TAU, 32, Color(1, 1, 1, 0.1), 1.0)
 	
 	if EnemyState["behavior"] == State.SUSPICIOUS:
 		var local_last_known = to_local(last_known_position)
-		draw_line(local_last_known - Vector2(10, 10), local_last_known + Vector2(10, 10), Color(1, 1, 0, 0.5), 2)
-		draw_line(local_last_known - Vector2(10, -10), local_last_known + Vector2(10, -10), Color(1, 1, 0, 0.5), 2)
+		var marker_size = 10.0 / scale.x
+		draw_line(local_last_known - Vector2(marker_size, marker_size), local_last_known + Vector2(marker_size, marker_size), Color(1, 1, 0, 0.5), 2)
+		draw_line(local_last_known - Vector2(marker_size, -marker_size), local_last_known + Vector2(marker_size, -marker_size), Color(1, 1, 0, 0.5), 2)
 	
 func take_damage(amount: int, source_pos: Vector2 = Vector2.ZERO, source: Node2D = null) -> void:
 	if source:
@@ -304,8 +318,8 @@ func take_damage(amount: int, source_pos: Vector2 = Vector2.ZERO, source: Node2D
 func start_low_health_pulse() -> void:
 	is_execution_ready = true
 	var tween = create_tween().set_loops()
-	tween.tween_property(self , "modulate", Color.CYAN, 0.5)
-	tween.tween_property(self , "modulate", Color.WHITE, 0.5)
+	tween.tween_property(self, "modulate", Color.CYAN, 0.5)
+	tween.tween_property(self, "modulate", Color.WHITE, 0.5)
 
 func stun(duration: float) -> void:
 	_frozen_until = Time.get_ticks_msec() + int(duration * 1000)
@@ -314,7 +328,7 @@ func stun(duration: float) -> void:
 	
 	await get_tree().create_timer(duration).timeout
 	
-	if is_instance_valid(self ) and EnemyState["behavior"] == State.FROZEN:
+	if is_instance_valid(self) and EnemyState["behavior"] == State.FROZEN:
 		EnemyState["behavior"] = prev_state
 
 func die() -> void:
