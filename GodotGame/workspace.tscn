@@ -2,7 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://bq3nv1n2jji1h" path="res://player/player.tscn" id="1_nf4vs"]
 [ext_resource type="PackedScene" uid="uid://buq31qg2ywauu" path="res://gameassets/wall.tscn" id="2_cn5mv"]
-[ext_resource type="PackedScene" path="res://enemy/level1.tscn" id="3_enemy"]
+[ext_resource type="PackedScene" uid="uid://b1u2ycrngix7o" path="res://enemy/level1.tscn" id="3_enemy"]
 [ext_resource type="PackedScene" path="res://gameassets/explosive_barrel.tscn" id="4_barrel"]
 [ext_resource type="PackedScene" path="res://enemy/level2heavy.tscn" id="5_j8etk"]
 
