@@ -89,6 +89,10 @@ func _ready() -> void:
 	if random_passive != "":
 		PassiveService.add_passive(self , random_passive)
 	
+	
+	if MapService:
+		MapService.restore_player_status(self)
+	
 	get_tree().node_added.connect(_on_node_added)
 	
 	call_deferred("_connect_existing_enemies")
@@ -223,6 +227,12 @@ func _input(event: InputEvent) -> void:
 			var target = _get_nearest_execution_enemy()
 			if target:
 				_perform_glory_kill(target)
+		
+		
+		if event.keycode == KEY_L:
+			var current_scene = get_tree().current_scene.scene_file_path
+			var next_scene = "res://level2.tscn" if "workspace.tscn" in current_scene else "res://workspace.tscn"
+			MapService.change_map(next_scene)
 	
 	if event is InputEventKey and not event.pressed:
 		if event.keycode == KEY_SPACE:
