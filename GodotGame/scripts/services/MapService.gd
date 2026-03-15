@@ -2,7 +2,7 @@ extends Node
 
 
 var player_data: Dictionary = {}
-var current_map_scene: String = "res://workspace.tscn"
+var current_map_scene: String = "res://lobby.tscn"
 
 func _ready():
 	print("Ready")

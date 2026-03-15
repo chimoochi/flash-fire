@@ -1,0 +1,56 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="PackedScene" path="res://player/player.tscn" id="1_player"]
+[ext_resource type="PackedScene" path="res://gameassets/portal.tscn" id="2_portal"]
+[ext_resource type="PackedScene" path="res://gameassets/wall.tscn" id="3_wall"]
+
+[node name="Lobby" type="Node2D"]
+
+[node name="Background" type="ColorRect" parent="."]
+offset_left = -2000.0
+offset_top = -2000.0
+offset_right = 2000.0
+offset_bottom = 2000.0
+color = Color(0.1, 0.1, 0.1, 1)
+
+[node name="Walls" type="Node2D" parent="."]
+
+[node name="Wall_Floor" parent="Walls" instance=ExtResource("3_wall")]
+position = Vector2(0, 300)
+scale = Vector2(40, 2)
+
+[node name="Wall_Ceiling" parent="Walls" instance=ExtResource("3_wall")]
+position = Vector2(0, -400)
+scale = Vector2(40, 2)
+
+[node name="Wall_Left" parent="Walls" instance=ExtResource("3_wall")]
+position = Vector2(-600, 0)
+rotation = 1.5708
+scale = Vector2(20, 2)
+
+[node name="Wall_Right" parent="Walls" instance=ExtResource("3_wall")]
+position = Vector2(600, 0)
+rotation = 1.5708
+scale = Vector2(20, 2)
+
+[node name="Player" parent="." instance=ExtResource("1_player")]
+position = Vector2(0, 100)
+
+[node name="LobbyLabel" type="Label" parent="."]
+offset_left = -200.0
+offset_top = -300.0
+offset_right = 200.0
+offset_bottom = -250.0
+theme_override_font_sizes/font_size = 32
+text = "THE LOBBY"
+horizontal_alignment = 1
+
+[node name="Portal_Level1" parent="." instance=ExtResource("2_portal")]
+position = Vector2(-300, -100)
+target_map_path = "res://level1.tscn"
+portal_label = "Level 1"
+
+[node name="Portal_Level2" parent="." instance=ExtResource("2_portal")]
+position = Vector2(300, -100)
+target_map_path = "res://level2.tscn"
+portal_label = "Level 2"
