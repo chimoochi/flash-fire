@@ -10,14 +10,24 @@ enum EnvironmentType {
 
 var current_environment: int = EnvironmentType.NONE
 
-# var WIND_FORCE = Vector2(3500, 0)
+
 const SNOW_SLOW_FACTOR = 0.5
-const HEAT_DAMAGE_RATE = 5
-const POISON_DAMAGE_RATE = 10
+
+const HEAT_TIME_TO_KILL = 30.0 
+const DAMAGE_REDUCTION_FACTOR = 0.6
+
+
+const POISON_MAX_STACKS = 10
+const POISON_DURATION = 10.0
+const POISON_DAMAGE_PERCENT = 0.01 
 
 var player: CharacterBody2D = null
 var original_speed: float = 0.0
 var damage_accumulator: float = 0.0
+
+var poison_stacks: int = 0
+var poison_timer: float = 0.0
+var poison_env_timer: float = 0.0 
 
 # UI
 var canvas_layer: CanvasLayer
@@ -83,25 +93,48 @@ func _physics_process(delta: float) -> void:
 	if not is_instance_valid(player):
 		return
 
+	if poison_stacks > 0:
+		poison_timer -= delta
+		if poison_timer <= 0:
+			poison_stacks = 0
+		else:
+			var max_hp = player.PlayerState.get("max_health", 100)
+			var poison_raw_dps = (max_hp * POISON_DAMAGE_PERCENT * poison_stacks) / DAMAGE_REDUCTION_FACTOR
+			_apply_damage(poison_raw_dps * delta)
+			
+	_update_label()
+
 	match current_environment:
 		EnvironmentType.WIND:
 			pass
 		EnvironmentType.HEAT:
 			if not _is_in_safe_zone():
-				_apply_damage(HEAT_DAMAGE_RATE * delta)
+				var max_hp = player.PlayerState.get("max_health", 100)
+				var heat_raw_dps = (max_hp / HEAT_TIME_TO_KILL) / DAMAGE_REDUCTION_FACTOR
+				_apply_damage(heat_raw_dps * delta)
 		EnvironmentType.POISON:
-			pass
+			poison_env_timer -= delta
+			if poison_env_timer <= 0:
+				add_poison_stack()
+				poison_env_timer = 1.0 
+
+func add_poison_stack() -> void:
+	poison_stacks = min(poison_stacks + 1, POISON_MAX_STACKS)
+	poison_timer = POISON_DURATION
 
 func _is_in_safe_zone() -> bool:
 	return false
 
 func _apply_damage(amount: float) -> void:
 	damage_accumulator += amount
-	if damage_accumulator >= 1.0:
+	if damage_accumulator >= 2.0:
 		var damage_to_deal = int(damage_accumulator)
 		damage_accumulator -= damage_to_deal
 		if player.has_method("take_damage"):
 			player.take_damage(damage_to_deal)
 
 func _update_label() -> void:
-	status_label.text = "Environment: " + EnvironmentType.keys()[current_environment] if current_environment < EnvironmentType.keys().size() else "Unknown"
+	var text = "Environment: " + EnvironmentType.keys()[current_environment] if current_environment < EnvironmentType.keys().size() else "Unknown"
+	if poison_stacks > 0:
+		text += "\nPoison: " + str(poison_stacks) + " (" + ("%.1f" % poison_timer) + "s)"
+	status_label.text = text
