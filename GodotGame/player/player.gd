@@ -61,8 +61,21 @@ var PlayerState: Dictionary = {
 	"dash_cooldown": 0.8,
 	"dash_push_force": 4000.0,
 	"is_attacking": false,
-	"is_invincible": false
+	"is_invincible": false,
+
+	"adrenaline": 0.0,
+	"max_adrenaline": 100.0,
+	"is_empowered": false,
 }
+
+const ADRENALINE_DRAIN_RATE := 2.0
+const ADRENALINE_ON_KILL := 40.0
+const ADRENALINE_ON_ATTACK := 7.0
+const ADRENALINE_ON_HIT := 10.0 # damage taken
+const EMPOWERED_DAMAGE_MULT := 4.0
+
+var _adrenaline_bar: ProgressBar = null
+var _empowered_tween: Tween = null
 
 func _ready() -> void:
 	add_to_group("Player")
@@ -91,7 +104,7 @@ func _ready() -> void:
 	
 	
 	if MapService:
-		MapService.restore_player_status(self)
+		MapService.restore_player_status(self )
 	
 	get_tree().node_added.connect(_on_node_added)
 	
@@ -105,14 +118,33 @@ func _setup_power_ui() -> void:
 	power_label = Label.new()
 	power_label.text = "Power: " + equipped_power.name
 	power_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
-	power_label.position = Vector2(41, 115)
+	power_label.position = Vector2(41, 128)
 	$CanvasLayer.add_child(power_label)
-	
+
 	passive_label = Label.new()
 	passive_label.text = "Active Passives: None"
 	passive_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
-	passive_label.position = Vector2(41, 140)
+	passive_label.position = Vector2(41, 150)
 	$CanvasLayer.add_child(passive_label)
+
+	_setup_adrenaline_bar()
+
+func _setup_adrenaline_bar() -> void:
+	var bg_style := StyleBoxFlat.new()
+	bg_style.bg_color = Color(0.15, 0.08, 0.05)
+
+	var fill_style := StyleBoxFlat.new()
+	fill_style.bg_color = Color(1.0, 0.45, 0.05)
+
+	_adrenaline_bar = ProgressBar.new()
+	_adrenaline_bar.custom_minimum_size = Vector2(200, 12)
+	_adrenaline_bar.max_value = PlayerState["max_adrenaline"]
+	_adrenaline_bar.value = 0.0
+	_adrenaline_bar.show_percentage = false
+	_adrenaline_bar.position = Vector2(41, 111)
+	_adrenaline_bar.add_theme_stylebox_override("background", bg_style)
+	_adrenaline_bar.add_theme_stylebox_override("fill", fill_style)
+	$CanvasLayer.add_child(_adrenaline_bar)
 
 func on_passive_added(passive_name: String) -> void:
 	if not PlayerState["passives"].has(passive_name):
@@ -161,8 +193,8 @@ func _physics_process(delta):
 
 	
 	look_at(get_global_mouse_position())
+	_process_adrenaline(delta)
 
-	
 	if Input.is_action_just_pressed("Dash") and dash_service.can_dash:
 		dash_service.start_dash(
 			self ,
@@ -249,24 +281,36 @@ func _stop_stream() -> void:
 func use_equipped_power() -> void:
 	if not PlayerState["is_alive"]:
 		return
-		
+
 	var now = Time.get_ticks_msec()
 	var cooldown_ms = equipped_power.settings.get("cooldown", 0.5) * 1000
-	
+
 	if now - last_power_time < cooldown_ms:
 		return
-		
+
 	if equipped_power.name == "Lightning":
 		if not lightning_stream:
 			last_power_time = now
+			gain_adrenaline(ADRENALINE_ON_ATTACK)
 			var stream_script = load("res://scripts/attacks/lightning_stream.gd")
 			lightning_stream = stream_script.new()
 			add_child(lightning_stream)
 			lightning_stream.start(self )
 		return
-	
+
 	last_power_time = now
-	PowerModule.execute_power(equipped_power, self , get_global_mouse_position())
+	gain_adrenaline(ADRENALINE_ON_ATTACK)
+
+	var empowered: bool = PlayerState["is_empowered"]
+	if empowered:
+		_consume_empowered()
+		var boosted: Dictionary = equipped_power.duplicate(true)
+		var orig_damage: int = boosted.settings.get("damage", -1)
+		if orig_damage > 0:
+			boosted.settings.damage = int(orig_damage * EMPOWERED_DAMAGE_MULT)
+		PowerModule.execute_power(boosted, self , get_global_mouse_position())
+	else:
+		PowerModule.execute_power(equipped_power, self , get_global_mouse_position())
 
 
 func absorb_loadout(power: Dictionary, passive_name: String) -> void:
@@ -296,21 +340,84 @@ func _on_node_added(node: Node) -> void:
 func _try_connect_enemy(node: Node) -> void:
 	if not is_instance_valid(node):
 		return
-	if node.is_in_group("Enemy") and node.has_signal("killed_by_player"):
-		if not node.killed_by_player.is_connected(absorb_loadout):
+	if node.is_in_group("Enemy"):
+		if node.has_signal("killed_by_player") and not node.killed_by_player.is_connected(absorb_loadout):
 			node.killed_by_player.connect(absorb_loadout)
+		if node.has_signal("died") and not node.died.is_connected(_on_enemy_died):
+			node.died.connect(_on_enemy_died)
+
+func _on_enemy_died() -> void:
+	gain_adrenaline(ADRENALINE_ON_KILL)
 
 func take_damage(amount: int, source_pos: Vector2 = Vector2.ZERO, source: Node2D = null) -> void:
 	if not PlayerState["is_alive"] or PlayerState.get("is_invincible", false):
 		return
 
+	lose_adrenaline(ADRENALINE_ON_HIT)
 	var reduced = int(amount * 0.6)
 	PlayerState["health"] -= reduced
 	if health_bar:
 		health_bar.set_health(PlayerState["health"])
-	
+	DamageNumber.spawn(get_tree(), global_position + Vector2(randf_range(-8, 8), -20), reduced, Color(1.0, 0.25, 0.25))
+	CameraService.shake(0.35)
+
 	if PlayerState["health"] <= 0:
 		die()
+
+func gain_adrenaline(amount: float) -> void:
+	var prev = PlayerState["adrenaline"]
+	PlayerState["adrenaline"] = min(PlayerState["max_adrenaline"], PlayerState["adrenaline"] + amount)
+	if _adrenaline_bar:
+		_adrenaline_bar.value = PlayerState["adrenaline"]
+		
+	CameraService.shake(amount * 0.002)
+	if prev < PlayerState["max_adrenaline"] and PlayerState["adrenaline"] >= PlayerState["max_adrenaline"]:
+		_on_empowered_ready()
+
+func lose_adrenaline(amount: float) -> void:
+	var was_empowered = PlayerState["is_empowered"]
+	PlayerState["adrenaline"] = max(0.0, PlayerState["adrenaline"] - amount)
+	PlayerState["is_empowered"] = PlayerState["adrenaline"] >= PlayerState["max_adrenaline"]
+	if _adrenaline_bar:
+		_adrenaline_bar.value = PlayerState["adrenaline"]
+	if was_empowered and not PlayerState["is_empowered"]:
+		_stop_empowered_pulse()
+
+func _process_adrenaline(delta: float) -> void:
+	if PlayerState["adrenaline"] <= 0.0:
+		return
+	lose_adrenaline(ADRENALINE_DRAIN_RATE * delta)
+	var ratio: float = float(PlayerState["adrenaline"]) / float(PlayerState["max_adrenaline"])
+	if ratio >= 0.7:
+		var floor_trauma: float = remap(ratio, 0.5, 1.0, 0.08, 0.45)
+		CameraService.trauma = max(CameraService.trauma, floor_trauma)
+
+func _on_empowered_ready() -> void:
+	PlayerState["is_empowered"] = true
+	CameraService.shake(0.2)
+	if _empowered_tween:
+		_empowered_tween.kill()
+	_adrenaline_bar.scale = Vector2(1.1, 1.4)
+	_empowered_tween = create_tween().set_loops()
+	_empowered_tween.tween_property(_adrenaline_bar, "modulate", Color(1.0, 1.0, 0.0, 1.0), 0.2)
+	_empowered_tween.tween_property(_adrenaline_bar, "modulate", Color(1.0, 0.3, 0.0, 1.0), 0.2)
+
+func _consume_empowered() -> void:
+	PlayerState["is_empowered"] = false
+	PlayerState["adrenaline"] = 0.0
+	if _adrenaline_bar:
+		_adrenaline_bar.value = 0.0
+	_stop_empowered_pulse()
+	CameraService.shake(0.9)
+	CameraService.kick(Vector2(0.45, 0.45), 0.35)
+
+func _stop_empowered_pulse() -> void:
+	if _empowered_tween:
+		_empowered_tween.kill()
+		_empowered_tween = null
+	if _adrenaline_bar:
+		_adrenaline_bar.modulate = Color.WHITE
+		_adrenaline_bar.scale = Vector2.ONE
 
 func die() -> void:
 	PlayerState["is_alive"] = false
@@ -371,7 +478,9 @@ func _perform_glory_kill(target: Node2D) -> void:
 		return
 	
 	ThrowableService.explode(GLORY_KILL_RADIUS, global_position, GLORY_KILL_DAMAGE, GLORY_KILL_PUSH_FORCE, self )
-	
+	CameraService.shake(0.7)
+	CameraService.kick(Vector2(0.08, 0.08), 0.2)
+
 	var missing_health = PlayerState.get("max_health", 100) - PlayerState["health"]
 	var heal_amount = ceil(missing_health * 0.15)
 	PlayerState["health"] = min(PlayerState["health"] + heal_amount, PlayerState.get("max_health", 100))

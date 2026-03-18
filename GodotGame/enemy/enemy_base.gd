@@ -2,6 +2,7 @@ class_name EnemyBase
 extends CharacterBody2D
 
 signal killed_by_player(power: Dictionary, passive_name: String)
+signal died
 
 @export var move_speed := 250.0
 @export var turn_speed := 8.0
@@ -296,6 +297,7 @@ func take_damage(amount: int, source_pos: Vector2 = Vector2.ZERO, source: Node2D
 	EnemyState["health"] -= amount
 	if health_bar:
 		health_bar.value = EnemyState["health"]
+	DamageNumber.spawn(get_tree(), global_position + Vector2(randf_range(-8, 8), -20), amount, Color(1.0, 0.85, 0.1))
 	
 	if source_pos != Vector2.ZERO:
 		var dir_to_source = global_position.direction_to(source_pos)
@@ -333,6 +335,7 @@ func stun(duration: float) -> void:
 
 func die() -> void:
 	EnemyState["is_alive"] = false
+	died.emit()
 	if is_instance_valid(_last_damage_source) and _last_damage_source.is_in_group("Player"):
 		killed_by_player.emit(equipped_power, equipped_passive)
 	queue_free()
