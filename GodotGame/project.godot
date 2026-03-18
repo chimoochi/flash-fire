@@ -20,6 +20,7 @@ config/icon="res://icon.svg"
 CameraService="*res://scripts/services/CameraService.gd"
 Enviormentservice="*res://scripts/services/Enviormentservice.gd"
 MapService="*res://scripts/services/MapService.gd"
+SoundService="*res://scripts/services/SoundService.gd"
 
 [input]
 
