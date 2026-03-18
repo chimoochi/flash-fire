@@ -88,6 +88,7 @@ func _apply_slam_hit() -> void:
 
 func die() -> void:
 	EnemyState["is_alive"] = false
+	died.emit()
 
 	for i in range(SPLIT_COUNT):
 		var child = LEVEL1_SCENE.instantiate()
