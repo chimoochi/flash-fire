@@ -78,6 +78,8 @@ func _ready() -> void:
 	# print(PowerModule.PowerType.keys()[EnemyState["Weapon_type"]])
 	if equipped_power.has("image"):
 		weapon_visual = WeaponVisual.attach_from_config(melee_visual, equipped_power["image"])
+	if equipped_power.has("hitbox"):
+		_apply_hitbox_config(equipped_power["hitbox"])
 	var random_passive = PassiveService.get_random_passive_name()
 	if random_passive != "":
 		PassiveService.add_passive(self, random_passive)
@@ -108,6 +110,23 @@ func _setup_melee() -> void:
 	
 	swing_melee = WaterPopper.new()
 	add_child(swing_melee)
+
+func _apply_hitbox_config(hb: Dictionary) -> void:
+	var shape_type: String = hb.get("shape", "rectangle")
+	var new_shape: Shape2D
+	if shape_type == "circle":
+		new_shape = CircleShape2D.new()
+		new_shape.radius = hb.get("radius", 20.0)
+	else:
+		new_shape = RectangleShape2D.new()
+		new_shape.size = hb.get("size", Vector2(40, 10))
+	melee_visual.shape = new_shape
+	melee_visual.position = hb.get("offset", Vector2(10, 0))
+	for child in melee_visual.get_children():
+		if child is ColorRect:
+			var hb_size: Vector2 = hb.get("size", Vector2(40, 10)) if shape_type == "rectangle" else Vector2(new_shape.radius * 2, new_shape.radius * 2)
+			child.size = hb_size
+			child.position = -hb_size / 2
 
 func _setup_health_bar() -> void:
 	health_bar = health_bar_scene.instantiate()

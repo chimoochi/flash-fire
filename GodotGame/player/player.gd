@@ -333,6 +333,33 @@ func _equip_weapon_visual() -> void:
 		weapon_visual = null
 	if equipped_power.has("image"):
 		weapon_visual = WeaponVisual.attach_from_config(weapon_visuals, equipped_power["image"])
+	_equip_weapon_hitbox()
+
+func _equip_weapon_hitbox() -> void:
+	if not equipped_power.has("hitbox"):
+		return
+	var collision_shape := weapon_visuals as CollisionShape2D
+	if not collision_shape:
+		return
+	var hb: Dictionary = equipped_power["hitbox"]
+	var shape_type: String = hb.get("shape", "rectangle")
+	var new_shape: Shape2D
+	var hb_size: Vector2
+	if shape_type == "circle":
+		var r: float = hb.get("radius", 20.0)
+		new_shape = CircleShape2D.new()
+		(new_shape as CircleShape2D).radius = r
+		hb_size = Vector2(r * 2, r * 2)
+	else:
+		hb_size = hb.get("size", Vector2(40, 10))
+		new_shape = RectangleShape2D.new()
+		(new_shape as RectangleShape2D).size = hb_size
+	collision_shape.shape = new_shape
+	collision_shape.position = hb.get("offset", Vector2(20.5, 0))
+	for child in collision_shape.get_children():
+		if child is ColorRect:
+			child.size = hb_size
+			child.position = -hb_size / 2
 
 func _on_node_added(node: Node) -> void:
 	call_deferred("_try_connect_enemy", node)
