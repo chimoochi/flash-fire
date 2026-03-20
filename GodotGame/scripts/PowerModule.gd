@@ -48,8 +48,24 @@ const POWERS = {
 		"image": {
 			"texture": "res://gameassets/tidepopper (1).png",
 			"offset": Vector2(0, 0),
-			"rotation": 70.0,
+			"rotation": 45.0,
 			"scale": Vector2(1, 1)
+		},
+		"hitbox": {
+			"shape": "rectangle",
+			"size": Vector2(100, 22),
+			"offset": Vector2(10, 20)
+		}
+	},
+	"Shotgun": {
+		"name": "Shotgun",
+		"type": PowerType.RANGED,
+		"settings": {
+			"damage": 20,
+			"speed": 1200.0,
+			"cooldown": 0.8,
+			"range": 350.0,
+			"spread": 10.0
 		}
 	},
 	"Lightning": {
@@ -153,5 +169,8 @@ static func execute_power(power: Dictionary, caller: Node2D, target: Vector2) ->
 					power.settings.duration
 				)
 				
+		"Shotgun":
+			BulletService.spawn_shotgun(caller, dir, power.settings.damage, power.settings.speed, power.settings.spread)
+
 		"Lightning":
 			LightningService.activate(caller)
