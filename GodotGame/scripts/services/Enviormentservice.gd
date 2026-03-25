@@ -117,10 +117,6 @@ func _physics_process(delta: float) -> void:
 		EnvironmentType.SNOW:
 			var in_snow_zone = false
 			if snow_zones.is_empty():
-				# Default to global if no zones defined? 
-				# Or strictly rely on zones? Let's assume global if empty for backward compatibility/testing
-				# But user asked for zones. Let's assume empty = no snow effect, unless user adds zones.
-				# Wait, previous behavior was global. Let's keep global if no zones are added to avoid breaking the "Change Env" button demo.
 				in_snow_zone = true
 			else:
 				for zone in snow_zones:
@@ -141,11 +137,6 @@ func _physics_process(delta: float) -> void:
 		EnvironmentType.HEAT:
 			var in_heat_zone = false
 			if heat_zones.is_empty():
-				# Global heat if no zones? 
-				# Previous behavior was global heat unless in safe zone.
-				# Let's assume global heat if no zones are registered, or maybe user wants zones ONLY.
-				# Given "add parameters... so that I am able to create zones", likely means zones are the primary way now.
-				# But for robustness, I'll assume global if list is empty, to keep the "Heat" button working.
 				in_heat_zone = true
 			else:
 				for zone in heat_zones:
