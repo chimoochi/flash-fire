@@ -3,7 +3,7 @@ extends CharacterBody2D
 
 var MAX_SPEED = 600.0
 const ACCELERATION = 3000.0
-const FRICTION = 2000.0
+const FRICTION = 6000.0
 
 const DASH_COOLDOWN = 0.8
 const MELEE_DAMAGE = 25
