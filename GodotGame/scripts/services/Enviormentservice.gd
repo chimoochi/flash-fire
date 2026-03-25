@@ -2,7 +2,6 @@ extends Node
 
 enum EnvironmentType {
 	NONE,
-	WIND,
 	SNOW,
 	HEAT,
 	POISON
@@ -20,7 +19,6 @@ const DAMAGE_REDUCTION_FACTOR = 0.6
 const POISON_MAX_STACKS = 10
 const POISON_DURATION = 10.0
 const POISON_DAMAGE_PERCENT = 0.01 
-const WIND_PUSH_FORCE = 3500.0
 
 var player: CharacterBody2D = null
 var original_speed: float = 0.0
@@ -116,11 +114,6 @@ func _physics_process(delta: float) -> void:
 	_update_label()
 
 	match current_environment:
-		EnvironmentType.WIND:
-			var wind_dir = Vector2(randf_range(-1, 1), randf_range(-1, 1)).normalized()
-			if player.has_method("push"):
-				player.push(wind_dir * WIND_PUSH_FORCE * delta)
-				
 		EnvironmentType.SNOW:
 			var in_snow_zone = false
 			if snow_zones.is_empty():
