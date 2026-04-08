@@ -1,271 +1,856 @@
-[gd_scene load_steps=5 format=3 uid="uid://bcu1tfx6j3b0a"]
+[gd_scene load_steps=7 format=3 uid="uid://bcu1tfx6j3b0a"]
 
-[ext_resource type="Texture2D" uid="uid://dmmugx6nbyvx7" path="res://gameassets/dungeon rooms/MiniTileset-Dungeon/Dungeon.png" id="1_bq17a"]
 [ext_resource type="PackedScene" uid="uid://b1u2ycrngix7o" path="res://enemy/enemy bad.tscn" id="2_w0bse"]
+[ext_resource type="Texture2D" uid="uid://b1xhtd6obwnr5" path="res://gameassets/Pixel Art Top Down - Basic v1.2.3/RHKW.png" id="3_wdt0y"]
+[ext_resource type="PackedScene" uid="uid://buq31qg2ywauu" path="res://gameassets/wall.tscn" id="4_4ihab"]
+[ext_resource type="PackedScene" uid="uid://bq3nv1n2jji1h" path="res://player/player.tscn" id="11_ap7ti"]
 
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_cfnsl"]
-texture = ExtResource("1_bq17a")
-0:1/0 = 0
-1:1/0 = 0
-2:1/0 = 0
-3:1/0 = 0
-4:1/0 = 0
-5:1/0 = 0
-6:1/0 = 0
-7:1/0 = 0
-0:2/0 = 0
-1:2/0 = 0
-2:2/0 = 0
-3:2/0 = 0
-4:2/0 = 0
-5:2/0 = 0
-6:2/0 = 0
-7:2/0 = 0
-0:3/0 = 0
-1:3/0 = 0
-2:3/0 = 0
-3:3/0 = 0
-4:3/0 = 0
-5:3/0 = 0
-6:3/0 = 0
-7:3/0 = 0
-0:4/0 = 0
-1:4/0 = 0
-2:4/0 = 0
-3:4/0 = 0
-4:4/0 = 0
-5:4/0 = 0
-6:4/0 = 0
-7:4/0 = 0
-0:5/0 = 0
-1:5/0 = 0
-2:5/0 = 0
-3:5/0 = 0
-4:5/0 = 0
-5:5/0 = 0
-6:5/0 = 0
-7:5/0 = 0
-0:6/0 = 0
-1:6/0 = 0
-2:6/0 = 0
-3:6/0 = 0
-4:6/0 = 0
-5:6/0 = 0
-6:6/0 = 0
-7:6/0 = 0
-0:7/0 = 0
-1:7/0 = 0
-2:7/0 = 0
-3:7/0 = 0
-4:7/0 = 0
-5:7/0 = 0
-6:7/0 = 0
-7:7/0 = 0
-0:8/0 = 0
-1:8/0 = 0
-2:8/0 = 0
-3:8/0 = 0
-4:8/0 = 0
-5:8/0 = 0
-6:8/0 = 0
-6:10/0 = 0
-7:10/0 = 0
-0:11/0 = 0
-1:11/0 = 0
-2:11/0 = 0
-3:11/0 = 0
-4:11/0 = 0
-5:11/0 = 0
-6:11/0 = 0
-7:11/0 = 0
-0:12/0 = 0
-1:12/0 = 0
-2:12/0 = 0
-3:12/0 = 0
-4:12/0 = 0
-5:12/0 = 0
-6:12/0 = 0
-7:12/0 = 0
-0:13/0 = 0
-1:13/0 = 0
-2:13/0 = 0
-3:13/0 = 0
-4:13/0 = 0
-5:13/0 = 0
-6:13/0 = 0
-7:13/0 = 0
-0:14/0 = 0
-1:14/0 = 0
-2:14/0 = 0
-3:14/0 = 0
-4:14/0 = 0
-5:14/0 = 0
-6:14/0 = 0
-7:14/0 = 0
-0:15/0 = 0
-1:15/0 = 0
-2:15/0 = 0
-3:15/0 = 0
-0:21/0 = 0
-1:21/0 = 0
-2:21/0 = 0
-3:21/0 = 0
-4:21/0 = 0
-5:21/0 = 0
-6:21/0 = 0
-7:21/0 = 0
-5:22/0 = 0
-7:22/0 = 0
-4:23/0 = 0
-5:23/0 = 0
-7:23/0 = 0
-4:24/0 = 0
-6:24/0 = 0
-0:25/0 = 0
-1:25/0 = 0
-2:25/0 = 0
-3:25/0 = 0
-4:25/0 = 0
-5:25/0 = 0
-6:25/0 = 0
-0:26/0 = 0
-1:26/0 = 0
-2:26/0 = 0
-3:26/0 = 0
-0:27/0 = 0
-1:27/0 = 0
-2:27/0 = 0
-3:27/0 = 0
-4:27/0 = 0
-7:27/0 = 0
-0:36/0 = 0
-1:36/0 = 0
-2:36/0 = 0
-3:36/0 = 0
-0:37/0 = 0
-1:37/0 = 0
-2:37/0 = 0
-3:37/0 = 0
-0:38/0 = 0
-1:38/0 = 0
-2:38/0 = 0
-3:38/0 = 0
-4:38/0 = 0
-5:38/0 = 0
-6:38/0 = 0
-7:38/0 = 0
-0:39/0 = 0
-1:39/0 = 0
-2:39/0 = 0
-3:39/0 = 0
-4:39/0 = 0
-5:39/0 = 0
-6:39/0 = 0
-7:39/0 = 0
-0:40/0 = 0
-1:40/0 = 0
-2:40/0 = 0
-3:40/0 = 0
-4:40/0 = 0
-5:40/0 = 0
-6:40/0 = 0
-7:40/0 = 0
-0:41/0 = 0
-1:41/0 = 0
-2:41/0 = 0
-3:41/0 = 0
-4:41/0 = 0
-5:41/0 = 0
-6:41/0 = 0
-7:41/0 = 0
-0:42/0 = 0
-1:42/0 = 0
-2:42/0 = 0
-3:42/0 = 0
-4:42/0 = 0
-6:42/0 = 0
-7:42/0 = 0
-0:43/0 = 0
-1:43/0 = 0
-2:43/0 = 0
-3:43/0 = 0
-4:43/0 = 0
-5:43/0 = 0
-6:43/0 = 0
-7:43/0 = 0
-1:44/0 = 0
-2:44/0 = 0
-3:44/0 = 0
-4:44/0 = 0
-1:45/0 = 0
-2:45/0 = 0
-3:45/0 = 0
-4:45/0 = 0
-4:49/0 = 0
-5:49/0 = 0
-6:49/0 = 0
-7:49/0 = 0
-2:50/0 = 0
-3:50/0 = 0
-4:50/0 = 0
-5:50/0 = 0
-6:50/0 = 0
-7:50/0 = 0
-2:51/0 = 0
-3:51/0 = 0
-4:51/0 = 0
-5:51/0 = 0
-6:51/0 = 0
-7:51/0 = 0
-2:52/0 = 0
-3:52/0 = 0
-4:52/0 = 0
-5:52/0 = 0
-2:53/0 = 0
-3:53/0 = 0
-4:53/0 = 0
-5:53/0 = 0
-0:28/size_in_atlas = Vector2i(4, 4)
-0:28/0 = 0
-4:28/size_in_atlas = Vector2i(4, 4)
-4:28/0 = 0
-0:32/size_in_atlas = Vector2i(4, 4)
-0:32/0 = 0
-5:32/size_in_atlas = Vector2i(2, 5)
-5:32/0 = 0
-0:46/size_in_atlas = Vector2i(2, 2)
-0:46/0 = 0
-2:46/size_in_atlas = Vector2i(2, 2)
-2:46/0 = 0
-4:46/size_in_atlas = Vector2i(2, 2)
-4:46/0 = 0
-0:48/size_in_atlas = Vector2i(4, 2)
-0:48/0 = 0
-0:50/size_in_atlas = Vector2i(2, 4)
-0:50/0 = 0
-0:54/size_in_atlas = Vector2i(2, 2)
-0:54/0 = 0
-2:54/size_in_atlas = Vector2i(2, 2)
-2:54/0 = 0
-6:44/size_in_atlas = Vector2i(2, 4)
-6:44/0 = 0
-1:9/size_in_atlas = Vector2i(4, 2)
-1:9/0 = 0
-0:17/size_in_atlas = Vector2i(8, 4)
-0:17/0 = 0
-0:23/size_in_atlas = Vector2i(4, 2)
-0:23/0 = 0
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_4ihab"]
+texture = ExtResource("3_wdt0y")
+0:0/size_in_atlas = Vector2i(75, 75)
+0:0/0 = 0
 
-[sub_resource type="TileSet" id="TileSet_7knc4"]
+[sub_resource type="TileSet" id="TileSet_ohkce"]
 physics_layer_0/collision_layer = 1
-sources/2 = SubResource("TileSetAtlasSource_cfnsl")
+sources/1 = SubResource("TileSetAtlasSource_4ihab")
 
 [node name="Node2D" type="Node2D"]
-
-[node name="TileMap" type="TileMap" parent="."]
-tile_set = SubResource("TileSet_7knc4")
-format = 2
-layer_0/tile_data = PackedInt32Array(131107, 2, 32, 65576, 2, 17, 65584, 2, 17, 65566, 2, 17, 65558, 2, 17, 35, 2, 23)
+position = Vector2(-8, -8)
 
 [node name="Enemy bad" parent="." instance=ExtResource("2_w0bse")]
 position = Vector2(572, 146)
+
+[node name="Player" parent="." instance=ExtResource("11_ap7ti")]
+position = Vector2(624, -240)
+
+[node name="TileMap" type="TileMap" parent="."]
+position = Vector2(-2824, 968.00006)
+scale = Vector2(3, 3)
+tile_set = SubResource("TileSet_ohkce")
+format = 2
+layer_0/tile_data = PackedInt32Array(-1966008, 1, 0)
+
+[node name="Wall6" parent="TileMap" instance=ExtResource("4_4ihab")]
+position = Vector2(714.66675, -432.00003)
+rotation = 3.1482038
+scale = Vector2(-1.3578166, 6.022865)
+
+[node name="Wall6" parent="TileMap/Wall6" instance=ExtResource("4_4ihab")]
+position = Vector2(667.0231, 24.903587)
+rotation = 3.1636887
+scale = Vector2(-1.3578166, 6.022865)
+
+[node name="Wall7" parent="." instance=ExtResource("4_4ihab")]
+position = Vector2(-111.99998, -1432.0001)
+rotation = 4.7131352
+scale = Vector2(-1.8978032, -3.783604)
+
+[node name="Wall7" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(134.9589, 44.351563)
+rotation = 4.7199287
+scale = Vector2(-0.5140804, 3.0750062)
+
+[node name="Wall8" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(-67.41803, 19.054735)
+rotation = 4.7190375
+scale = Vector2(-0.5140804, 3.0750062)
+
+[node name="Wall9" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(-172.91626, -57.023727)
+rotation = 4.7190375
+scale = Vector2(-0.5140804, 3.0750062)
+
+[node name="Wall10" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(-358.8059, -333.93884)
+rotation = 4.7190375
+scale = Vector2(-0.5140804, 3.0750062)
+
+[node name="Wall11" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(-464.00528, -209.1506)
+rotation = 4.7190375
+scale = Vector2(-0.5140804, 3.0750062)
+
+[node name="Wall12" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(-468.36853, -308.5252)
+rotation = 4.7190375
+scale = Vector2(-0.5140804, 3.0750062)
+
+[node name="Wall13" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(-354.47412, -255.70816)
+rotation = 3.15448
+scale = Vector2(-0.5140804, 3.0750062)
+
+[node name="Wall14" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(-345.93637, -183.82214)
+rotation = 1.5693299
+scale = Vector2(-0.5140804, 3.0750062)
+
+[node name="Wall15" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(-38.583466, -433.43488)
+rotation = 1.5693299
+scale = Vector2(-0.5140804, 3.0750062)
+
+[node name="Wall16" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(210.08423, -461.01495)
+rotation = 1.5693299
+scale = Vector2(-0.5140804, 3.0750062)
+
+[node name="Wall17" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(631.62726, -459.05835)
+rotation = 1.5693299
+scale = Vector2(-0.5140804, 3.0750062)
+
+[node name="Wall18" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(269.09988, -461.0371)
+rotation = 1.5693299
+scale = Vector2(-0.5140804, 3.0750062)
+
+[node name="Wall19" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(833.96655, -459.13412)
+rotation = 1.5693299
+scale = Vector2(-0.5140804, 3.0750062)
+
+[node name="Wall20" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(1032.0146, -509.95358)
+rotation = 1.5693299
+scale = Vector2(-0.5140804, 3.0750062)
+
+[node name="Wall21" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(1327.2405, -410.68787)
+rotation = 1.5693299
+scale = Vector2(-0.5140804, 3.0750062)
+
+[node name="Wall22" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(1327.5425, -207.70688)
+rotation = 1.5693299
+scale = Vector2(-0.5140804, 3.0750062)
+
+[node name="Wall23" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(838.2511, -412.6192)
+rotation = 1.5693299
+scale = Vector2(-0.5140804, 3.0750062)
+
+[node name="Wall24" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(770.80457, -412.594)
+rotation = 1.5693299
+scale = Vector2(-0.5140804, 3.0750062)
+
+[node name="Wall27" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(1045.5605, 94.75601)
+rotation = 1.5693299
+scale = Vector2(-0.5140804, 3.0750062)
+
+[node name="Wall28" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(822.069, 44.094437)
+rotation = 1.5693299
+scale = Vector2(-0.5140804, 3.0750062)
+
+[node name="Wall29" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(586.0066, 44.18278)
+rotation = 1.5693299
+scale = Vector2(-0.5140804, 3.0750062)
+
+[node name="Wall30" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(96.76237, -129.01382)
+rotation = 1.5693299
+scale = Vector2(0.3806222, 1.8219656)
+
+[node name="Wall153" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(357.856, -304.60565)
+rotation = 1.5693299
+scale = Vector2(0.3806222, 1.8219656)
+
+[node name="Wall154" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(366.1988, -363.81165)
+rotation = 1.5693299
+scale = Vector2(0.3806222, 1.8219656)
+
+[node name="Wall31" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(67.47478, 19.004227)
+rotation = 1.5693299
+scale = Vector2(0.3806222, 1.8219656)
+
+[node name="Wall155" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(134.62231, -181.88765)
+rotation = 1.5693299
+scale = Vector2(1.2984613, 1.1787418)
+
+[node name="Wall156" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(134.60974, -190.34518)
+rotation = 1.5693299
+scale = Vector2(0.3921502, 1.1787418)
+
+[node name="Wall157" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(134.52165, -249.54799)
+rotation = 1.5693299
+scale = Vector2(0.3921502, 1.1787418)
+
+[node name="Wall158" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(138.50742, -403.89975)
+rotation = 1.5693299
+scale = Vector2(0.3921502, 1.1787418)
+
+[node name="Wall159" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(138.4854, -418.70047)
+rotation = 1.5693299
+scale = Vector2(0.3921502, 1.1787418)
+
+[node name="Wall160" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(109.616196, 10.530945)
+rotation = 1.5693299
+scale = Vector2(0.34839404, 0.90726644)
+
+[node name="Wall161" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(42.169815, 10.556154)
+rotation = 1.5693299
+scale = Vector2(0.34839404, 0.90726644)
+
+[node name="Wall162" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(46.356903, -8.474894)
+rotation = 1.5693299
+scale = Vector2(0.34839404, 0.90726644)
+
+[node name="Wall163" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(109.58795, -8.498562)
+rotation = 1.5693299
+scale = Vector2(0.34839404, 0.90726644)
+
+[node name="Wall164" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(113.6365, -120.56258)
+rotation = 1.5693299
+scale = Vector2(0.34839404, 0.90726644)
+
+[node name="Wall165" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(54.617832, -122.65488)
+rotation = 1.5693299
+scale = Vector2(0.34839404, 0.90726644)
+
+[node name="Wall166" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(50.430744, -103.62384)
+rotation = 1.5693299
+scale = Vector2(0.34839404, 0.90726644)
+
+[node name="Wall167" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(109.44633, -103.645905)
+rotation = 1.5693299
+scale = Vector2(0.34839404, 0.90726644)
+
+[node name="Wall32" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(269.85168, 44.301125)
+rotation = 1.5693299
+scale = Vector2(0.3806222, 1.8219656)
+
+[node name="Wall33" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(547.99866, -2.3195229)
+rotation = 1.5693299
+scale = Vector2(0.3806222, 1.8219656)
+
+[node name="Wall34" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(682.89154, -2.369997)
+rotation = 1.5693299
+scale = Vector2(0.3806222, 1.8219656)
+
+[node name="Wall35" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(1045.3782, -27.878326)
+rotation = 1.5693299
+scale = Vector2(0.3806528, 1.5242736)
+
+[node name="Wall148" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(231.73059, -78.319046)
+rotation = 1.5693299
+scale = Vector2(0.46161428, 1.3094788)
+
+[node name="Wall149" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(392.1518, 80.19995)
+rotation = 2.3145692
+scale = Vector2(0.40056798, 1.0703354)
+
+[node name="Wall150" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(459.59808, 80.17466)
+rotation = 2.3145692
+scale = Vector2(0.40056798, 1.0703354)
+
+[node name="Wall151" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(437.6623, -497.04474)
+rotation = 0.7461308
+scale = Vector2(0.30492586, 0.8440786)
+
+[node name="Wall152" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(500.89957, -492.83963)
+rotation = 0.7461308
+scale = Vector2(0.30492586, 0.8440786)
+
+[node name="Wall36" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(1041.2319, 18.639744)
+rotation = 1.5693299
+scale = Vector2(0.3806528, 1.5242736)
+
+[node name="Wall37" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(686.569, -363.93152)
+rotation = 1.5693299
+scale = Vector2(0.3806528, 1.5242736)
+
+[node name="Wall38" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(585.4025, -361.77933)
+rotation = 1.5693299
+scale = Vector2(0.3806528, 1.5242736)
+
+[node name="Wall39" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(442.00043, -414.58533)
+rotation = 1.5693299
+scale = Vector2(0.3806528, 1.5242736)
+
+[node name="Wall40" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(433.56964, -414.5821)
+rotation = 1.5693299
+scale = Vector2(0.3806528, 1.5242736)
+
+[node name="Wall41" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(429.62793, -230.62904)
+rotation = 1.5693299
+scale = Vector2(0.3806528, 1.5242736)
+
+[node name="Wall42" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(433.9094, -186.22844)
+rotation = 1.5693299
+scale = Vector2(0.3806528, 1.5242736)
+
+[node name="Wall43" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(231.79672, -33.916946)
+rotation = 1.5693299
+scale = Vector2(0.3806528, 1.5242736)
+
+[node name="Wall44" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(-122.59573, -234.65105)
+rotation = 1.5693299
+scale = Vector2(0.3806528, 1.5242736)
+
+[node name="Wall45" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(-122.66481, -281.16757)
+rotation = 1.5693299
+scale = Vector2(0.3806528, 1.5242736)
+
+[node name="Wall132" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(-189.96976, -185.99496)
+rotation = 1.5693299
+scale = Vector2(0.3806528, 1.5242736)
+
+[node name="Wall133" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(-194.40222, -331.886)
+rotation = 1.5693299
+scale = Vector2(0.3806528, 1.5242736)
+
+[node name="Wall134" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(168.42725, -126.926315)
+rotation = 1.5693299
+scale = Vector2(0.3806528, 1.5242736)
+
+[node name="Wall135" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(172.85655, 16.850403)
+rotation = 1.5693299
+scale = Vector2(0.3806528, 1.5242736)
+
+[node name="Wall136" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(434.03204, -103.76741)
+rotation = 1.5693299
+scale = Vector2(0.3806528, 1.5242736)
+
+[node name="Wall137" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(471.9706, -103.78162)
+rotation = 1.5693299
+scale = Vector2(0.3806528, 1.5242736)
+
+[node name="Wall138" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(817.70886, -53.16574)
+rotation = 1.5693299
+scale = Vector2(0.34649354, 1.089922)
+
+[node name="Wall139" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(1007.54333, 41.910606)
+rotation = 1.5693299
+scale = Vector2(0.34649354, 1.089922)
+
+[node name="Wall140" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(998.55566, -332.33255)
+rotation = 1.5693299
+scale = Vector2(0.34649354, 1.089922)
+
+[node name="Wall141" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(994.21765, -414.79196)
+rotation = 1.5693299
+scale = Vector2(0.34649354, 1.089922)
+
+[node name="Wall142" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(1002.5855, -457.08282)
+rotation = 1.5693299
+scale = Vector2(0.34649354, 1.089922)
+
+[node name="Wall143" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(307.26807, -306.7011)
+rotation = 1.5693299
+scale = Vector2(0.34649354, 1.089922)
+
+[node name="Wall144" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(311.3985, -363.7911)
+rotation = 1.5693299
+scale = Vector2(0.34649354, 1.089922)
+
+[node name="Wall46" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(-299.86584, -384.70612)
+rotation = 0.0024741888
+scale = Vector2(0.3806528, 1.5242736)
+
+[node name="Wall47" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(-198.432, -207.13564)
+rotation = 0.0024741888
+scale = Vector2(-0.9014625, 0.5781138)
+
+[node name="Wall48" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(-198.59244, -314.9693)
+rotation = 0.0024741888
+scale = Vector2(-0.9014625, 0.5781138)
+
+[node name="Wall49" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(-206.781, -152.15845)
+rotation = 0.0024741888
+scale = Vector2(-0.9014625, 0.5781138)
+
+[node name="Wall50" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(-206.69608, -95.070045)
+rotation = 0.0024741888
+scale = Vector2(-0.9014625, 0.5781138)
+
+[node name="Wall51" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(-206.68349, -86.612495)
+rotation = 0.0024741888
+scale = Vector2(-0.9014625, 0.5781138)
+
+[node name="Wall52" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(-0.13520813, -90.918564)
+rotation = 0.0024741888
+scale = Vector2(-0.9014625, 0.5781138)
+
+[node name="Wall53" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(-0.1540829, -103.60489)
+rotation = 0.0024741888
+scale = Vector2(-0.9014625, 0.5781138)
+
+[node name="Wall54" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(155.8094, -107.89206)
+rotation = 0.0024741888
+scale = Vector2(-0.9014625, 0.5781138)
+
+[node name="Wall55" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(155.9541, -10.63031)
+rotation = 0.0024741888
+scale = Vector2(-0.9014625, 0.5781138)
+
+[node name="Wall56" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(299.40036, 71.77708)
+rotation = 0.0024741888
+scale = Vector2(-0.9014625, 0.5781138)
+
+[node name="Wall57" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(299.4569, 109.83603)
+rotation = 0.0024741888
+scale = Vector2(-0.9014625, 0.5781138)
+
+[node name="Wall58" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(611.39966, 111.83366)
+rotation = 0.0024741888
+scale = Vector2(-0.9014625, 0.5781138)
+
+[node name="Wall59" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(611.3431, 73.77472)
+rotation = 0.0024741888
+scale = Vector2(-0.9014625, 0.5781138)
+
+[node name="Wall60" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(459.42505, -36.11653)
+rotation = 0.0024741888
+scale = Vector2(-0.9014625, 0.5781138)
+
+[node name="Wall61" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(459.36212, -78.40425)
+rotation = 0.0024741888
+scale = Vector2(-0.9014625, 0.5781138)
+
+[node name="Wall62" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(358.11084, -133.34042)
+rotation = 0.0024741888
+scale = Vector2(-0.9014625, 0.5781138)
+
+[node name="Wall63" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(358.07315, -158.71303)
+rotation = 0.0024741888
+scale = Vector2(-0.9014625, 0.5781138)
+
+[node name="Wall64" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(357.9158, -264.43234)
+rotation = 0.0024741888
+scale = Vector2(-0.9014625, 0.5781138)
+
+[node name="Wall65" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(357.89063, -281.3474)
+rotation = 0.0024741888
+scale = Vector2(-0.9014625, 0.5781138)
+
+[node name="Wall66" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(248.21164, -334.166)
+rotation = 0.0024741888
+scale = Vector2(-0.9014625, 0.5781138)
+
+[node name="Wall67" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(248.20207, -340.50916)
+rotation = 0.0024741888
+scale = Vector2(-0.9014625, 0.5781138)
+
+[node name="Wall145" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(105.45738, 48.59134)
+rotation = 0.0024741888
+scale = Vector2(-0.9014625, 0.5781138)
+
+[node name="Wall146" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(480.66876, 75.93801)
+rotation = 0.0024741888
+scale = Vector2(-0.9014625, 0.5781138)
+
+[node name="Wall147" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(416.9314, -264.45438)
+rotation = 0.0024741888
+scale = Vector2(-0.9014625, 0.5781138)
+
+[node name="Wall68" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(357.73016, -389.18115)
+rotation = 0.0024741888
+scale = Vector2(-0.9014625, 0.5781138)
+
+[node name="Wall69" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(505.26917, -389.23633)
+rotation = 0.0024741888
+scale = Vector2(-0.9014625, 0.5781138)
+
+[node name="Wall70" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(964.6753, -438.03915)
+rotation = 0.0024741888
+scale = Vector2(-0.9014625, 0.5781138)
+
+[node name="Wall71" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(711.6695, -492.91858)
+rotation = 0.0024741888
+scale = Vector2(-0.9014625, 0.5781138)
+
+[node name="Wall72" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(711.60974, -533.0919)
+rotation = 0.0024741888
+scale = Vector2(-0.9014625, 0.5781138)
+
+[node name="Wall73" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(349.1421, -494.89722)
+rotation = 0.0024741888
+scale = Vector2(-0.9014625, 0.5781138)
+
+[node name="Wall74" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(349.0854, -532.9561)
+rotation = 0.0024741888
+scale = Vector2(-0.9014625, 0.5781138)
+
+[node name="Wall75" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(96.26213, -465.20114)
+rotation = 0.0024741888
+scale = Vector2(-0.9014625, 0.5781138)
+
+[node name="Wall76" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(-51.198135, -412.28632)
+rotation = 0.0024741888
+scale = Vector2(-0.9014625, 0.5781138)
+
+[node name="Wall77" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(758.72797, -29.885406)
+rotation = 0.0024741888
+scale = Vector2(-0.9014625, 0.5781138)
+
+[node name="Wall78" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(859.82196, -80.66853)
+rotation = 0.0024741888
+scale = Vector2(-0.9014625, 0.5781138)
+
+[node name="Wall79" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(859.737, -137.75696)
+rotation = 0.0024741888
+scale = Vector2(-0.9014625, 0.5781138)
+
+[node name="Wall80" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(859.6553, -192.73096)
+rotation = 0.0024741888
+scale = Vector2(-0.9014625, 0.5781138)
+
+[node name="Wall81" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(859.57336, -247.70502)
+rotation = 0.0024741888
+scale = Vector2(-0.9014625, 0.5781138)
+
+[node name="Wall82" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(859.48846, -304.79346)
+rotation = 0.0024741888
+scale = Vector2(-0.9014625, 0.5781138)
+
+[node name="Wall83" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(859.4855, -306.90784)
+rotation = 0.0024741888
+scale = Vector2(-0.9014625, 0.5781138)
+
+[node name="Wall84" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(964.98987, -226.6006)
+rotation = 0.0024741888
+scale = Vector2(-0.9014625, 0.5781138)
+
+[node name="Wall85" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(965.0718, -171.62662)
+rotation = 0.0024741888
+scale = Vector2(-0.9014625, 0.5781138)
+
+[node name="Wall86" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(965.1566, -114.53816)
+rotation = 0.0024741888
+scale = Vector2(-0.9014625, 0.5781138)
+
+[node name="Wall87" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(965.2416, -57.449738)
+rotation = 0.0024741888
+scale = Vector2(-0.9014625, 0.5781138)
+
+[node name="Wall88" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(964.90485, -283.68903)
+rotation = 0.0024741888
+scale = Vector2(-0.9014625, 0.5781138)
+
+[node name="Wall89" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(964.8703, -306.94727)
+rotation = 0.0024741888
+scale = Vector2(-0.9014625, 0.5781138)
+
+[node name="Wall90" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(1167.7568, 60.880127)
+rotation = 0.0024741888
+scale = Vector2(-0.9014625, 0.5781138)
+
+[node name="Wall91" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(1167.672, 3.7917175)
+rotation = 0.0024741888
+scale = Vector2(-0.9014625, 0.5781138)
+
+[node name="Wall92" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(1167.587, -53.29671)
+rotation = 0.0024741888
+scale = Vector2(-0.9014625, 0.5781138)
+
+[node name="Wall93" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(1167.5022, -110.38512)
+rotation = 0.0024741888
+scale = Vector2(-0.9014625, 0.5781138)
+
+[node name="Wall94" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(1167.4172, -167.47354)
+rotation = 0.0024741888
+scale = Vector2(-0.9014625, 0.5781138)
+
+[node name="Wall95" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(1167.3982, -180.15987)
+rotation = 0.0024741888
+scale = Vector2(-0.9014625, 0.5781138)
+
+[node name="Wall96" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(1268.4735, -243.62929)
+rotation = 0.0024741888
+scale = Vector2(-0.9014625, 0.5781138)
+
+[node name="Wall97" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(1268.3915, -298.60333)
+rotation = 0.0024741888
+scale = Vector2(-0.9014625, 0.5781138)
+
+[node name="Wall98" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(1268.31, -353.57733)
+rotation = 0.0024741888
+scale = Vector2(-0.9014625, 0.5781138)
+
+[node name="Wall99" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(1268.2689, -381.06433)
+rotation = 0.0024741888
+scale = Vector2(-0.9014625, 0.5781138)
+
+[node name="Wall100" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(1167.0051, -444.45804)
+rotation = 0.0024741888
+scale = Vector2(-0.9014625, 0.5781138)
+
+[node name="Wall101" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(1166.9486, -482.51703)
+rotation = 0.0024741888
+scale = Vector2(-0.9014625, 0.5781138)
+
+[node name="Wall102" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(909.7996, -488.76395)
+rotation = 0.0024741888
+scale = Vector2(-0.9014625, 0.5781138)
+
+[node name="Wall103" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(1044.7646, -440.1835)
+rotation = 0.0024741888
+scale = Vector2(-1.4161073, 0.48265812)
+
+[node name="Wall104" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(1044.9565, -311.206)
+rotation = 0.0024741888
+scale = Vector2(-1.4161073, 0.48265812)
+
+[node name="Wall105" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(1044.9788, -296.40533)
+rotation = 0.0024741888
+scale = Vector2(-1.4161073, 0.48265812)
+
+[node name="Wall106" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(1040.8733, -222.4003)
+rotation = 0.0024741888
+scale = Vector2(-1.4161073, 0.48265812)
+
+[node name="Wall107" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(1040.9332, -182.22691)
+rotation = 0.0024741888
+scale = Vector2(-1.4161073, 0.48265812)
+
+[node name="Wall108" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(1040.993, -142.05359)
+rotation = 0.0024741888
+scale = Vector2(-1.4161073, 0.48265812)
+
+[node name="Wall109" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(1041.0623, -95.53706)
+rotation = 0.0024741888
+scale = Vector2(-1.4161073, 0.48265812)
+
+[node name="Wall110" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(1041.1218, -55.36376)
+rotation = 0.0024741888
+scale = Vector2(-1.4161073, 0.48265812)
+
+[node name="Wall111" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(906.4115, 67.3211)
+rotation = 0.0024741888
+scale = Vector2(-1.4161073, 0.48265812)
+
+[node name="Wall112" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(969.59845, 37.69603)
+rotation = 0.0024741888
+scale = Vector2(-1.4161073, 0.48265812)
+
+[node name="Wall113" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(535.30865, -31.916168)
+rotation = 0.0024741888
+scale = Vector2(-1.4161073, 0.48265812)
+
+[node name="Wall114" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(535.23944, -78.43265)
+rotation = 0.0024741888
+scale = Vector2(-1.4161073, 0.48265812)
+
+[node name="Wall115" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(535.2331, -82.66143)
+rotation = 0.0024741888
+scale = Vector2(-1.4161073, 0.48265812)
+
+[node name="Wall116" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(438.2066, -131.25598)
+rotation = 0.0024741888
+scale = Vector2(-1.4161073, 0.48265812)
+
+[node name="Wall117" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(438.16248, -160.85739)
+rotation = 0.0024741888
+scale = Vector2(-1.4161073, 0.48265812)
+
+[node name="Wall118" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(438.01782, -258.11917)
+rotation = 0.0024741888
+scale = Vector2(-1.4161073, 0.48265812)
+
+[node name="Wall119" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(437.97687, -285.60617)
+rotation = 0.0024741888
+scale = Vector2(-1.4161073, 0.48265812)
+
+[node name="Wall120" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(437.8228, -389.21106)
+rotation = 0.0024741888
+scale = Vector2(-1.4161073, 0.48265812)
+
+[node name="Wall121" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(-118.34552, -211.39442)
+rotation = 0.0024741888
+scale = Vector2(-1.4161073, 0.48265812)
+
+[node name="Wall122" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(-118.490486, -308.65613)
+rotation = 0.0024741888
+scale = Vector2(-1.4161073, 0.48265812)
+
+[node name="Wall123" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(-118.49363, -310.77048)
+rotation = 0.0024741888
+scale = Vector2(-1.4161073, 0.48265812)
+
+[node name="Wall124" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(-118.339355, -207.16559)
+rotation = 0.0024741888
+scale = Vector2(-1.4161073, 0.48265812)
+
+[node name="Wall125" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(231.68964, -105.806076)
+rotation = 0.0024741888
+scale = Vector2(-1.4161073, 0.48265812)
+
+[node name="Wall126" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(231.68655, -107.92044)
+rotation = 0.0024741888
+scale = Vector2(-1.4161073, 0.48265812)
+
+[node name="Wall127" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(231.83441, -8.544327)
+rotation = 0.0024741888
+scale = Vector2(-1.4161073, 0.48265812)
+
+[node name="Wall128" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(231.83755, -6.4299355)
+rotation = 0.0024741888
+scale = Vector2(-1.4161073, 0.48265812)
+
+[node name="Wall129" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(526.19824, -488.6203)
+rotation = 0.0024741888
+scale = Vector2(-1.4161073, 0.48265812)
+
+[node name="Wall130" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(526.17944, -501.30664)
+rotation = 0.0024741888
+scale = Vector2(-1.4161073, 0.48265812)
+
+[node name="Wall131" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(-214.98828, -2.033966)
+rotation = 0.0024741888
+scale = Vector2(-1.4161073, 0.48265812)
+
+[node name="Wall168" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(-307.9977, -183.83635)
+rotation = 0.0024741888
+scale = Vector2(-1.4161073, 0.48265812)
+
+[node name="Wall25" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(888.9552, -332.2915)
+rotation = 1.5693299
+scale = Vector2(-0.38060024, -0.6425562)
+
+[node name="Wall26" parent="Wall7" instance=ExtResource("4_4ihab")]
+position = Vector2(922.6786, -332.30417)
+rotation = 1.5693299
+scale = Vector2(-0.38060024, -0.6425562)

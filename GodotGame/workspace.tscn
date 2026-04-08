@@ -51,6 +51,59 @@ rotation = 5.962261
 
 [node name="Camera2D" type="Camera2D" parent="."]
 
+<<<<<<< Updated upstream
+=======
+[node name="Wall2" parent="." instance=ExtResource("2_cn5mv")]
+position = Vector2(131, 271)
+rotation = 1.5795916
+scale = Vector2(-1.0654341, 1.918099)
+
+[node name="Wall5" parent="." instance=ExtResource("2_cn5mv")]
+position = Vector2(235.00003, 4.9999847)
+rotation = 3.1636887
+scale = Vector2(-1.3578166, 6.022865)
+
+[node name="Wall6" parent="." instance=ExtResource("2_cn5mv")]
+position = Vector2(23.000002, 4)
+rotation = 3.1636887
+scale = Vector2(-1.3578166, 6.022865)
+
+[node name="Wall7" parent="." instance=ExtResource("2_cn5mv")]
+position = Vector2(-50.00003, -334)
+rotation = 4.731469
+scale = Vector2(1.8683968, 1.7276001)
+
+[node name="Wall8" parent="." instance=ExtResource("2_cn5mv")]
+position = Vector2(312, -328)
+rotation = 4.731469
+scale = Vector2(1.8683968, 1.7276001)
+
+[node name="Wall9" parent="." instance=ExtResource("2_cn5mv")]
+position = Vector2(402, -671)
+rotation = 6.3177013
+scale = Vector2(-1.3922728, 6.3296213)
+
+[node name="Wall10" parent="." instance=ExtResource("2_cn5mv")]
+position = Vector2(-111.99994, -683.99994)
+rotation = 6.3177013
+scale = Vector2(-1.3922728, 6.3296213)
+
+[node name="Wall12" parent="." instance=ExtResource("2_cn5mv")]
+position = Vector2(237, -1128)
+rotation = 6.3177013
+scale = Vector2(1.6095865, -3.1982439)
+
+[node name="Wall13" parent="." instance=ExtResource("2_cn5mv")]
+position = Vector2(98.000015, -1131.0001)
+rotation = 6.3177013
+scale = Vector2(1.6095865, -3.1982439)
+
+[node name="Wall14" parent="." instance=ExtResource("2_cn5mv")]
+position = Vector2(-20, -990.9999)
+rotation = 7.8506756
+scale = Vector2(2.739371, -2.044064)
+
+>>>>>>> Stashed changes
 [node name="Wall15" parent="." instance=ExtResource("2_cn5mv")]
 position = Vector2(337.99997, 525.00006)
 rotation = 9.417487
