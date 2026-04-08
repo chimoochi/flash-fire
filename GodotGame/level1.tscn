@@ -148,3 +148,7 @@ position = Vector2(200, 700)
 
 [node name="Spikes" parent="." instance=ExtResource("7_i2041")]
 position = Vector2(628, 370)
+scale = Vector2(2.6592383, -4.2519875)
+
+[node name="Spikes2" parent="." instance=ExtResource("7_i2041")]
+position = Vector2(766, 368)
