@@ -1,0 +1,120 @@
+class_name ThrowableService
+
+const EXPLOSION_SCENE = preload("res://projectiles/HitboxVisualizer.tscn")
+
+static func throwing(startpos: Vector2, endpos: Vector2, speed: float, scene: PackedScene = null, owner_node: Node = null, duration: float = 1.0, arc_height: float = 50.0):
+	var direction = (endpos - startpos).normalized()
+	
+	if scene:
+		var projectile = ThrowableProjectile.new()
+		projectile.global_position = startpos
+		projectile.direction = direction
+		projectile.speed = speed
+		projectile.air_duration = duration
+		projectile.height_arc = arc_height
+		
+		
+		projectile.collision_layer = 0
+		projectile.collision_mask = 7
+		
+		if owner_node and owner_node is CollisionObject2D:
+			projectile.add_collision_exception_with(owner_node)
+		
+		
+		var collider = CollisionShape2D.new()
+		var shape = CircleShape2D.new()
+		shape.radius = 5.0
+		collider.shape = shape
+		projectile.add_child(collider)
+		
+		
+		var visual = scene.instantiate()
+		projectile.add_child(visual)
+		
+		
+		if owner_node:
+			var root = owner_node.get_tree().root
+			root.add_child(projectile)
+		
+		return projectile
+	
+	return direction * speed
+
+static func explode(radius: float, position: Vector2, damage: int = 0, push_force: float = 0.0, source_node: Node = null):
+	if not source_node:
+		return
+
+	var tree = source_node.get_tree()
+	if not tree:
+		return
+		
+		
+	var explosion = EXPLOSION_SCENE.instantiate()
+	explosion.global_position = position
+	explosion.radius = radius # Set the radius for visualization
+	tree.root.add_child(explosion)
+
+	NoiseService.emit_noise(tree, position, 1000.0)
+
+	var shake_radius = radius * 3.0
+	var players = tree.get_nodes_in_group("Player")
+	if players.size() > 0:
+		var dist = position.distance_to(players[0].global_position)
+		if dist < shake_radius:
+			var intensity = clamp(1.0 - (dist / shake_radius), 0.0, 1.0)
+			CameraService.shake(intensity * 0.5)
+
+	var space_state = tree.root.get_world_2d().direct_space_state
+	
+	var shape = CircleShape2D.new()
+	shape.radius = radius
+	
+	var query = PhysicsShapeQueryParameters2D.new()
+	query.shape = shape
+	query.transform = Transform2D(0, position)
+	query.collide_with_areas = true
+	query.collide_with_bodies = true
+	if source_node:
+		query.exclude = [source_node.get_rid()]
+	
+	var result = space_state.intersect_shape(query)
+	var hit_targets = []
+	
+	for data in result:
+		var collider = data["collider"]
+		
+		if collider in hit_targets:
+			continue
+		hit_targets.append(collider)
+		
+		var is_friendly = false
+		if source_node:
+			if source_node.is_in_group("Player") and collider.is_in_group("Player"):
+				is_friendly = true
+			if source_node.is_in_group("Enemy") and collider.is_in_group("Enemy"):
+				is_friendly = true
+		
+		if not is_friendly:
+			var dist = position.distance_to(collider.global_position)
+			var falloff = clamp(1.0 - (dist / radius), 0.0, 1.0)
+			var final_damage = float(damage)
+			
+			if collider.is_in_group("Enemy") and "EnemyState" in collider:
+				var max_hp = collider.EnemyState.get("max_health", 100)
+				final_damage = max_hp * 0.75
+			
+			if collider.has_method("take_damage") and final_damage > 0:
+				collider.take_damage(int(final_damage * falloff), position, source_node if is_instance_valid(source_node) else null)
+			
+			if push_force > 0:
+				if source_node and source_node is Node2D and collider is Node2D:
+					KnockbackService.apply_knockback(explosion, collider, push_force)
+				elif collider.has_method("push"):
+					var direction = (collider.global_position - position).normalized()
+					if direction == Vector2.ZERO:
+						direction = Vector2.RIGHT
+					collider.push(direction * push_force)
+
+static func lingering(duration, radius, position):
+	pass
+	

@@ -6,7 +6,7 @@
 bg_color = Color(0.196078, 0.196078, 0.196078, 1)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fill"]
-bg_color = Color(1, 0, 0, 1)
+bg_color = Color(0.18039216, 1, 0.63529414, 1)
 
 [node name="HealthBar" type="ProgressBar"]
 custom_minimum_size = Vector2(200, 20)

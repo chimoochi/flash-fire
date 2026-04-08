@@ -1,0 +1,12 @@
+[gd_scene load_steps=2 format=3]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_wall"]
+radius = 50.0
+
+[node name="WallCircle" type="StaticBody2D"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_wall")
+
+[node name="Visual" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(50, 0, 46.194, 19.134, 35.355, 35.355, 19.134, 46.194, 0, 50, -19.134, 46.194, -35.355, 35.355, -46.194, 19.134, -50, 0, -46.194, -19.134, -35.355, -35.355, -19.134, -46.194, 0, -50, 19.134, -46.194, 35.355, -35.355, 46.194, -19.134)

@@ -1,0 +1,151 @@
+[gd_scene load_steps=6 format=3 uid="uid://bjvgwhhsqt4wg"]
+
+[ext_resource type="PackedScene" uid="uid://bq3nv1n2jji1h" path="res://player/player.tscn" id="1_nf4vs"]
+[ext_resource type="PackedScene" uid="uid://buq31qg2ywauu" path="res://gameassets/wall.tscn" id="2_cn5mv"]
+[ext_resource type="PackedScene" uid="uid://b1u2ycrngix7o" path="res://enemy/level1.tscn" id="3_enemy"]
+[ext_resource type="PackedScene" path="res://gameassets/explosive_barrel.tscn" id="4_barrel"]
+[ext_resource type="PackedScene" path="res://enemy/level2heavy.tscn" id="5_j8etk"]
+
+[node name="Level2" type="Node2D"]
+
+[node name="Player" parent="." instance=ExtResource("1_nf4vs")]
+position = Vector2(800, 800)
+
+[node name="Enemy bad" parent="." instance=ExtResource("3_enemy")]
+position = Vector2(520, 1082)
+rotation = 5.962261
+
+[node name="Enemy bad3" parent="." instance=ExtResource("3_enemy")]
+position = Vector2(-229.00006, 972.0001)
+rotation = 7.986667
+
+[node name="Enemy bad4" parent="." instance=ExtResource("3_enemy")]
+position = Vector2(-32, 522.00006)
+rotation = 7.66512
+
+[node name="Enemy bad7" parent="." instance=ExtResource("3_enemy")]
+position = Vector2(-888, 435.00006)
+rotation = 7.66512
+
+[node name="Enemy bad8" parent="." instance=ExtResource("3_enemy")]
+position = Vector2(612, -32)
+rotation = 7.66512
+
+[node name="Enemy bad9" parent="." instance=ExtResource("3_enemy")]
+position = Vector2(789, 652)
+rotation = 7.66512
+
+[node name="Enemy bad5" parent="." instance=ExtResource("3_enemy")]
+position = Vector2(282, -877)
+rotation = 8.48952
+
+[node name="Enemy bad6" parent="." instance=ExtResource("3_enemy")]
+position = Vector2(-567.00006, -385.99988)
+rotation = 11.219576
+
+[node name="Enemy bad2" parent="." instance=ExtResource("3_enemy")]
+position = Vector2(-87.00001, -21)
+rotation = 5.962261
+
+[node name="Camera2D" type="Camera2D" parent="."]
+
+[node name="Wall15" parent="." instance=ExtResource("2_cn5mv")]
+position = Vector2(337.99997, 525.00006)
+rotation = 9.417487
+scale = Vector2(3.5452416, -2.8112924)
+
+[node name="Wall16" parent="." instance=ExtResource("2_cn5mv")]
+position = Vector2(-311, 528)
+rotation = 9.417487
+scale = Vector2(3.5452416, -2.8112924)
+
+[node name="Wall17" parent="." instance=ExtResource("2_cn5mv")]
+position = Vector2(100, 100)
+rotation = 0
+scale = Vector2(10, 1)
+
+[node name="Wall18" parent="." instance=ExtResource("2_cn5mv")]
+position = Vector2(100, 1500)
+rotation = 0
+scale = Vector2(10, 1)
+
+[node name="Wall19" parent="." instance=ExtResource("2_cn5mv")]
+position = Vector2(305.00003, -215.00002)
+rotation = 7.865108
+scale = Vector2(2.4679365, -3.160738)
+
+[node name="Wall20" parent="." instance=ExtResource("2_cn5mv")]
+position = Vector2(-293.99997, -224)
+rotation = 7.865108
+scale = Vector2(2.4679365, -3.160738)
+
+[node name="Wall21" parent="." instance=ExtResource("2_cn5mv")]
+position = Vector2(-294, 1169)
+rotation = 7.865108
+scale = Vector2(2.4679365, -3.160738)
+
+[node name="Wall22" parent="." instance=ExtResource("2_cn5mv")]
+position = Vector2(276, 1172)
+rotation = 7.865108
+scale = Vector2(2.4679365, -3.160738)
+
+[node name="Wall23" parent="." instance=ExtResource("2_cn5mv")]
+position = Vector2(492.00003, 896)
+rotation = 7.865108
+scale = Vector2(2.4679365, -3.160738)
+
+[node name="Wall24" parent="." instance=ExtResource("2_cn5mv")]
+position = Vector2(483.00003, 220.00006)
+rotation = 7.865108
+scale = Vector2(2.4679365, -3.160738)
+
+[node name="Wall25" parent="." instance=ExtResource("2_cn5mv")]
+position = Vector2(-529, 199.00002)
+rotation = 7.865108
+scale = Vector2(2.4679365, -3.160738)
+
+[node name="Wall26" parent="." instance=ExtResource("2_cn5mv")]
+position = Vector2(-569.00006, 923)
+rotation = 7.865108
+scale = Vector2(2.4679365, -3.160738)
+
+[node name="Wall27" parent="." instance=ExtResource("2_cn5mv")]
+position = Vector2(-461.00003, 490.00003)
+rotation = 7.2994456
+scale = Vector2(2.4679365, -3.160738)
+
+[node name="Wall28" parent="." instance=ExtResource("2_cn5mv")]
+position = Vector2(-445, 614)
+rotation = 8.236704
+scale = Vector2(2.4679365, -3.160738)
+
+[node name="Wall29" parent="." instance=ExtResource("2_cn5mv")]
+position = Vector2(461, 596)
+rotation = 7.4090757
+scale = Vector2(2.8695867, -3.447475)
+
+[node name="Wall30" parent="." instance=ExtResource("2_cn5mv")]
+position = Vector2(469.00003, 469)
+rotation = 8.176359
+scale = Vector2(2.8695867, -3.447475)
+
+[node name="ExplosiveBarrel1" parent="." instance=ExtResource("4_barrel")]
+position = Vector2(100, 500)
+
+[node name="ExplosiveBarrel2" parent="." instance=ExtResource("4_barrel")]
+position = Vector2(-200, 800)
+
+[node name="Enemy bad10" parent="." instance=ExtResource("3_enemy")]
+position = Vector2(-746, 1059)
+
+[node name="Level2Heavy" parent="." instance=ExtResource("5_j8etk")]
+position = Vector2(-893, 1084)
+
+[node name="Enemy bad11" parent="." instance=ExtResource("3_enemy")]
+position = Vector2(200, 200)
+
+[node name="Enemy bad12" parent="." instance=ExtResource("3_enemy")]
+position = Vector2(400, 400)
+
+[node name="Enemy bad13" parent="." instance=ExtResource("3_enemy")]
+position = Vector2(600, 600)
