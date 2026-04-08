@@ -2,7 +2,7 @@ extends CharacterBody2D
 
 
 var MAX_SPEED = 600.0
-const ACCELERATION = 3000.0
+var ACCELERATION = 3000.0
 const FRICTION = 6000.0
 
 const DASH_COOLDOWN = 0.8
@@ -381,7 +381,7 @@ func take_damage(amount: int, source_pos: Vector2 = Vector2.ZERO, source: Node2D
 		return
 
 	lose_adrenaline(ADRENALINE_ON_HIT)
-	var reduced = int(amount * 0.6)
+	var reduced = max(int(amount * 0.6), 1)
 	PlayerState["health"] -= reduced
 	if health_bar:
 		health_bar.set_health(PlayerState["health"])

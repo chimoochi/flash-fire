@@ -53,8 +53,16 @@ static func explode(radius: float, position: Vector2, damage: int = 0, push_forc
 	explosion.global_position = position
 	explosion.radius = radius # Set the radius for visualization
 	tree.root.add_child(explosion)
-	
+
 	NoiseService.emit_noise(tree, position, 1000.0)
+
+	var shake_radius = radius * 3.0
+	var players = tree.get_nodes_in_group("Player")
+	if players.size() > 0:
+		var dist = position.distance_to(players[0].global_position)
+		if dist < shake_radius:
+			var intensity = clamp(1.0 - (dist / shake_radius), 0.0, 1.0)
+			CameraService.shake(intensity * 0.5)
 
 	var space_state = tree.root.get_world_2d().direct_space_state
 	

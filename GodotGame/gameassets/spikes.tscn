@@ -1,0 +1,18 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://gameassets/spikes.gd" id="1_script"]
+[ext_resource type="Script" path="res://gameassets/spikes_visual.gd" id="2_visual"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_spikes"]
+size = Vector2(32, 32)
+
+[node name="Spikes" type="Area2D"]
+collision_layer = 0
+collision_mask = 6
+script = ExtResource("1_script")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_spikes")
+
+[node name="Visual" type="Node2D" parent="."]
+script = ExtResource("2_visual")

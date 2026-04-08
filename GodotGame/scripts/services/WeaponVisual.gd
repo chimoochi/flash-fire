@@ -53,6 +53,6 @@ func set_image_scale(s: Vector2) -> void:
 func set_texture(tex: Texture2D) -> void:
 	if _sprite:
 		_sprite.texture = tex
-        
+		
 func remove() -> void:
 	queue_free()
