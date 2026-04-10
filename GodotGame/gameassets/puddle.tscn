@@ -1,0 +1,18 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://gameassets/puddle.gd" id="1_script"]
+
+[sub_resource type="ConvexPolygonShape2D" id="ConvexPolygonShape2D_1"]
+points = PackedVector2Array(-50, -30, 0, -40, 50, -30, 60, 0, 50, 30, 0, 40, -50, 30, -60, 0)
+
+[node name="Puddle" type="Area2D"]
+collision_layer = 0
+collision_mask = 6
+script = ExtResource("1_script")
+
+[node name="Visual" type="Polygon2D" parent="."]
+color = Color(0.2, 0.6, 0.85, 0.4)
+polygon = PackedVector2Array(-50, -30, 0, -40, 50, -30, 60, 0, 50, 30, 0, 40, -50, 30, -60, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("ConvexPolygonShape2D_1")

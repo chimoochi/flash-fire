@@ -3,9 +3,18 @@ extends Node
 
 var player_data: Dictionary = {}
 var current_map_scene: String = "res://lobby.tscn"
+var completed_levels: Array[String] = []
 
 func _ready():
 	print("Ready")
+
+func complete_level(level_name: String) -> void:
+	if level_name not in completed_levels:
+		completed_levels.append(level_name)
+		print("Level completed: ", level_name)
+
+func is_level_completed(level_name: String) -> bool:
+	return level_name in completed_levels
 
 
 func save_player_status(player: Node2D):

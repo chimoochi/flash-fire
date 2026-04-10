@@ -5,6 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://b1u2ycrngix7o" path="res://enemy/level1.tscn" id="3_enemy"]
 [ext_resource type="PackedScene" path="res://gameassets/explosive_barrel.tscn" id="4_barrel"]
 [ext_resource type="PackedScene" path="res://enemy/level2heavy.tscn" id="5_j8etk"]
+[ext_resource type="Script" path="res://scripts/level_manager.gd" id="6_lvlmgr"]
 
 [node name="Level2" type="Node2D"]
 
@@ -149,3 +150,7 @@ position = Vector2(400, 400)
 
 [node name="Enemy bad13" parent="." instance=ExtResource("3_enemy")]
 position = Vector2(600, 600)
+
+[node name="LevelManager" type="Node" parent="."]
+script = ExtResource("6_lvlmgr")
+level_name = "level2"
