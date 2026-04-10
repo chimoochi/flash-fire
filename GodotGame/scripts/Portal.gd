@@ -5,9 +5,15 @@ extends Area2D
 
 var locked: bool = false
 
+var _entry_cooldown: float = 1.0
+
 func _ready():
 	body_entered.connect(_on_body_entered)
 	_update_lock_state()
+
+func _process(delta: float) -> void:
+	if _entry_cooldown > 0:
+		_entry_cooldown -= delta
 
 func _update_lock_state() -> void:
 	var level_num = _get_level_number()
@@ -30,7 +36,7 @@ func _get_level_number() -> int:
 
 func _on_body_entered(body):
 	if body.is_in_group("Player"):
-		if locked:
+		if locked or _entry_cooldown > 0:
 			return
 		if target_map_path != "":
 			MapService.change_map(target_map_path)

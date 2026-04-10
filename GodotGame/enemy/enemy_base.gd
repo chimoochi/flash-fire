@@ -59,6 +59,7 @@ var _last_damage_source: Node2D = null
 
 func _ready() -> void:
 	add_to_group("Enemy")
+	add_to_group("EnemyUnit")
 	_acquire_target()
 	_setup_health_bar()
 	_setup_melee()

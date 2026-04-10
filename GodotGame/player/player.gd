@@ -78,6 +78,7 @@ var _adrenaline_bar: ProgressBar = null
 var _empowered_tween: Tween = null
 
 func _ready() -> void:
+	motion_mode = CharacterBody2D.MOTION_MODE_FLOATING
 	add_to_group("Player")
 	swing_melee = WaterPopper.new()
 	add_child(swing_melee)

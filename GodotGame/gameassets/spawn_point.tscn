@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://gameassets/spawn_point.gd" id="1_script"]
+
+[node name="SpawnPoint" type="Marker2D"]
+gizmo_extents = 16.0
+script = ExtResource("1_script")

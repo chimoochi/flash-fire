@@ -44,13 +44,11 @@ func restore_player_status(player: Node2D):
 
 func change_map(target_scene_path: String):
 	var tree = get_tree()
-	var current_scene = tree.current_scene
-	
-	
+
 	var players = tree.get_nodes_in_group("Player")
 	if players.size() > 0:
 		save_player_status(players[0])
-	
+
 	current_map_scene = target_scene_path
 	tree.change_scene_to_file(target_scene_path)
 	
