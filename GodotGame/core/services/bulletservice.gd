@@ -1,7 +1,7 @@
 class_name BulletService
 extends Node
 
-const BULLET_SCENE = preload("res://player/bullet.tscn")
+const BULLET_SCENE = preload("res://combat/projectiles/bullet.tscn")
 
 static func spawn_bullet(caller: Node2D, direction: Vector2, damage: int, speed: float = 1500.0) -> void:
 	var bullet = BULLET_SCENE.instantiate()

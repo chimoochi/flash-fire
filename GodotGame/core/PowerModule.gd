@@ -1,6 +1,6 @@
 class_name PowerModule
 
-const THROWABLE_SCENE = preload("res://projectiles/throwable.tscn")
+const THROWABLE_SCENE = preload("res://combat/projectiles/throwable.tscn")
 
 enum PowerType {RANGED, MELEE, UTILITY, SPECIAL}
 static var OVERRIDE = ""

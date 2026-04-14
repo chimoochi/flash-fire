@@ -1,6 +1,6 @@
 class_name ThrowableService
 
-const EXPLOSION_SCENE = preload("res://projectiles/HitboxVisualizer.tscn")
+const EXPLOSION_SCENE = preload("res://combat/projectiles/HitboxVisualizer.tscn")
 
 static func throwing(startpos: Vector2, endpos: Vector2, speed: float, scene: PackedScene = null, owner_node: Node = null, duration: float = 1.0, arc_height: float = 50.0):
 	var direction = (endpos - startpos).normalized()

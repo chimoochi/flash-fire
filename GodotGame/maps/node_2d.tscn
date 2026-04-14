@@ -2,8 +2,8 @@
 
 [ext_resource type="PackedScene" uid="uid://bguofiqvtwbmp" path="res://enemy/enemy bad.tscn" id="1_gjpxi"]
 [ext_resource type="PackedScene" uid="uid://bq3nv1n2jji1h" path="res://player/player.tscn" id="2_dniuu"]
-[ext_resource type="PackedScene" uid="uid://buq31qg2ywauu" path="res://gameassets/wall.tscn" id="4_ol1q4"]
-[ext_resource type="PackedScene" path="res://gameassets/wall_circle.tscn" id="5_gq0g6"]
+[ext_resource type="PackedScene" uid="uid://buq31qg2ywauu" path="res://environment/wall.tscn" id="4_ol1q4"]
+[ext_resource type="PackedScene" path="res://environment/wall_circle.tscn" id="5_gq0g6"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_4ihab"]
 0:0/0 = 0

@@ -1,13 +1,12 @@
-[gd_scene load_steps=9 format=3 uid="uid://c15pxkvyo1x8b"]
+[gd_scene load_steps=8 format=3 uid="uid://1ywan04ntsa7"]
 
 [ext_resource type="PackedScene" uid="uid://bq3nv1n2jji1h" path="res://player/player.tscn" id="1_nf4vs"]
-[ext_resource type="PackedScene" uid="uid://buq31qg2ywauu" path="res://gameassets/wall.tscn" id="2_cn5mv"]
-[ext_resource type="PackedScene" uid="uid://cqwewuufhdctl" path="res://enemy/level1.tscn" id="3_enemy"]
-[ext_resource type="PackedScene" path="res://gameassets/explosive_barrel.tscn" id="4_barrel"]
-[ext_resource type="PackedScene" path="res://gameassets/spikes.tscn" id="7_i2041"]
-[ext_resource type="PackedScene" path="res://gameassets/turret.tscn" id="8_xy4tn"]
-[ext_resource type="Script" path="res://scripts/level_manager.gd" id="9_lvlmgr"]
-[ext_resource type="PackedScene" path="res://gameassets/puddle.tscn" id="10_5j5gb"]
+[ext_resource type="PackedScene" uid="uid://buq31qg2ywauu" path="res://environment/wall.tscn" id="2_cn5mv"]
+[ext_resource type="PackedScene" uid="uid://b1u2ycrngix7o" path="res://enemy/level1.tscn" id="3_enemy"]
+[ext_resource type="PackedScene" path="res://environment/explosive_barrel.tscn" id="4_barrel"]
+[ext_resource type="PackedScene" path="res://enemy/level2heavy.tscn" id="5_j8etk"]
+[ext_resource type="PackedScene" uid="uid://csr6fua6sknbl" path="res://enemy/slime.tscn" id="6_slime"]
+[ext_resource type="PackedScene" path="res://environment/wall_circle.tscn" id="7_r0yns"]
 
 [node name="Workspace" type="Node2D"]
 
@@ -18,8 +17,36 @@ position = Vector2(-5, 1313)
 position = Vector2(520, 1082)
 rotation = 5.962261
 
+[node name="Enemy bad3" parent="." instance=ExtResource("3_enemy")]
+position = Vector2(-229.00006, 972.0001)
+rotation = 7.986667
+
+[node name="Enemy bad4" parent="." instance=ExtResource("3_enemy")]
+position = Vector2(-32, 522.00006)
+rotation = 7.66512
+
+[node name="Enemy bad7" parent="." instance=ExtResource("3_enemy")]
+position = Vector2(-888, 435.00006)
+rotation = 7.66512
+
+[node name="Enemy bad8" parent="." instance=ExtResource("3_enemy")]
+position = Vector2(612, -32)
+rotation = 7.66512
+
+[node name="Enemy bad9" parent="." instance=ExtResource("3_enemy")]
+position = Vector2(789, 652)
+rotation = 7.66512
+
+[node name="Enemy bad5" parent="." instance=ExtResource("3_enemy")]
+position = Vector2(282, -877)
+rotation = 8.48952
+
+[node name="Enemy bad6" parent="." instance=ExtResource("3_enemy")]
+position = Vector2(-567.00006, -385.99988)
+rotation = 11.219576
+
 [node name="Enemy bad2" parent="." instance=ExtResource("3_enemy")]
-position = Vector2(515, 1234)
+position = Vector2(-87.00001, -21)
 rotation = 5.962261
 
 [node name="Camera2D" type="Camera2D" parent="."]
@@ -110,19 +137,14 @@ position = Vector2(100, 500)
 [node name="ExplosiveBarrel2" parent="." instance=ExtResource("4_barrel")]
 position = Vector2(-200, 800)
 
-[node name="Spikes" parent="." instance=ExtResource("7_i2041")]
-position = Vector2(628, 370)
-scale = Vector2(2.6592383, -4.2519875)
+[node name="Enemy bad10" parent="." instance=ExtResource("3_enemy")]
+position = Vector2(-746, 1059)
 
-[node name="Spikes2" parent="." instance=ExtResource("7_i2041")]
-position = Vector2(766, 368)
+[node name="Level2Heavy" parent="." instance=ExtResource("5_j8etk")]
+position = Vector2(-893, 1084)
 
-[node name="Turret" parent="." instance=ExtResource("8_xy4tn")]
-position = Vector2(818, 476)
+[node name="Slime" parent="." instance=ExtResource("6_slime")]
+position = Vector2(200, 700)
 
-[node name="LevelManager" type="Node" parent="."]
-script = ExtResource("9_lvlmgr")
-level_name = "level1"
-
-[node name="Puddle" parent="." instance=ExtResource("10_5j5gb")]
-position = Vector2(585, 740)
+[node name="WallCircle" parent="." instance=ExtResource("7_r0yns")]
+position = Vector2(144, 971)

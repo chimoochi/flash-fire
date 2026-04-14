@@ -2,7 +2,7 @@ extends Node
 
 
 var player_data: Dictionary = {}
-var current_map_scene: String = "res://lobby.tscn"
+var current_map_scene: String = "res://levels/lobby.tscn"
 var completed_levels: Array[String] = []
 
 func _ready():

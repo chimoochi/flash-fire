@@ -264,7 +264,7 @@ func _input(event: InputEvent) -> void:
 		
 		if event.keycode == KEY_L:
 			var current_scene = get_tree().current_scene.scene_file_path
-			var next_scene = "res://level2.tscn" if "workspace.tscn" in current_scene else "res://workspace.tscn"
+			var next_scene = "res://levels/level2.tscn" if "workspace.tscn" in current_scene else "res://levels/workspace.tscn"
 			MapService.change_map(next_scene)
 	
 	if event is InputEventKey and not event.pressed:
@@ -293,7 +293,7 @@ func use_equipped_power() -> void:
 		if not lightning_stream:
 			last_power_time = now
 			gain_adrenaline(ADRENALINE_ON_ATTACK)
-			var stream_script = load("res://scripts/attacks/lightning_stream.gd")
+			var stream_script = load("res://combat/attacks/lightning_stream.gd")
 			lightning_stream = stream_script.new()
 			add_child(lightning_stream)
 			lightning_stream.start(self )

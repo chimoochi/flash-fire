@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://b8x7j2q5k3y1p"]
 
-[ext_resource type="Script" path="res://scripts/attacks/wall_push.gd" id="1_script"]
+[ext_resource type="Script" path="res://combat/attacks/wall_push.gd" id="1_script"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_wall"]
 size = Vector2(20, 100)

@@ -13,4 +13,4 @@ func _process(_delta: float) -> void:
 		print("LevelManager: all enemies dead, changing map")
 		if level_name != "":
 			MapService.complete_level(level_name)
-		MapService.change_map("res://lobby.tscn")
+		MapService.change_map("res://levels/lobby.tscn")

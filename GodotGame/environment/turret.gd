@@ -5,7 +5,7 @@ extends StaticBody2D
 @export var arrow_distance: float = 600.0
 @export var arrow_damage: int = 15
 
-var _arrow_scene: PackedScene = preload("res://gameassets/turret_arrow.tscn")
+var _arrow_scene: PackedScene = preload("res://environment/turret_arrow.tscn")
 var _timer: float = 0.0
 
 func _physics_process(delta: float) -> void:
