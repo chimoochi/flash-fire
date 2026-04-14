@@ -1,8 +1,8 @@
 extends Node
 
 const SOUNDS: Dictionary = {
-	"music": preload("res://gameassets/music.mp3"),
-	"kill":  preload("res://gameassets/kill.mp3"),
+	"music": preload("res://audio/music.mp3"),
+	"kill":  preload("res://audio/kill.mp3"),
 }
 
 

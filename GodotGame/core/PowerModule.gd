@@ -46,7 +46,7 @@ const POWERS = {
 			"range": 80.0
 		},
 		"image": {
-			"texture": "res://gameassets/tidepopper (1).png",
+			"texture": "res://gameassets/textures/weapons/tidepopper (1).png",
 			"offset": Vector2(0, 0),
 			"rotation": 45.0,
 			"scale": Vector2(1, 1)

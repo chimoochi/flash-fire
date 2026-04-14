@@ -89,7 +89,7 @@ func _ready() -> void:
 	add_child(dash_service)
 	
 	kill_sound_player = AudioStreamPlayer.new()
-	kill_sound_player.stream = load("res://gameassets/kill.mp3")
+	kill_sound_player.stream = load("res://audio/kill.mp3")
 	add_child(kill_sound_player)
 	
 	health_bar.max_value = PlayerState["max_health"]

@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://c4af162fdb6yc" path="res://player/player.gd" id="1_player"]
 [ext_resource type="PackedScene" uid="uid://c6jlkk74smucx" path="res://player/health_bar.tscn" id="2_healthbar"]
-[ext_resource type="AudioStream" uid="uid://bxoil7vbca6q8" path="res://gameassets/music.mp3" id="3_music"]
+[ext_resource type="AudioStream" uid="uid://bxoil7vbca6q8" path="res://audio/music.mp3" id="3_music"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_player"]
 size = Vector2(32, 32)
