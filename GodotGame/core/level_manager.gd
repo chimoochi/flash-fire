@@ -7,10 +7,18 @@ var _level_cleared: bool = false
 func _process(_delta: float) -> void:
 	if _level_cleared:
 		return
-	var enemies = get_tree().get_nodes_in_group("EnemyUnit")
-	if enemies.size() == 0:
+	if get_tree().get_nodes_in_group("EnemyUnit").size() == 0:
 		_level_cleared = true
-		print("LevelManager: all enemies dead, changing map")
 		if level_name != "":
 			MapService.complete_level(level_name)
-		MapService.change_map("res://levels/lobby.tscn")
+		MapService.advance_to(_next_level_path())
+
+func _next_level_path() -> String:
+	var current := MapService.current_map_scene
+	var fname := current.get_file().get_basename()
+	if fname.begins_with("level") and fname.substr(5).is_valid_int():
+		var num := fname.substr(5).to_int() + 1
+		var next := "res://levels/level%d.tscn" % num
+		if ResourceLoader.exists(next):
+			return next
+	return "res://levels/lobby.tscn"

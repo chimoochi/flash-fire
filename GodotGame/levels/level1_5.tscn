@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://0q26hseu155c"]
+
+[ext_resource type="Script" uid="uid://c0q0437pox5po" path="res://core/cutscene/StageScene.gd" id="1_stage"]
+
+[node name="Level1_5" type="Node2D"]
+script = ExtResource("1_stage")

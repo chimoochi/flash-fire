@@ -1,9 +1,14 @@
 extends CharacterBody2D
 
 
-var MAX_SPEED = 600.0
+var MAX_SPEED = 300.0
+var SPRINT_SPEED = 600.0
 var ACCELERATION = 3000.0
-var FRICTION = 6000.0
+var FRICTION = 4000.0
+
+const SPRINT_STAMINA_DRAIN = 15.0
+const STAMINA_REGEN_RATE = 20.0
+const STAMINA_REGEN_DELAY = 1.5
 
 const DASH_COOLDOWN = 0.8
 const MELEE_DAMAGE = 25
@@ -66,6 +71,9 @@ var PlayerState: Dictionary = {
 	"adrenaline": 0.0,
 	"max_adrenaline": 100.0,
 	"is_empowered": false,
+
+	"stamina": 100.0,
+	"max_stamina": 100.0,
 }
 
 const ADRENALINE_DRAIN_RATE := 2.0
@@ -75,7 +83,11 @@ const ADRENALINE_ON_HIT := 10.0 # damage taken
 const EMPOWERED_DAMAGE_MULT := 4.0
 
 var _adrenaline_bar: ProgressBar = null
+var _stamina_bar: ProgressBar = null
+var _stamina_regen_timer: float = 0.0
 var _empowered_tween: Tween = null
+
+var debug_hitboxes: bool = false
 
 func _ready() -> void:
 	motion_mode = CharacterBody2D.MOTION_MODE_FLOATING
@@ -89,7 +101,7 @@ func _ready() -> void:
 	add_child(dash_service)
 	
 	kill_sound_player = AudioStreamPlayer.new()
-	kill_sound_player.stream = load("res://audio/kill.mp3")
+	kill_sound_player.stream = load("res://gameassets/kill.mp3")
 	add_child(kill_sound_player)
 	
 	health_bar.max_value = PlayerState["max_health"]
@@ -119,16 +131,17 @@ func _setup_power_ui() -> void:
 	power_label = Label.new()
 	power_label.text = "Power: " + equipped_power.name
 	power_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
-	power_label.position = Vector2(41, 128)
+	power_label.position = Vector2(41, 152)
 	$CanvasLayer.add_child(power_label)
 
 	passive_label = Label.new()
 	passive_label.text = "Active Passives: None"
 	passive_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
-	passive_label.position = Vector2(41, 150)
+	passive_label.position = Vector2(41, 174)
 	$CanvasLayer.add_child(passive_label)
 
 	_setup_adrenaline_bar()
+	_setup_stamina_bar()
 
 func _setup_adrenaline_bar() -> void:
 	var bg_style := StyleBoxFlat.new()
@@ -146,6 +159,23 @@ func _setup_adrenaline_bar() -> void:
 	_adrenaline_bar.add_theme_stylebox_override("background", bg_style)
 	_adrenaline_bar.add_theme_stylebox_override("fill", fill_style)
 	$CanvasLayer.add_child(_adrenaline_bar)
+
+func _setup_stamina_bar() -> void:
+	var bg_style := StyleBoxFlat.new()
+	bg_style.bg_color = Color(0.05, 0.1, 0.2)
+
+	var fill_style := StyleBoxFlat.new()
+	fill_style.bg_color = Color(0.2, 0.65, 1.0)
+
+	_stamina_bar = ProgressBar.new()
+	_stamina_bar.custom_minimum_size = Vector2(200, 12)
+	_stamina_bar.max_value = PlayerState["max_stamina"]
+	_stamina_bar.value = PlayerState["stamina"]
+	_stamina_bar.show_percentage = false
+	_stamina_bar.position = Vector2(41, 127)
+	_stamina_bar.add_theme_stylebox_override("background", bg_style)
+	_stamina_bar.add_theme_stylebox_override("fill", fill_style)
+	$CanvasLayer.add_child(_stamina_bar)
 
 func on_passive_added(passive_name: String) -> void:
 	if not PlayerState["passives"].has(passive_name):
@@ -166,7 +196,7 @@ func _update_passive_ui() -> void:
 
 func _physics_process(delta):
 	var direction = Vector2.ZERO
-	
+
 	if Input.is_action_pressed("MoveRight"):
 		direction.x += 1
 	if Input.is_action_pressed("MoveLeft"):
@@ -175,24 +205,29 @@ func _physics_process(delta):
 		direction.y += 1
 	if Input.is_action_pressed("MoveUp"):
 		direction.y -= 1
-	
+
 	if direction.length() > 0:
 		direction = direction.normalized()
-	
+
+	var is_sprinting = Input.is_action_pressed("Sprint") and direction != Vector2.ZERO and PlayerState["stamina"] > 0.0
+	_process_stamina(delta, is_sprinting)
+	var current_max_speed = SPRINT_SPEED if is_sprinting else MAX_SPEED
+
+	if debug_hitboxes:
+		melee_pivot.visible = true
+
 	_handle_push_interaction(delta)
-	
-	
+
 	push_velocity = push_velocity.move_toward(Vector2.ZERO, PUSH_DECAY * delta)
-	
+
 	if dash_service.is_dashing:
 		dash_service.process_dash_physics(self , delta)
 	else:
-		_handle_movement_physics(direction, delta)
+		_handle_movement_physics(direction, delta, current_max_speed)
 		velocity += push_velocity
 		velocity = velocity.limit_length(MAX_VELOCITY)
 		move_and_slide()
 
-	
 	look_at(get_global_mouse_position())
 	_process_adrenaline(delta)
 
@@ -205,9 +240,21 @@ func _physics_process(delta):
 			PlayerState["dash_cooldown"],
 			PlayerState["dash_push_force"]
 		)
-		
+
 	if Input.is_action_pressed("shoot") or Input.is_key_pressed(KEY_SPACE):
 		use_equipped_power()
+
+func _process_stamina(delta: float, is_sprinting: bool) -> void:
+	if is_sprinting:
+		PlayerState["stamina"] = max(0.0, PlayerState["stamina"] - SPRINT_STAMINA_DRAIN * delta)
+		_stamina_regen_timer = STAMINA_REGEN_DELAY
+	else:
+		if _stamina_regen_timer > 0.0:
+			_stamina_regen_timer -= delta
+		else:
+			PlayerState["stamina"] = min(PlayerState["max_stamina"], PlayerState["stamina"] + STAMINA_REGEN_RATE * delta)
+	if _stamina_bar:
+		_stamina_bar.value = PlayerState["stamina"]
 		
 func push(force: Vector2) -> void:
 	if dash_service.is_dashing:
@@ -245,15 +292,17 @@ func _handle_push_interaction(delta: float) -> void:
 				velocity -= push_dir * PLAYER_PUSH_RESISTANCE
 				velocity *= 0.9
 
-func _handle_movement_physics(direction: Vector2, delta: float) -> void:
+func _handle_movement_physics(direction: Vector2, delta: float, max_speed: float = MAX_SPEED) -> void:
 	if direction != Vector2.ZERO:
-		velocity = velocity.move_toward(direction * MAX_SPEED, ACCELERATION * delta)
+		velocity = velocity.move_toward(direction * max_speed, ACCELERATION * delta)
 	else:
 		velocity = velocity.move_toward(Vector2.ZERO, FRICTION * delta)
 
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo:
+		if event.keycode == KEY_F1:
+			debug_hitboxes = not debug_hitboxes
 		if event.keycode == KEY_M:
 			music_player.playing = not music_player.playing
 		if event.keycode == KEY_E:
@@ -264,7 +313,7 @@ func _input(event: InputEvent) -> void:
 		
 		if event.keycode == KEY_L:
 			var current_scene = get_tree().current_scene.scene_file_path
-			var next_scene = "res://levels/level2.tscn" if "workspace.tscn" in current_scene else "res://levels/workspace.tscn"
+			var next_scene = "res://level2.tscn" if "workspace.tscn" in current_scene else "res://workspace.tscn"
 			MapService.change_map(next_scene)
 	
 	if event is InputEventKey and not event.pressed:
@@ -360,7 +409,7 @@ func _equip_weapon_hitbox() -> void:
 	for child in collision_shape.get_children():
 		if child is ColorRect:
 			child.size = hb_size
-			child.position = -hb_size / 2
+			child.position = - hb_size / 2
 
 func _on_node_added(node: Node) -> void:
 	call_deferred("_try_connect_enemy", node)

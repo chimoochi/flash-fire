@@ -4,7 +4,7 @@ extends CharacterBody2D
 signal killed_by_player(power: Dictionary, passive_name: String)
 signal died
 
-@export var move_speed := 250.0
+@export var move_speed := 175.0
 @export var turn_speed := 8.0
 @export var enemy_level: String = "level1"
 
