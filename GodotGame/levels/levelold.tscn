@@ -35,7 +35,7 @@ offset_bottom = 1368.0
 texture = ExtResource("1_yjjji")
 
 [node name="Wall7" parent="." instance=ExtResource("2_cn5mv")]
-position = Vector2(-111.99998, -1432.0001)
+position = Vector2(-112, -1431.9999)
 rotation = 4.7131352
 scale = Vector2(-1.8978032, -3.783604)
 
@@ -619,6 +619,16 @@ position = Vector2(1903.9999, -768.0001)
 rotation = -1.5651174
 scale = Vector2(1.710814, -2.1873488)
 
+[node name="Wall205" parent="." instance=ExtResource("2_cn5mv")]
+position = Vector2(1752, -632.00006)
+rotation = -1.0996578
+scale = Vector2(1.710814, -2.1873488)
+
+[node name="Wall229" parent="." instance=ExtResource("2_cn5mv")]
+position = Vector2(1744, -495.99994)
+rotation = -1.0996578
+scale = Vector2(1.710814, -2.1873488)
+
 [node name="Wall75" parent="." instance=ExtResource("2_cn5mv")]
 position = Vector2(1648, -1248.0001)
 rotation = -1.5651174
@@ -891,11 +901,6 @@ scale = Vector2(2.6875176, -1.826183)
 
 [node name="Wall126" parent="." instance=ExtResource("2_cn5mv")]
 position = Vector2(295.99997, -992.00006)
-rotation = -1.5651174
-scale = Vector2(2.6875176, -1.826183)
-
-[node name="Wall205" parent="." instance=ExtResource("2_cn5mv")]
-position = Vector2(108.00001, -891.00006)
 rotation = -1.5651174
 scale = Vector2(2.6875176, -1.826183)
 
