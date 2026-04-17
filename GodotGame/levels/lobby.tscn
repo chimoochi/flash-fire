@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=3 uid="uid://bcve6gx378akl"]
+[gd_scene load_steps=5 format=3 uid="uid://bcve6gx378akl"]
 
 [ext_resource type="PackedScene" uid="uid://bq3nv1n2jji1h" path="res://player/player.tscn" id="1_player"]
 [ext_resource type="PackedScene" path="res://environment/portal.tscn" id="2_portal"]
 [ext_resource type="PackedScene" uid="uid://buq31qg2ywauu" path="res://environment/wall.tscn" id="3_wall"]
+[ext_resource type="PackedScene" uid="uid://bkmeilu2r0cyr" path="res://ui/shop.tscn" id="4_shop"]
 
 [node name="Lobby" type="Node2D"]
 
@@ -34,7 +35,7 @@ rotation = 1.5708
 scale = Vector2(20, 2)
 
 [node name="Player" parent="." instance=ExtResource("1_player")]
-position = Vector2(0, 100)
+position = Vector2(-1, 101)
 
 [node name="LobbyLabel" type="Label" parent="."]
 offset_left = -200.0
@@ -54,3 +55,7 @@ portal_label = "Level 1"
 position = Vector2(300, -100)
 target_map_path = "res://levels/level2.tscn"
 portal_label = "Level 2"
+
+[node name="Shop" parent="." instance=ExtResource("4_shop")]
+position = Vector2(0, -200)
+scale = Vector2(0.85949725, 0.85949725)
