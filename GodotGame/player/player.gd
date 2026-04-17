@@ -512,7 +512,11 @@ func respawn() -> void:
 	if health_bar:
 		health_bar.set_health(PlayerState["health"])
 	
-	global_position = Vector2.ZERO
+	var spawn_points := get_tree().get_nodes_in_group("SpawnPoint")
+	if spawn_points.size() > 0:
+		global_position = spawn_points[0].global_position
+	else:
+		global_position = Vector2.ZERO
 	velocity = Vector2.ZERO
 	
 	visible = true
