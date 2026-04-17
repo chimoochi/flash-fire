@@ -1,6 +1,7 @@
-[gd_scene load_steps=6 format=3 uid="uid://bfwo66nrqflfc"]
+[gd_scene load_steps=7 format=3 uid="uid://bfwo66nrqflfc"]
 
 [ext_resource type="PackedScene" uid="uid://bq3nv1n2jji1h" path="res://player/player.tscn" id="2_dniuu"]
+[ext_resource type="Texture2D" uid="uid://lxl1h5ik2pk0" path="res://gameassets/RHKW.png" id="3_rss15"]
 [ext_resource type="PackedScene" uid="uid://buq31qg2ywauu" path="res://environment/wall.tscn" id="4_ol1q4"]
 [ext_resource type="PackedScene" path="res://environment/wall_circle.tscn" id="5_gq0g6"]
 
@@ -33,6 +34,13 @@ scale = Vector2(-1.3578166, 6.022865)
 position = Vector2(667.0231, 24.903587)
 rotation = 3.1636887
 scale = Vector2(-1.3578166, 6.022865)
+
+[node name="TextureRect" type="TextureRect" parent="TileMap"]
+offset_left = 562.6667
+offset_top = -1074.6666
+offset_right = 1762.6667
+offset_bottom = 125.333374
+texture = ExtResource("3_rss15")
 
 [node name="Wall7" parent="." instance=ExtResource("4_ol1q4")]
 position = Vector2(-111.99998, -1432.0001)
@@ -539,11 +547,6 @@ position = Vector2(505.26917, -389.23633)
 rotation = 0.0024741888
 scale = Vector2(-0.9014625, 0.5781138)
 
-[node name="Wall197" parent="Wall7" instance=ExtResource("4_ol1q4")]
-position = Vector2(473.58322, -436.53384)
-rotation = 0.0024741888
-scale = Vector2(-0.9014625, 0.5781138)
-
 [node name="Wall70" parent="Wall7" instance=ExtResource("4_ol1q4")]
 position = Vector2(964.6753, -438.03915)
 rotation = 0.0024741888
@@ -701,6 +704,41 @@ scale = Vector2(-0.7605808, 0.21970148)
 
 [node name="Wall209" parent="Wall7" instance=ExtResource("4_ol1q4")]
 position = Vector2(1166.9276, -142.36502)
+rotation = 0.0024741888
+scale = Vector2(-0.7605808, 0.21970148)
+
+[node name="Wall218" parent="Wall7" instance=ExtResource("4_ol1q4")]
+position = Vector2(1167.4675, -133.64339)
+rotation = 0.0024741888
+scale = Vector2(-0.7605808, 0.21970148)
+
+[node name="Wall219" parent="Wall7" instance=ExtResource("4_ol1q4")]
+position = Vector2(1167.5052, -108.27074)
+rotation = 0.0024741888
+scale = Vector2(-0.7605808, 0.21970148)
+
+[node name="Wall220" parent="Wall7" instance=ExtResource("4_ol1q4")]
+position = Vector2(1167.5398, -85.0125)
+rotation = 0.0024741888
+scale = Vector2(-0.7605808, 0.21970148)
+
+[node name="Wall221" parent="Wall7" instance=ExtResource("4_ol1q4")]
+position = Vector2(1167.5778, -59.639874)
+rotation = 0.0024741888
+scale = Vector2(-0.7605808, 0.21970148)
+
+[node name="Wall222" parent="Wall7" instance=ExtResource("4_ol1q4")]
+position = Vector2(1167.6217, -30.03848)
+rotation = 0.0024741888
+scale = Vector2(-0.7605808, 0.21970148)
+
+[node name="Wall223" parent="Wall7" instance=ExtResource("4_ol1q4")]
+position = Vector2(1167.4393, -152.67282)
+rotation = 0.0024741888
+scale = Vector2(-0.7605808, 0.21970148)
+
+[node name="Wall224" parent="Wall7" instance=ExtResource("4_ol1q4")]
+position = Vector2(1167.4045, -175.93106)
 rotation = 0.0024741888
 scale = Vector2(-0.7605808, 0.21970148)
 
@@ -954,6 +992,26 @@ position = Vector2(964.60925, -482.44128)
 rotation = 7.8506756
 scale = Vector2(-1.0410411, -0.85128236)
 
+[node name="Wall214" parent="Wall7" instance=ExtResource("4_ol1q4")]
+position = Vector2(964.625, -471.8693)
+rotation = 7.8506756
+scale = Vector2(-1.0410411, -0.85128236)
+
+[node name="Wall215" parent="Wall7" instance=ExtResource("4_ol1q4")]
+position = Vector2(964.58716, -497.24197)
+rotation = 7.8506756
+scale = Vector2(-1.0410411, -0.85128236)
+
+[node name="Wall216" parent="Wall7" instance=ExtResource("4_ol1q4")]
+position = Vector2(1158.7505, -326.0493)
+rotation = 7.8506756
+scale = Vector2(-1.0410411, -0.59756565)
+
+[node name="Wall217" parent="Wall7" instance=ExtResource("4_ol1q4")]
+position = Vector2(1158.7504, -326.04935)
+rotation = 7.8506756
+scale = Vector2(-1.0410411, -0.59756565)
+
 [node name="Wall177" parent="Wall7" instance=ExtResource("4_ol1q4")]
 position = Vector2(867.7242, -435.88852)
 rotation = 7.8506756
@@ -1044,6 +1102,11 @@ position = Vector2(117.420975, -410.235)
 rotation = 7.8506756
 scale = Vector2(1.1020371, -1.1332698)
 
+[node name="Wall208" parent="Wall7" instance=ExtResource("4_ol1q4")]
+position = Vector2(125.87065, -397.55185)
+rotation = 7.873711
+scale = Vector2(1.578102, -0.26893845)
+
 [node name="Wall195" parent="Wall7" instance=ExtResource("4_ol1q4")]
 position = Vector2(564.1621, -471.7194)
 rotation = 7.8506756
@@ -1105,6 +1168,10 @@ scale = Vector2(0.24139385, 0.14354126)
 
 [node name="WallCircle12" parent="Wall7" instance=ExtResource("5_gq0g6")]
 position = Vector2(323.97235, -412.4267)
+scale = Vector2(0.24139385, 0.14354126)
+
+[node name="WallCircle19" parent="Wall7" instance=ExtResource("5_gq0g6")]
+position = Vector2(328.20035, -403.97073)
 scale = Vector2(0.24139385, 0.14354126)
 
 [node name="WallCircle13" parent="Wall7" instance=ExtResource("5_gq0g6")]
