@@ -1,6 +1,5 @@
-[gd_scene load_steps=7 format=3 uid="uid://bfwo66nrqflfc"]
+[gd_scene load_steps=6 format=3 uid="uid://bfwo66nrqflfc"]
 
-[ext_resource type="PackedScene" uid="uid://bguofiqvtwbmp" path="res://enemy/enemy bad.tscn" id="1_gjpxi"]
 [ext_resource type="PackedScene" uid="uid://bq3nv1n2jji1h" path="res://player/player.tscn" id="2_dniuu"]
 [ext_resource type="PackedScene" uid="uid://buq31qg2ywauu" path="res://environment/wall.tscn" id="4_ol1q4"]
 [ext_resource type="PackedScene" path="res://environment/wall_circle.tscn" id="5_gq0g6"]
@@ -14,10 +13,6 @@ sources/1 = SubResource("TileSetAtlasSource_4ihab")
 
 [node name="Node2D" type="Node2D"]
 position = Vector2(-8, -8)
-
-[node name="Enemy bad" parent="." instance=ExtResource("1_gjpxi")]
-position = Vector2(572, 146)
-script = null
 
 [node name="Player" parent="." instance=ExtResource("2_dniuu")]
 position = Vector2(624, -240)
