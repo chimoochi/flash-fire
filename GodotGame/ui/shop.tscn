@@ -43,7 +43,6 @@ horizontal_alignment = 1
 
 [node name="ShopCanvas" type="CanvasLayer" parent="."]
 layer = 20
-visible = false
 
 [node name="Panel" type="Panel" parent="ShopCanvas"]
 anchors_preset = 8
@@ -75,27 +74,6 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 22
 text = "SHOP"
 horizontal_alignment = 1
-
-[node name="Sep1" type="HSeparator" parent="ShopCanvas/Panel/MarginContainer/VBox"]
-layout_mode = 2
-
-[node name="WeaponsLabel" type="Label" parent="ShopCanvas/Panel/MarginContainer/VBox"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 15
-text = "Weapons"
-
-[node name="UpgradesLabel" type="Label" parent="ShopCanvas/Panel/MarginContainer/VBox"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 15
-text = "Upgrades"
-
-[node name="PassivesLabel" type="Label" parent="ShopCanvas/Panel/MarginContainer/VBox"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 15
-text = "Passives"
-
-[node name="Sep2" type="HSeparator" parent="ShopCanvas/Panel/MarginContainer/VBox"]
-layout_mode = 2
 
 [node name="CloseHint" type="Label" parent="ShopCanvas/Panel/MarginContainer/VBox"]
 layout_mode = 2
