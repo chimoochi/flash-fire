@@ -1,21 +1,21 @@
-[gd_scene load_steps=27 format=3 uid="uid://cyd75lvhygeeo"]
+[gd_scene load_steps=27 format=3 uid="uid://noa2gj785hn1"]
 
-[ext_resource type="Texture2D" uid="uid://b8whads1so5t3" path="res://gameassets/textures/world/TX Plant.png" id="1_0n348"]
-[ext_resource type="Texture2D" uid="uid://cwtvwny1q12lk" path="res://gameassets/textures/world/TX Player.png" id="2_n131r"]
-[ext_resource type="Texture2D" uid="uid://dk4si4aikdh31" path="res://gameassets/mana seed seasonal forest sample (winter)/seasonal sample (winter).png" id="3_n131r"]
-[ext_resource type="Texture2D" uid="uid://c2gbet5sp4t4" path="res://gameassets/textures/world/dirt.png" id="3_vbcmq"]
-[ext_resource type="Texture2D" uid="uid://c68t6s0w7k2ml" path="res://gameassets/textures/world/TX Props.png" id="4_brxvl"]
-[ext_resource type="Texture2D" uid="uid://bahxxr70llgoq" path="res://gameassets/textures/world/TX Shadow Plant.png" id="5_visda"]
-[ext_resource type="Texture2D" uid="uid://cngyakf4fqxss" path="res://gameassets/textures/world/TX Shadow.png" id="6_tddga"]
-[ext_resource type="Texture2D" uid="uid://brurpnlw2u3tr" path="res://gameassets/textures/world/TX Struct.png" id="7_2dl4d"]
-[ext_resource type="Texture2D" uid="uid://d3eh4a1vn0jkh" path="res://gameassets/textures/world/TX Tileset Grass.png" id="8_4bn58"]
-[ext_resource type="Texture2D" uid="uid://cym3wwitii6cu" path="res://gameassets/textures/world/TX Tileset Stone Ground.png" id="9_dpp1g"]
-[ext_resource type="Texture2D" uid="uid://bbps63vu6a278" path="res://gameassets/textures/world/TX Tileset Wall.png" id="10_n4lbq"]
-[ext_resource type="Texture2D" uid="uid://d103s34hu7f8k" path="res://gameassets/textures/world/Water+.png" id="11_6m5g4"]
-[ext_resource type="PackedScene" uid="uid://bq3nv1n2jji1h" path="res://player/player.tscn" id="12_8nwg4"]
+[ext_resource type="Texture2D" uid="uid://b8whads1so5t3" path="res://gameassets/textures/world/TX Plant.png" id="1_vfcp1"]
+[ext_resource type="Texture2D" uid="uid://cwtvwny1q12lk" path="res://gameassets/textures/world/TX Player.png" id="2_jn4vn"]
+[ext_resource type="Texture2D" uid="uid://dk4si4aikdh31" path="res://gameassets/mana seed seasonal forest sample (winter)/seasonal sample (winter).png" id="3_owlai"]
+[ext_resource type="Texture2D" uid="uid://c2gbet5sp4t4" path="res://gameassets/textures/world/dirt.png" id="4_rq3cj"]
+[ext_resource type="Texture2D" uid="uid://c68t6s0w7k2ml" path="res://gameassets/textures/world/TX Props.png" id="5_0gldf"]
+[ext_resource type="Texture2D" uid="uid://bahxxr70llgoq" path="res://gameassets/textures/world/TX Shadow Plant.png" id="6_wldme"]
+[ext_resource type="Texture2D" uid="uid://cngyakf4fqxss" path="res://gameassets/textures/world/TX Shadow.png" id="7_5u252"]
+[ext_resource type="Texture2D" uid="uid://brurpnlw2u3tr" path="res://gameassets/textures/world/TX Struct.png" id="8_flye3"]
+[ext_resource type="Texture2D" uid="uid://d3eh4a1vn0jkh" path="res://gameassets/textures/world/TX Tileset Grass.png" id="9_7v0a1"]
+[ext_resource type="Texture2D" uid="uid://cym3wwitii6cu" path="res://gameassets/textures/world/TX Tileset Stone Ground.png" id="10_oc3yd"]
+[ext_resource type="Texture2D" uid="uid://bbps63vu6a278" path="res://gameassets/textures/world/TX Tileset Wall.png" id="11_im7i8"]
+[ext_resource type="Texture2D" uid="uid://d103s34hu7f8k" path="res://gameassets/textures/world/Water+.png" id="12_norvi"]
+[ext_resource type="PackedScene" uid="uid://bq3nv1n2jji1h" path="res://player/player.tscn" id="13_5j6ii"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_0k6sk"]
-texture = ExtResource("1_0n348")
+texture = ExtResource("1_vfcp1")
 4:0/0 = 0
 5:0/0 = 0
 3:1/0 = 0
@@ -304,7 +304,7 @@ texture = ExtResource("1_0n348")
 7:31/0 = 0
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_la3eu"]
-texture = ExtResource("2_n131r")
+texture = ExtResource("2_jn4vn")
 0:0/0 = 0
 1:0/0 = 0
 2:0/0 = 0
@@ -335,7 +335,7 @@ texture = ExtResource("2_n131r")
 7:3/0 = 0
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_vbcmq"]
-texture = ExtResource("3_n131r")
+texture = ExtResource("3_owlai")
 1:0/0 = 0
 2:0/0 = 0
 3:0/0 = 0
@@ -563,7 +563,7 @@ texture = ExtResource("3_n131r")
 15:15/0 = 0
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_5b3yj"]
-texture = ExtResource("3_vbcmq")
+texture = ExtResource("4_rq3cj")
 3:1/0 = 0
 0:0/0 = 0
 1:0/0 = 0
@@ -822,7 +822,7 @@ texture = ExtResource("3_vbcmq")
 4:4/0 = 0
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_1uywc"]
-texture = ExtResource("4_brxvl")
+texture = ExtResource("5_0gldf")
 14:0/0 = 0
 14:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 15:0/0 = 0
@@ -1296,7 +1296,7 @@ texture = ExtResource("4_brxvl")
 19:21/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_apqpd"]
-texture = ExtResource("5_visda")
+texture = ExtResource("6_wldme")
 4:6/0 = 0
 5:6/0 = 0
 6:6/0 = 0
@@ -1397,7 +1397,7 @@ texture = ExtResource("5_visda")
 23:14/0 = 0
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_tbaap"]
-texture = ExtResource("6_tddga")
+texture = ExtResource("7_5u252")
 24:0/0 = 0
 25:0/0 = 0
 2:1/0 = 0
@@ -1719,7 +1719,7 @@ texture = ExtResource("6_tddga")
 11:31/0 = 0
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_smnxo"]
-texture = ExtResource("7_2dl4d")
+texture = ExtResource("8_flye3")
 25:1/0 = 0
 26:1/0 = 0
 26:1/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
@@ -2082,7 +2082,7 @@ texture = ExtResource("7_2dl4d")
 16:29/0 = 0
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_p0n1m"]
-texture = ExtResource("8_4bn58")
+texture = ExtResource("9_7v0a1")
 0:0/0 = 0
 1:0/0 = 0
 2:0/0 = 0
@@ -2341,7 +2341,7 @@ texture = ExtResource("8_4bn58")
 15:15/0 = 0
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_c3880"]
-texture = ExtResource("9_dpp1g")
+texture = ExtResource("10_oc3yd")
 0:0/0 = 0
 1:0/0 = 0
 2:0/0 = 0
@@ -2544,7 +2544,7 @@ texture = ExtResource("9_dpp1g")
 15:15/0 = 0
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_xcgt8"]
-texture = ExtResource("10_n4lbq")
+texture = ExtResource("11_im7i8")
 2:2/0 = 0
 3:2/0 = 0
 4:2/0 = 0
@@ -2739,7 +2739,7 @@ texture = ExtResource("10_n4lbq")
 11:21/0 = 0
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_xo8f0"]
-texture = ExtResource("11_6m5g4")
+texture = ExtResource("12_norvi")
 0:0/0 = 0
 1:0/0 = 0
 2:0/0 = 0
@@ -2933,5 +2933,5 @@ layer_2/tile_data = PackedInt32Array(3014676, 1769480, 4, 3014675, 1572872, 4, 3
 layer_3/name = "Layer3"
 layer_3/tile_data = PackedInt32Array(524265, 720906, 0, 589801, 720906, 1, 655337, 720906, 2, 720873, 720906, 3, 786409, 720906, 4, 524266, 786442, 0, 589802, 786442, 1, 655338, 786442, 2, 720874, 786442, 3, 786410, 786442, 4, 851946, 786442, 5, 524267, 720906, 4, 589803, 851978, 1, 655339, 851978, 2, 720875, 851978, 3, 786411, 851978, 4, 851947, 851978, 5, 524268, 786442, 4, 589804, 786442, 5, 655340, 917514, 2, 720876, 917514, 3, 786412, 917514, 4, 851948, 917514, 5, 524269, 851978, 4, 589805, 851978, 5, 655341, 983050, 2, 720877, 983050, 3, 786413, 983050, 4, 851949, 983050, 5, 262123, 720906, 0, 327659, 720906, 1, 393195, 720906, 2, 458731, 720906, 3, 262124, 786442, 0, 327660, 786442, 1, 393196, 786442, 2, 458732, 786442, 3, 262125, 851978, 0, 327661, 851978, 1, 393197, 851978, 2, 458733, 851978, 3, 262126, 917514, 0, 327662, 917514, 1, 393198, 917514, 2, 458734, 917514, 3, 524270, 917514, 4, 589806, 917514, 5, 262127, 983050, 0, 327663, 983050, 1, 393199, 983050, 2, 458735, 983050, 3, 524271, 983050, 4, 589807, 983050, 5, 524277, 851978, 5, 589813, 720906, 1, 655349, 720906, 2, 720885, 720906, 3, 786421, 720906, 4, 524278, 917514, 5, 589814, 786442, 1, 655350, 786442, 2, 720886, 786442, 3, 786422, 786442, 4, 851958, 786442, 5, 524279, 983050, 5, 589815, 851978, 1, 655351, 851978, 2, 720887, 851978, 3, 786423, 851978, 4, 851959, 851978, 5, 524280, 917514, 0, 589816, 917514, 1, 655352, 917514, 2, 720888, 917514, 3, 786424, 917514, 4, 851960, 917514, 5, 524281, 196618, 15, 589817, 983050, 1, 655353, 983050, 2, 720889, 983050, 3, 786425, 983050, 4, 851961, 983050, 5, 196595, 720906, 0, 262131, 720906, 1, 327667, 720906, 2, 393203, 720906, 3, 458739, 720906, 4, 196596, 786442, 0, 262132, 786442, 1, 327668, 786442, 2, 393204, 786442, 3, 458740, 786442, 4, 524276, 786442, 5, 196597, 851978, 0, 262133, 851978, 1, 327669, 851978, 2, 393205, 851978, 3, 458741, 851978, 4, 196598, 917514, 0, 262134, 917514, 1, 327670, 917514, 2, 393206, 917514, 3, 458742, 917514, 4, 196599, 983050, 0, 262135, 983050, 1, 327671, 983050, 2, 393207, 983050, 3, 458743, 983050, 4, 327674, 851978, 4, 393210, 851978, 5, 196602, 851978, 4, 262138, 851978, 5, -65544, 720906, 0, -8, 720906, 1, 65528, 720906, 2, 131064, 720906, 3, 196600, 720906, 4, -65543, 786442, 0, -7, 786442, 1, 65529, 786442, 2, 131065, 786442, 3, 196601, 786442, 4, -65542, 851978, 0, -6, 851978, 1, 65530, 851978, 2, 131066, 851978, 3, -65541, 917514, 0, -5, 917514, 1, 65531, 917514, 2, 131067, 917514, 3, 196603, 917514, 4, -65540, 983050, 0, -4, 983050, 1, 65532, 983050, 2, 131068, 983050, 3, 196604, 983050, 4, 458752, 851978, 5, 524288, 851978, 4, 589824, 851978, 5, 327680, 851978, 5, 393216, 851978, 4, 196608, 851978, 4, 262144, 851978, 4, -2, 720906, 0, 65534, 720906, 1, 131070, 720906, 2, 196606, 720906, 3, 262142, 720906, 4, -1, 786442, 0, 65535, 786442, 1, 131071, 786442, 2, 196607, 786442, 3, 262143, 786442, 4, -65536, 851978, 0, 0, 851978, 1, 65536, 851978, 2, 131072, 851978, 3, -65535, 917514, 0, 1, 917514, 1, 65537, 917514, 2, 131073, 917514, 3, 196609, 917514, 4, -65534, 983050, 0, 2, 983050, 1, 65538, 983050, 2, 131074, 983050, 3, 196610, 983050, 4, 720890, 196618, 14, 786426, 196618, 15, 720891, 262154, 14, 786427, 262154, 15, 458745, 196618, 14, 458746, 262154, 14, 524282, 262154, 15, 327677, 196618, 14, 393213, 196618, 15, 327678, 262154, 14, 393214, 262154, 15, -11, 196618, 14, 65525, 196618, 15, -10, 262154, 14, 65526, 262154, 15, 131054, 196618, 14, 196590, 196618, 15, 131055, 262154, 14, 196591, 262154, 15, 524273, 196618, 14, 589809, 196618, 15, 524274, 262154, 14, 589810, 262154, 15, 786407, 196618, 14, 851943, 196618, 15, 786408, 262154, 14, 851944, 262154, 15)
 
-[node name="Player" parent="." instance=ExtResource("12_8nwg4")]
+[node name="Player" parent="." instance=ExtResource("13_5j6ii")]
 position = Vector2(-123, 971)
