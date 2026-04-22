@@ -3,18 +3,23 @@ extends Node
 
 const BULLET_SCENE = preload("res://combat/projectiles/bullet.tscn")
 
+const PLAYER_HITBOX_SIZE := Vector2(28, 16)
+
 static func spawn_bullet(caller: Node2D, direction: Vector2, damage: int, speed: float = 1500.0) -> void:
 	var bullet = BULLET_SCENE.instantiate()
 	bullet.direction = direction
 	bullet.speed = speed
 	bullet.damage = damage
 	bullet.owner_node = caller
+	if caller.is_in_group("Player"):
+		bullet.hitbox_size = PLAYER_HITBOX_SIZE
+		bullet.is_player_bullet = true
 
 	bullet.global_position = caller.global_position + direction * 40.0
 	bullet.rotation = direction.angle()
 
 	caller.get_tree().root.add_child(bullet)
-	
+
 	NoiseService.emit_noise(caller.get_tree(), caller.global_position, 500.0)
 
 static func spawn_shotgun(caller: Node2D, direction: Vector2, damage: int, speed: float = 1500.0, spread_angle_deg: float = 45.0) -> void:

@@ -83,9 +83,22 @@ layout_mode = 2
 alignment = 1
 theme_override_constants/separation = 2
 
-[node name="Icon1" type="ColorRect" parent="Content/AttacksRow/Slot1"]
+[node name="IconWrap1" type="Control" parent="Content/AttacksRow/Slot1"]
+layout_mode = 2
 custom_minimum_size = Vector2(56, 32)
+clip_contents = true
+
+[node name="Icon1" type="ColorRect" parent="Content/AttacksRow/Slot1/IconWrap1"]
+anchor_right = 1.0
+anchor_bottom = 1.0
 color = Color(1.0, 0.38, 0.08, 1)
+
+[node name="Cooldown1" type="ColorRect" parent="Content/AttacksRow/Slot1/IconWrap1"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0, 0, 0.65)
+mouse_filter = 2
+visible = false
 
 [node name="Key1" type="Label" parent="Content/AttacksRow/Slot1"]
 layout_mode = 2
@@ -98,9 +111,22 @@ layout_mode = 2
 alignment = 1
 theme_override_constants/separation = 2
 
-[node name="Icon2" type="ColorRect" parent="Content/AttacksRow/Slot2"]
+[node name="IconWrap2" type="Control" parent="Content/AttacksRow/Slot2"]
+layout_mode = 2
 custom_minimum_size = Vector2(56, 32)
+clip_contents = true
+
+[node name="Icon2" type="ColorRect" parent="Content/AttacksRow/Slot2/IconWrap2"]
+anchor_right = 1.0
+anchor_bottom = 1.0
 color = Color(1.0, 0.85, 0.1, 1)
+
+[node name="Cooldown2" type="ColorRect" parent="Content/AttacksRow/Slot2/IconWrap2"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0, 0, 0.65)
+mouse_filter = 2
+visible = false
 
 [node name="Key2" type="Label" parent="Content/AttacksRow/Slot2"]
 layout_mode = 2
@@ -113,9 +139,22 @@ layout_mode = 2
 alignment = 1
 theme_override_constants/separation = 2
 
-[node name="Icon3" type="ColorRect" parent="Content/AttacksRow/Slot3"]
+[node name="IconWrap3" type="Control" parent="Content/AttacksRow/Slot3"]
+layout_mode = 2
 custom_minimum_size = Vector2(56, 32)
+clip_contents = true
+
+[node name="Icon3" type="ColorRect" parent="Content/AttacksRow/Slot3/IconWrap3"]
+anchor_right = 1.0
+anchor_bottom = 1.0
 color = Color(0.6, 0.15, 1.0, 1)
+
+[node name="Cooldown3" type="ColorRect" parent="Content/AttacksRow/Slot3/IconWrap3"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0, 0, 0.65)
+mouse_filter = 2
+visible = false
 
 [node name="Key3" type="Label" parent="Content/AttacksRow/Slot3"]
 layout_mode = 2
@@ -123,3 +162,30 @@ horizontal_alignment = 1
 text = "3 AOE"
 theme_override_font_sizes/font_size = 9
 
+[node name="Slot4" type="VBoxContainer" parent="Content/AttacksRow"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 2
+
+[node name="IconWrap4" type="Control" parent="Content/AttacksRow/Slot4"]
+layout_mode = 2
+custom_minimum_size = Vector2(56, 32)
+clip_contents = true
+
+[node name="Icon4" type="ColorRect" parent="Content/AttacksRow/Slot4/IconWrap4"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.2, 0.7, 1.0, 1)
+
+[node name="Cooldown4" type="ColorRect" parent="Content/AttacksRow/Slot4/IconWrap4"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0, 0, 0.65)
+mouse_filter = 2
+visible = false
+
+[node name="Key4" type="Label" parent="Content/AttacksRow/Slot4"]
+layout_mode = 2
+horizontal_alignment = 1
+text = "4 Shotgun"
+theme_override_font_sizes/font_size = 9

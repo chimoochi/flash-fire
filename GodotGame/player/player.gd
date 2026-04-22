@@ -19,6 +19,12 @@ const FIRE_BULLET_DAMAGE = 40
 const FIRE_BULLET_SELF_DAMAGE = 12
 const FIRE_BULLET_DURATION = 0.7
 
+const SHOTGUN_STAMINA_COST = 15.0
+const SHOTGUN_DAMAGE = 12
+const SHOTGUN_SPEED = 1300.0
+const SHOTGUN_SPREAD = 40.0
+const SHOTGUN_COOLDOWN = 0.7
+
 const FIREBALL_STAMINA_COST = 10.0
 const FIREBALL_DAMAGE = 25
 const FIREBALL_SPEED = 900.0
@@ -57,6 +63,7 @@ const THROW_SPEED = 600.0
 @onready var weapon_visuals: Node2D = $MeleePivot/MeleeHitBox
 @onready var health_bar = $CanvasLayer/HUD/Content/BarsRow/HealthSection/HealthBar
 @onready var music_player: AudioStreamPlayer = $MusicPlayer
+@onready var _hud = $CanvasLayer/HUD
 
 var dash_service: DashService
 var swing_melee: WaterPopper
@@ -66,13 +73,11 @@ var fire_bullet_timer: float = 0.0
 var _fire_bullet_hit: Array = []
 var is_charging: bool = false
 var _fireball_cooldown: float = 0.0
+var _shotgun_cooldown: float = 0.0
 var _aoe_cooldown: float = 0.0
 
 var equipped_power: Dictionary
 var last_power_time: int = 0
-var power_label: Label
-var passive_label: Label
-var scrap_label: Label
 var push_velocity: Vector2 = Vector2.ZERO
 var lightning_stream: Node = null
 var weapon_visual: WeaponVisual = null
@@ -160,32 +165,21 @@ func _connect_existing_enemies() -> void:
 		_try_connect_enemy(enemy)
 
 func _setup_power_ui() -> void:
-	power_label = Label.new()
-	power_label.text = "Power: " + equipped_power.name
-	power_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
-	power_label.position = Vector2(41, 152)
-	$CanvasLayer.add_child(power_label)
-
-	passive_label = Label.new()
-	passive_label.text = "Active Passives: None"
-	passive_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
-	passive_label.position = Vector2(41, 174)
-	$CanvasLayer.add_child(passive_label)
-
-	scrap_label = Label.new()
-	scrap_label.text = "Scrap: 0"
-	scrap_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
-	scrap_label.position = Vector2(41, 196)
-	$CanvasLayer.add_child(scrap_label)
-
 	_stamina_bar = $CanvasLayer/HUD/Content/BarsRow/StaminaSection/StaminaBar
 	_stamina_bar.max_value = PlayerState["max_stamina"]
 	_stamina_bar.value = PlayerState["stamina"]
 	_setup_adrenaline_bar()
 
+func _update_cooldown_ui() -> void:
+	if not _hud:
+		return
+	_hud.set_slot_cooldown(0, _fireball_cooldown / FIREBALL_COOLDOWN if _fireball_cooldown > 0.0 else 0.0)
+	_hud.set_slot_cooldown(1, fire_bullet_timer / FIRE_BULLET_DURATION if is_fire_bullet else 0.0)
+	_hud.set_slot_cooldown(2, _aoe_cooldown / AOE_COOLDOWN if _aoe_cooldown > 0.0 else 0.0)
+	_hud.set_slot_cooldown(3, _shotgun_cooldown / SHOTGUN_COOLDOWN if _shotgun_cooldown > 0.0 else 0.0)
+
 func _update_scrap_ui() -> void:
-	if scrap_label:
-		scrap_label.text = "Scrap: " + str(PlayerState["scrap"])
+	pass
 
 func _setup_adrenaline_bar() -> void:
 	var bg_style := StyleBoxFlat.new()
@@ -217,10 +211,7 @@ func on_passive_removed(passive_name: String) -> void:
 		_update_passive_ui()
 
 func _update_passive_ui() -> void:
-	if PlayerState["passives"].is_empty():
-		passive_label.text = "Active Passives: None"
-	else:
-		passive_label.text = "Active Passives: " + ", ".join(PlayerState["passives"])
+	pass
 
 
 func _physics_process(delta):
@@ -238,7 +229,9 @@ func _physics_process(delta):
 	_process_stamina(delta, is_charging)
 
 	if _fireball_cooldown > 0: _fireball_cooldown -= delta
+	if _shotgun_cooldown > 0: _shotgun_cooldown -= delta
 	if _aoe_cooldown > 0: _aoe_cooldown -= delta
+	_update_cooldown_ui()
 
 	if debug_hitboxes:
 		melee_pivot.visible = true
@@ -259,16 +252,19 @@ func _physics_process(delta):
 	look_at(get_global_mouse_position())
 	_process_adrenaline(delta)
 
-	if not is_fire_bullet and not dash_service.is_dashing:
+	if not dash_service.is_dashing:
 		if Input.is_action_just_pressed("Dash") and dash_service.can_dash and PlayerState["stamina"] >= DASH_STAMINA_COST:
 			PlayerState["stamina"] -= DASH_STAMINA_COST
 			dash_service.start_dash(self, direction, PlayerState["dash_speed"], PlayerState["dash_duration"], PlayerState["dash_cooldown"], PlayerState["dash_push_force"])
 
-		if Input.is_action_just_pressed("shoot") and PlayerState["stamina"] >= FIREBALL_STAMINA_COST and _fireball_cooldown <= 0:
-			_activate_fireball()
+	if Input.is_action_just_pressed("shoot") and PlayerState["stamina"] >= FIREBALL_STAMINA_COST and _fireball_cooldown <= 0:
+		_activate_fireball()
 
-		if Input.is_action_just_pressed("fire_bullet") and PlayerState["stamina"] >= FIRE_BULLET_STAMINA_COST:
-			_activate_fire_bullet()
+	if Input.is_action_just_pressed("fire_bullet") and PlayerState["stamina"] >= FIRE_BULLET_STAMINA_COST and not is_fire_bullet:
+		_activate_fire_bullet()
+
+	if Input.is_action_just_pressed("shotgun") and PlayerState["stamina"] >= SHOTGUN_STAMINA_COST and _shotgun_cooldown <= 0:
+		_activate_shotgun()
 
 	if Input.is_action_just_pressed("aoe") and PlayerState["stamina"] >= AOE_STAMINA_COST and _aoe_cooldown <= 0:
 		_activate_aoe()
@@ -404,6 +400,16 @@ func _activate_aoe() -> void:
 	CameraService.kick(Vector2(0.1, 0.1), 0.2)
 	gain_adrenaline(ADRENALINE_ON_ATTACK)
 
+func _activate_shotgun() -> void:
+	PlayerState["stamina"] -= SHOTGUN_STAMINA_COST
+	_shotgun_cooldown = SHOTGUN_COOLDOWN
+	var dir = (get_global_mouse_position() - global_position).normalized()
+	BulletService.spawn_shotgun(self, dir, SHOTGUN_DAMAGE, SHOTGUN_SPEED, SHOTGUN_SPREAD)
+	velocity += -dir * 300.0
+	velocity = velocity.limit_length(MAX_VELOCITY)
+	CameraService.shake(0.2)
+	gain_adrenaline(ADRENALINE_ON_ATTACK)
+
 func _activate_fire_bullet() -> void:
 	if is_fire_bullet or PlayerState["stamina"] < FIRE_BULLET_STAMINA_COST:
 		return
@@ -420,14 +426,11 @@ func _activate_fire_bullet() -> void:
 
 func _process_fire_bullet(delta: float) -> void:
 	fire_bullet_timer -= delta
-
 	var current_speed = velocity.length()
 	current_speed = min(current_speed + FIRE_BULLET_ACCEL * delta, FIRE_BULLET_SPEED)
-
 	var target_dir = (get_global_mouse_position() - global_position).normalized()
 	var steered_dir = velocity.normalized().lerp(target_dir, FIRE_BULLET_STEER).normalized()
 	velocity = steered_dir * current_speed
-
 	move_and_slide()
 	if get_slide_collision_count() > 0:
 		_on_fire_bullet_wall_hit()
@@ -455,8 +458,6 @@ func absorb_loadout(power: Dictionary, passive_name: String) -> void:
 	equipped_power = power
 	last_power_time = 0
 	_equip_weapon_visual()
-	if power_label:
-		power_label.text = "Power: " + power.name
 	
 	PassiveService.remove_all_passives(self )
 	if passive_name != "":

@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://c0q0437pox5po" path="res://core/cutscene/StageScene.gd" id="1_stage"]
 [ext_resource type="PackedScene" path="res://player/minigame_player.tscn" id="2_mgplayer"]
-[ext_resource type="Script" path="res://levels/goal_zone.gd" id="3_goalzone"]
+[ext_resource type="Script" uid="uid://d1l3nmsknrosq" path="res://levels/goal_zone.gd" id="3_goalzone"]
 
 [sub_resource type="RectangleShape2D" id="1_goalshape"]
 size = Vector2(64, 64)

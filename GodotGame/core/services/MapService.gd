@@ -54,8 +54,6 @@ func restore_player_status(player: Node2D) -> void:
 		player.PlayerState["passives"] = player_data["passives"].duplicate()
 		if player.health_bar:
 			player.health_bar.set_health(player.PlayerState["health"])
-		if player.power_label:
-			player.power_label.text = "Power: " + player.equipped_power.name
 		player._equip_weapon_visual()
 		player._update_passive_ui()
 
