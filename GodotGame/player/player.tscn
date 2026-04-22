@@ -1,7 +1,7 @@
 [gd_scene load_steps=7 format=3 uid="uid://bq3nv1n2jji1h"]
 
 [ext_resource type="Script" uid="uid://c4af162fdb6yc" path="res://player/player.gd" id="1_player"]
-[ext_resource type="PackedScene" uid="uid://c6jlkk74smucx" path="res://player/health_bar.tscn" id="2_healthbar"]
+[ext_resource type="PackedScene" uid="uid://dq8hud_main01" path="res://ui/hud.tscn" id="2_hud"]
 [ext_resource type="AudioStream" uid="uid://bxoil7vbca6q8" path="res://audio/music.mp3" id="3_music"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_player"]
@@ -58,11 +58,7 @@ drag_vertical_enabled = true
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
-[node name="HealthBar" parent="CanvasLayer" instance=ExtResource("2_healthbar")]
-offset_left = 41.0
-offset_top = 87.0
-offset_right = 241.0
-offset_bottom = 107.0
+[node name="HUD" parent="CanvasLayer" instance=ExtResource("2_hud")]
 
 [node name="MusicPlayer" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("3_music")

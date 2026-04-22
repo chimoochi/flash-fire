@@ -6,9 +6,33 @@ var SPRINT_SPEED = 600.0
 var ACCELERATION = 3000.0
 var FRICTION = 4000.0
 
-const SPRINT_STAMINA_DRAIN = 15.0
-const STAMINA_REGEN_RATE = 20.0
-const STAMINA_REGEN_DELAY = 1.5
+const STAMINA_PASSIVE_REGEN = 12.0
+const STAMINA_CHARGE_REGEN = 35.0
+
+const FIRE_BULLET_STAMINA_COST = 20.0
+const FIRE_BULLET_START_SPEED = 150.0
+const FIRE_BULLET_SPEED = 1400.0
+const FIRE_BULLET_ACCEL = 4000.0
+const FIRE_BULLET_STEER = 0.05
+const FIRE_BULLET_KNOCKBACK = 2000.0
+const FIRE_BULLET_DAMAGE = 40
+const FIRE_BULLET_SELF_DAMAGE = 12
+const FIRE_BULLET_DURATION = 0.7
+
+const FIREBALL_STAMINA_COST = 10.0
+const FIREBALL_DAMAGE = 25
+const FIREBALL_SPEED = 900.0
+const FIREBALL_RECOIL = 650.0
+const FIREBALL_COOLDOWN = 0.5
+
+const AOE_STAMINA_COST = 15.0
+const AOE_DAMAGE = 35
+const AOE_RADIUS = 130.0
+const AOE_PUSH_FORCE = 1500.0
+const AOE_COOLDOWN = 1.5
+
+const DASH_STAMINA_COST = 20.0
+const DASH_DAMAGE = 30
 
 const DASH_COOLDOWN = 0.8
 const MELEE_DAMAGE = 25
@@ -31,11 +55,18 @@ const THROW_SPEED = 600.0
 
 @onready var melee_pivot: Node2D = $MeleePivot
 @onready var weapon_visuals: Node2D = $MeleePivot/MeleeHitBox
-@onready var health_bar: ProgressBar = $CanvasLayer/HealthBar
+@onready var health_bar = $CanvasLayer/HUD/Content/BarsRow/HealthSection/HealthBar
 @onready var music_player: AudioStreamPlayer = $MusicPlayer
 
 var dash_service: DashService
 var swing_melee: WaterPopper
+
+var is_fire_bullet: bool = false
+var fire_bullet_timer: float = 0.0
+var _fire_bullet_hit: Array = []
+var is_charging: bool = false
+var _fireball_cooldown: float = 0.0
+var _aoe_cooldown: float = 0.0
 
 var equipped_power: Dictionary
 var last_power_time: int = 0
@@ -86,7 +117,6 @@ const EMPOWERED_DAMAGE_MULT := 4.0
 
 var _adrenaline_bar: ProgressBar = null
 var _stamina_bar: ProgressBar = null
-var _stamina_regen_timer: float = 0.0
 var _empowered_tween: Tween = null
 
 var debug_hitboxes: bool = false
@@ -148,8 +178,10 @@ func _setup_power_ui() -> void:
 	scrap_label.position = Vector2(41, 196)
 	$CanvasLayer.add_child(scrap_label)
 
+	_stamina_bar = $CanvasLayer/HUD/Content/BarsRow/StaminaSection/StaminaBar
+	_stamina_bar.max_value = PlayerState["max_stamina"]
+	_stamina_bar.value = PlayerState["stamina"]
 	_setup_adrenaline_bar()
-	_setup_stamina_bar()
 
 func _update_scrap_ui() -> void:
 	if scrap_label:
@@ -172,21 +204,6 @@ func _setup_adrenaline_bar() -> void:
 	_adrenaline_bar.add_theme_stylebox_override("fill", fill_style)
 	$CanvasLayer.add_child(_adrenaline_bar)
 
-func _setup_stamina_bar() -> void:
-	var bg_style := StyleBoxFlat.new()
-	bg_style.bg_color = Color(0.05, 0.1, 0.2)
-
-	var fill_style := StyleBoxFlat.new()
-	fill_style.bg_color = Color(0.2, 0.65, 1.0)
-
-	_stamina_bar = ProgressBar.new()
-	_stamina_bar.custom_minimum_size = Vector2(200, 12)
-	_stamina_bar.max_value = PlayerState["max_stamina"]
-	_stamina_bar.value = PlayerState["stamina"]
-	_stamina_bar.show_percentage = false
-	_stamina_bar.position = Vector2(41, 127)
-	_stamina_bar.add_theme_stylebox_override("background", bg_style)
-	_stamina_bar.add_theme_stylebox_override("fill", fill_style)
 	$CanvasLayer.add_child(_stamina_bar)
 
 func on_passive_added(passive_name: String) -> void:
@@ -209,33 +226,32 @@ func _update_passive_ui() -> void:
 func _physics_process(delta):
 	var direction = Vector2.ZERO
 
-	if Input.is_action_pressed("MoveRight"):
-		direction.x += 1
-	if Input.is_action_pressed("MoveLeft"):
-		direction.x -= 1
-	if Input.is_action_pressed("MoveDown"):
-		direction.y += 1
-	if Input.is_action_pressed("MoveUp"):
-		direction.y -= 1
+	if not is_fire_bullet:
+		if Input.is_action_pressed("MoveRight"): direction.x += 1
+		if Input.is_action_pressed("MoveLeft"): direction.x -= 1
+		if Input.is_action_pressed("MoveDown"): direction.y += 1
+		if Input.is_action_pressed("MoveUp"): direction.y -= 1
+		if direction.length() > 0:
+			direction = direction.normalized()
 
-	if direction.length() > 0:
-		direction = direction.normalized()
+	is_charging = Input.is_action_pressed("Sprint") and not is_fire_bullet
+	_process_stamina(delta, is_charging)
 
-	var is_sprinting = Input.is_action_pressed("Sprint") and direction != Vector2.ZERO and PlayerState["stamina"] > 0.0
-	_process_stamina(delta, is_sprinting)
-	var current_max_speed = SPRINT_SPEED if is_sprinting else MAX_SPEED
+	if _fireball_cooldown > 0: _fireball_cooldown -= delta
+	if _aoe_cooldown > 0: _aoe_cooldown -= delta
 
 	if debug_hitboxes:
 		melee_pivot.visible = true
 
 	_handle_push_interaction(delta)
-
 	push_velocity = push_velocity.move_toward(Vector2.ZERO, PUSH_DECAY * delta)
 
-	if dash_service.is_dashing:
-		dash_service.process_dash_physics(self , delta)
+	if is_fire_bullet:
+		_process_fire_bullet(delta)
+	elif dash_service.is_dashing:
+		dash_service.process_dash_physics(self, delta)
 	else:
-		_handle_movement_physics(direction, delta, current_max_speed)
+		_handle_movement_physics(direction, delta, MAX_SPEED)
 		velocity += push_velocity
 		velocity = velocity.limit_length(MAX_VELOCITY)
 		move_and_slide()
@@ -243,28 +259,23 @@ func _physics_process(delta):
 	look_at(get_global_mouse_position())
 	_process_adrenaline(delta)
 
-	if Input.is_action_just_pressed("Dash") and dash_service.can_dash:
-		dash_service.start_dash(
-			self ,
-			direction,
-			PlayerState["dash_speed"],
-			PlayerState["dash_duration"],
-			PlayerState["dash_cooldown"],
-			PlayerState["dash_push_force"]
-		)
+	if not is_fire_bullet and not dash_service.is_dashing:
+		if Input.is_action_just_pressed("Dash") and dash_service.can_dash and PlayerState["stamina"] >= DASH_STAMINA_COST:
+			PlayerState["stamina"] -= DASH_STAMINA_COST
+			dash_service.start_dash(self, direction, PlayerState["dash_speed"], PlayerState["dash_duration"], PlayerState["dash_cooldown"], PlayerState["dash_push_force"])
 
-	if Input.is_action_pressed("shoot") or Input.is_key_pressed(KEY_SPACE):
-		use_equipped_power()
+		if Input.is_action_just_pressed("shoot") and PlayerState["stamina"] >= FIREBALL_STAMINA_COST and _fireball_cooldown <= 0:
+			_activate_fireball()
 
-func _process_stamina(delta: float, is_sprinting: bool) -> void:
-	if is_sprinting:
-		PlayerState["stamina"] = max(0.0, PlayerState["stamina"] - SPRINT_STAMINA_DRAIN * delta)
-		_stamina_regen_timer = STAMINA_REGEN_DELAY
-	else:
-		if _stamina_regen_timer > 0.0:
-			_stamina_regen_timer -= delta
-		else:
-			PlayerState["stamina"] = min(PlayerState["max_stamina"], PlayerState["stamina"] + STAMINA_REGEN_RATE * delta)
+		if Input.is_action_just_pressed("fire_bullet") and PlayerState["stamina"] >= FIRE_BULLET_STAMINA_COST:
+			_activate_fire_bullet()
+
+	if Input.is_action_just_pressed("aoe") and PlayerState["stamina"] >= AOE_STAMINA_COST and _aoe_cooldown <= 0:
+		_activate_aoe()
+
+func _process_stamina(delta: float, charging: bool) -> void:
+	var regen = STAMINA_CHARGE_REGEN if charging else STAMINA_PASSIVE_REGEN
+	PlayerState["stamina"] = min(PlayerState["max_stamina"], PlayerState["stamina"] + regen * delta)
 	if _stamina_bar:
 		_stamina_bar.value = PlayerState["stamina"]
 		
@@ -281,28 +292,35 @@ func _handle_push_interaction(delta: float) -> void:
 	query.shape = $CollisionShape2D.shape
 	query.transform = global_transform
 	query.collision_mask = 4
-	query.exclude = [ self.get_rid()]
-	
+	query.exclude = [self.get_rid()]
+
 	var result = space_state.intersect_shape(query)
 	for data in result:
 		var collider = data["collider"]
-		
+
 		if dash_service.is_dashing and collider.is_in_group("Enemy"):
 			dash_service.handle_impact(collider)
-			
-			
+
 		if collider.has_method("push"):
 			var push_dir = (collider.global_position - global_position).normalized()
-			
-			var force_mag = PUSH_FORCE
-			if dash_service.is_dashing:
-				force_mag = dash_service.dash_push_force
-				
-			collider.push(push_dir * force_mag * delta)
-			
-			if not dash_service.is_dashing:
-				velocity -= push_dir * PLAYER_PUSH_RESISTANCE
-				velocity *= 0.9
+
+			if is_fire_bullet and collider.is_in_group("Enemy"):
+				collider.push(push_dir * FIRE_BULLET_KNOCKBACK)
+				if not _fire_bullet_hit.has(collider) and collider.has_method("take_damage"):
+					_fire_bullet_hit.append(collider)
+					collider.take_damage(FIRE_BULLET_DAMAGE, global_position, self)
+			else:
+				var force_mag = PUSH_FORCE
+				if dash_service.is_dashing:
+					force_mag = dash_service.dash_push_force
+				collider.push(push_dir * force_mag * delta)
+				if dash_service.is_dashing and collider.is_in_group("Enemy") and collider.has_method("take_damage"):
+					if not dash_service._hit_entities.has(collider):
+						collider.take_damage(DASH_DAMAGE, global_position, self)
+					dash_service.handle_impact(collider)
+				elif not dash_service.is_dashing:
+					velocity -= push_dir * PLAYER_PUSH_RESISTANCE
+					velocity *= 0.9
 
 func _handle_movement_physics(direction: Vector2, delta: float, max_speed: float = MAX_SPEED) -> void:
 	if direction != Vector2.ZERO:
@@ -321,18 +339,11 @@ func _input(event: InputEvent) -> void:
 			var target = _get_nearest_execution_enemy()
 			if target:
 				_perform_glory_kill(target)
-		
-		
 		if event.keycode == KEY_L:
 			var current_scene = get_tree().current_scene.scene_file_path
 			var next_scene = "res://level2.tscn" if "workspace.tscn" in current_scene else "res://workspace.tscn"
 			MapService.change_map(next_scene)
-	
-	if event is InputEventKey and not event.pressed:
-		if event.keycode == KEY_SPACE:
-			_stop_stream()
-	if event.is_action_released("shoot"):
-		_stop_stream()
+
 
 func _stop_stream() -> void:
 	if lightning_stream:
@@ -374,6 +385,68 @@ func use_equipped_power() -> void:
 	else:
 		PowerModule.execute_power(equipped_power, self , get_global_mouse_position())
 
+
+func _activate_fireball() -> void:
+	PlayerState["stamina"] -= FIREBALL_STAMINA_COST
+	_fireball_cooldown = FIREBALL_COOLDOWN
+	var dir = (get_global_mouse_position() - global_position).normalized()
+	BulletService.spawn_bullet(self, dir, FIREBALL_DAMAGE, FIREBALL_SPEED)
+	velocity += -dir * FIREBALL_RECOIL
+	velocity = velocity.limit_length(MAX_VELOCITY)
+	CameraService.shake(0.15)
+	gain_adrenaline(ADRENALINE_ON_ATTACK)
+
+func _activate_aoe() -> void:
+	PlayerState["stamina"] -= AOE_STAMINA_COST
+	_aoe_cooldown = AOE_COOLDOWN
+	ThrowableService.explode(AOE_RADIUS, global_position, AOE_DAMAGE, AOE_PUSH_FORCE, self)
+	CameraService.shake(0.5)
+	CameraService.kick(Vector2(0.1, 0.1), 0.2)
+	gain_adrenaline(ADRENALINE_ON_ATTACK)
+
+func _activate_fire_bullet() -> void:
+	if is_fire_bullet or PlayerState["stamina"] < FIRE_BULLET_STAMINA_COST:
+		return
+	PlayerState["stamina"] -= FIRE_BULLET_STAMINA_COST
+	is_fire_bullet = true
+	fire_bullet_timer = FIRE_BULLET_DURATION
+	_fire_bullet_hit.clear()
+	set_collision_mask_value(3, false)
+	push_velocity = Vector2.ZERO
+	var dir = (get_global_mouse_position() - global_position).normalized()
+	velocity = dir * FIRE_BULLET_START_SPEED
+	CameraService.shake(0.15)
+	gain_adrenaline(ADRENALINE_ON_ATTACK)
+
+func _process_fire_bullet(delta: float) -> void:
+	fire_bullet_timer -= delta
+
+	var current_speed = velocity.length()
+	current_speed = min(current_speed + FIRE_BULLET_ACCEL * delta, FIRE_BULLET_SPEED)
+
+	var target_dir = (get_global_mouse_position() - global_position).normalized()
+	var steered_dir = velocity.normalized().lerp(target_dir, FIRE_BULLET_STEER).normalized()
+	velocity = steered_dir * current_speed
+
+	move_and_slide()
+	if get_slide_collision_count() > 0:
+		_on_fire_bullet_wall_hit()
+		return
+	if fire_bullet_timer <= 0:
+		_end_fire_bullet()
+
+func _on_fire_bullet_wall_hit() -> void:
+	ThrowableService.explode(80.0, global_position, 0, 900.0, self)
+	take_damage(FIRE_BULLET_SELF_DAMAGE, global_position)
+	velocity = -velocity.normalized() * 400.0
+	CameraService.shake(0.4)
+	_end_fire_bullet()
+
+func _end_fire_bullet() -> void:
+	is_fire_bullet = false
+	fire_bullet_timer = 0.0
+	_fire_bullet_hit.clear()
+	set_collision_mask_value(3, true)
 
 func absorb_loadout(power: Dictionary, passive_name: String) -> void:
 	if kill_sound_player:

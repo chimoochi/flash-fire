@@ -1,0 +1,125 @@
+[gd_scene load_steps=6 format=3 uid="uid://dq8hud_main01"]
+
+[ext_resource type="Script" uid="uid://dq8hud_gd001" path="res://ui/hud.gd" id="1_hud"]
+[ext_resource type="PackedScene" uid="uid://c6jlkk74smucx" path="res://player/health_bar.tscn" id="2_healthbar"]
+
+[sub_resource type="StyleBoxFlat" id="SF_hp_fill"]
+bg_color = Color(0.22, 0.88, 0.4, 1)
+
+[sub_resource type="StyleBoxFlat" id="SF_hp_bg"]
+bg_color = Color(0.1, 0.1, 0.1, 1)
+
+[sub_resource type="StyleBoxFlat" id="SF_st_fill"]
+bg_color = Color(0.25, 0.6, 1.0, 1)
+
+[sub_resource type="StyleBoxFlat" id="SF_st_bg"]
+bg_color = Color(0.1, 0.1, 0.1, 1)
+
+[node name="HUD" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+script = ExtResource("1_hud")
+
+[node name="Content" type="VBoxContainer" parent="."]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -150.0
+offset_top = -88.0
+offset_right = 150.0
+offset_bottom = -6.0
+theme_override_constants/separation = 6
+
+[node name="BarsRow" type="HBoxContainer" parent="Content"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="HealthSection" type="VBoxContainer" parent="Content/BarsRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 2
+
+[node name="HealthLabel" type="Label" parent="Content/BarsRow/HealthSection"]
+layout_mode = 2
+text = "HP"
+theme_override_font_sizes/font_size = 9
+
+[node name="HealthBar" parent="Content/BarsRow/HealthSection" instance=ExtResource("2_healthbar")]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 10)
+size_flags_horizontal = 3
+theme_override_styles/background = SubResource("SF_hp_bg")
+theme_override_styles/fill = SubResource("SF_hp_fill")
+
+[node name="StaminaSection" type="VBoxContainer" parent="Content/BarsRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 2
+
+[node name="StaminaLabel" type="Label" parent="Content/BarsRow/StaminaSection"]
+layout_mode = 2
+text = "STAMINA"
+theme_override_font_sizes/font_size = 9
+
+[node name="StaminaBar" type="ProgressBar" parent="Content/BarsRow/StaminaSection"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 10)
+size_flags_horizontal = 3
+max_value = 100.0
+value = 100.0
+show_percentage = false
+theme_override_styles/background = SubResource("SF_st_bg")
+theme_override_styles/fill = SubResource("SF_st_fill")
+
+[node name="AttacksRow" type="HBoxContainer" parent="Content"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 6
+
+[node name="Slot1" type="VBoxContainer" parent="Content/AttacksRow"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 2
+
+[node name="Icon1" type="ColorRect" parent="Content/AttacksRow/Slot1"]
+custom_minimum_size = Vector2(56, 32)
+color = Color(1.0, 0.38, 0.08, 1)
+
+[node name="Key1" type="Label" parent="Content/AttacksRow/Slot1"]
+layout_mode = 2
+horizontal_alignment = 1
+text = "1 Fireball"
+theme_override_font_sizes/font_size = 9
+
+[node name="Slot2" type="VBoxContainer" parent="Content/AttacksRow"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 2
+
+[node name="Icon2" type="ColorRect" parent="Content/AttacksRow/Slot2"]
+custom_minimum_size = Vector2(56, 32)
+color = Color(1.0, 0.85, 0.1, 1)
+
+[node name="Key2" type="Label" parent="Content/AttacksRow/Slot2"]
+layout_mode = 2
+horizontal_alignment = 1
+text = "2 Launch"
+theme_override_font_sizes/font_size = 9
+
+[node name="Slot3" type="VBoxContainer" parent="Content/AttacksRow"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 2
+
+[node name="Icon3" type="ColorRect" parent="Content/AttacksRow/Slot3"]
+custom_minimum_size = Vector2(56, 32)
+color = Color(0.6, 0.15, 1.0, 1)
+
+[node name="Key3" type="Label" parent="Content/AttacksRow/Slot3"]
+layout_mode = 2
+horizontal_alignment = 1
+text = "3 AOE"
+theme_override_font_sizes/font_size = 9
+
