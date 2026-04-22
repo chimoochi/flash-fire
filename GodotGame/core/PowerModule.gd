@@ -77,22 +77,6 @@ const POWERS = {
 		}
 	}
 }
-const ENEMY_LEVELS = {
-"level1": { 
-	"basespeed":1,
-	"damagemult":.3,
-	"allowedweapons": [PowerType.MELEE],
-	"allowedpowers": [], # empty means any (for now)
-	},
-"level2heavy": {
-	"basespeed": .7,
-	"damagemult": 1,
-	"allowedweapons":[PowerType.RANGED,PowerType.SPECIAL,PowerType.UTILITY],
-	"allowedpowers":[],
-	
-},
-}
-
 static func get_random_power() -> Dictionary:
 	return get_random_power_for_level("")
 
@@ -104,10 +88,10 @@ static func get_random_power_for_level(level: String) -> Dictionary:
 	var allowed_weapons = []
 	var allowed_powers = []
 	
-	if level != "" and ENEMY_LEVELS.has(level):
-		var level_data = ENEMY_LEVELS[level]
-		allowed_weapons = level_data.get("allowedweapons", [])
-		allowed_powers = level_data.get("allowedpowers", [])
+	if level != "" and EnemyMetadata.ENEMY_LEVELS.has(level):
+		var level_data = EnemyMetadata.ENEMY_LEVELS[level]
+		allowed_weapons = level_data.get("allowed_weapons", [])
+		allowed_powers = level_data.get("allowed_powers", [])
 		
 	for key in POWERS.keys():
 		var power = POWERS[key]

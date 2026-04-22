@@ -68,8 +68,8 @@ func _ready() -> void:
 	
 	equipped_power = PowerModule.get_random_power_for_level(enemy_level).duplicate(true)
 	
-	if PowerModule.ENEMY_LEVELS.has(enemy_level):
-		var stats = PowerModule.ENEMY_LEVELS[enemy_level]
+	if EnemyMetadata.ENEMY_LEVELS.has(enemy_level):
+		var stats = EnemyMetadata.ENEMY_LEVELS[enemy_level]
 		move_speed *= stats.get("basespeed", 1.0)
 		var dmg_mult = stats.get("damagemult", 1.0)
 		if equipped_power.has("settings") and equipped_power.settings.has("damage"):
@@ -355,10 +355,52 @@ func stun(duration: float) -> void:
 
 func die() -> void:
 	EnemyState["is_alive"] = false
+	_drop_loot()
 	died.emit()
 	if is_instance_valid(_last_damage_source) and _last_damage_source.is_in_group("Player"):
 		killed_by_player.emit(equipped_power, equipped_passive)
 	queue_free()
+
+func _drop_loot() -> void:
+	if not EnemyMetadata.ENEMY_LEVELS.has(enemy_level):
+		return
+		
+	var drops = EnemyMetadata.ENEMY_LEVELS[enemy_level].get("drops", [])
+	for drop in drops:
+		if randf() <= drop.get("chance", 1.0):
+			var count = 1
+			if drop.has("min") and drop.has("max"):
+				count = randi_range(drop["min"], drop["max"])
+			
+			for i in range(count):
+				_spawn_loot_item(drop)
+
+func _spawn_loot_item(drop_data: Dictionary) -> void:
+	var loot_script = load("res://environment/loot.gd")
+	var loot = Area2D.new()
+	loot.set_script(loot_script)
+	
+	match drop_data["type"]:
+		"scrap":
+			loot.type = 0 # SCRAP
+			loot.amount = 1
+		"health":
+			loot.type = 1 # HEALTH
+			loot.amount = drop_data.get("amount", 10)
+	
+	# Add a collision shape to the loot
+	var collision = CollisionShape2D.new()
+	var shape = CircleShape2D.new()
+	shape.radius = 15.0
+	collision.shape = shape
+	loot.add_child(collision)
+	
+	# Set collision mask to detect player (layer 2)
+	loot.collision_layer = 0
+	loot.collision_mask = 2
+	
+	get_tree().root.add_child(loot)
+	loot.global_position = global_position + Vector2(randf_range(-20, 20), randf_range(-20, 20))
 
 func hear_noise(source_pos: Vector2, range_dist: float) -> void:
 	if EnemyState["behavior"] != State.IDLE:

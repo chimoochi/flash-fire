@@ -41,6 +41,7 @@ var equipped_power: Dictionary
 var last_power_time: int = 0
 var power_label: Label
 var passive_label: Label
+var scrap_label: Label
 var push_velocity: Vector2 = Vector2.ZERO
 var lightning_stream: Node = null
 var weapon_visual: WeaponVisual = null
@@ -50,6 +51,7 @@ var kill_sound_player: AudioStreamPlayer
 var PlayerState: Dictionary = {
 	"health": 100,
 	"max_health": 100,
+	"scrap": 0,
 	"abilities": [],
 	"passives": [],
 	"is_alive": true,
@@ -76,7 +78,7 @@ var PlayerState: Dictionary = {
 	"max_stamina": 100.0,
 }
 
-const ADRENALINE_DRAIN_RATE := 2.0
+const ADRENALINE_DRAIN_RATE := 1.0
 const ADRENALINE_ON_KILL := 40.0
 const ADRENALINE_ON_ATTACK := 7.0
 const ADRENALINE_ON_HIT := 10.0 # damage taken
@@ -140,8 +142,18 @@ func _setup_power_ui() -> void:
 	passive_label.position = Vector2(41, 174)
 	$CanvasLayer.add_child(passive_label)
 
+	scrap_label = Label.new()
+	scrap_label.text = "Scrap: 0"
+	scrap_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	scrap_label.position = Vector2(41, 196)
+	$CanvasLayer.add_child(scrap_label)
+
 	_setup_adrenaline_bar()
 	_setup_stamina_bar()
+
+func _update_scrap_ui() -> void:
+	if scrap_label:
+		scrap_label.text = "Scrap: " + str(PlayerState["scrap"])
 
 func _setup_adrenaline_bar() -> void:
 	var bg_style := StyleBoxFlat.new()
@@ -440,6 +452,12 @@ func take_damage(amount: int, source_pos: Vector2 = Vector2.ZERO, source: Node2D
 
 	if PlayerState["health"] <= 0:
 		die()
+
+func heal(amount: int) -> void:
+	PlayerState["health"] = min(PlayerState["health"] + amount, PlayerState["max_health"])
+	if health_bar:
+		health_bar.set_health(PlayerState["health"])
+	DamageNumber.spawn(get_tree(), global_position + Vector2(randf_range(-8, 8), -20), amount, Color(0.25, 1.0, 0.25))
 
 func gain_adrenaline(amount: float) -> void:
 	var prev = PlayerState["adrenaline"]

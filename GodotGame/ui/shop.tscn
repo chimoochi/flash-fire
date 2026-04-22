@@ -43,6 +43,7 @@ horizontal_alignment = 1
 
 [node name="ShopCanvas" type="CanvasLayer" parent="."]
 layer = 20
+visible = false
 
 [node name="Panel" type="Panel" parent="ShopCanvas"]
 anchors_preset = 8
