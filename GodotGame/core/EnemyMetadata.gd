@@ -8,7 +8,7 @@ const ENEMY_LEVELS = {
 		"allowed_powers": [],
 		"drops": [
 			{"type": "scrap", "chance": 0.8, "min": 1, "max": 3},
-			{"type": "health", "chance": 0.2, "amount": 10}
+			{"type": "health", "chance": 1.0, "amount": 10}
 		]
 	},
 	"level2heavy": {
@@ -18,7 +18,7 @@ const ENEMY_LEVELS = {
 		"allowed_powers": [],
 		"drops": [
 			{"type": "scrap", "chance": 1.0, "min": 5, "max": 10},
-			{"type": "health", "chance": 0.4, "amount": 25}
+			{"type": "health", "chance": 1.0, "amount": 10}
 		]
 	}
 }

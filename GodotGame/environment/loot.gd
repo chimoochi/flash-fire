@@ -6,17 +6,18 @@ enum LootType {SCRAP, HEALTH}
 @export var amount: int = 1
 
 func _ready() -> void:
-	var visual = ColorRect.new()
-	visual.size = Vector2(10, 10)
-	visual.position = -visual.size / 2
-	
 	match type:
 		LootType.SCRAP:
+			var visual = ColorRect.new()
+			visual.size = Vector2(10, 10)
+			visual.position = -visual.size / 2
 			visual.color = Color.YELLOW
+			add_child(visual)
 		LootType.HEALTH:
-			visual.color = Color.GREEN
-			
-	add_child(visual)
+			var sprite = Sprite2D.new()
+			sprite.texture = load("res://gameassets/runtime/sprites/Bandage.png")
+			sprite.scale = Vector2(0.15, 0.15)
+			add_child(sprite)
 	
 	body_entered.connect(_on_body_entered)
 	
@@ -35,7 +36,6 @@ func _on_body_entered(body: Node2D) -> void:
 				if body.health_bar:
 					body.health_bar.set_health(body.PlayerState["health"])
 		else:
-			# Scrap or other currency
 			if body.has_method("add_scrap"):
 				body.add_scrap(amount)
 			elif "PlayerState" in body:

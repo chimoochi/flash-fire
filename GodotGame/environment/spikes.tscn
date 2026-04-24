@@ -1,10 +1,10 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=4 format=3 uid="uid://r0al6imxgo7n"]
 
-[ext_resource type="Script" path="res://environment/spikes.gd" id="1_script"]
-[ext_resource type="Script" path="res://environment/spikes_visual.gd" id="2_visual"]
+[ext_resource type="Script" uid="uid://cfojrw5lidaks" path="res://environment/spikes.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://bprlgjn5uwums" path="res://gameassets/runtime/sprites/SpikeTrap.png" id="2_texture"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_spikes"]
-size = Vector2(32, 32)
+size = Vector2(27, 30)
 
 [node name="Spikes" type="Area2D"]
 z_index = -1
@@ -13,7 +13,10 @@ collision_mask = 6
 script = ExtResource("1_script")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(-0.5, 0)
 shape = SubResource("RectangleShape2D_spikes")
 
-[node name="Visual" type="Node2D" parent="."]
-script = ExtResource("2_visual")
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(0, 0.99999994)
+scale = Vector2(0.89, 0.89)
+texture = ExtResource("2_texture")

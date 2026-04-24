@@ -21,14 +21,15 @@ const FIRE_BULLET_DURATION = 0.7
 
 const SHOTGUN_STAMINA_COST = 15.0
 const SHOTGUN_DAMAGE = 12
-const SHOTGUN_SPEED = 1300.0
+const SHOTGUN_SPEED = 700.0
 const SHOTGUN_SPREAD = 40.0
 const SHOTGUN_COOLDOWN = 0.7
+const SHOTGUN_RECOIL = 650.0
 
 const FIREBALL_STAMINA_COST = 10.0
 const FIREBALL_DAMAGE = 25
-const FIREBALL_SPEED = 900.0
-const FIREBALL_RECOIL = 650.0
+const FIREBALL_SPEED = 550.0
+const FIREBALL_RECOIL = 1100.0
 const FIREBALL_COOLDOWN = 0.5
 
 const AOE_STAMINA_COST = 15.0
@@ -405,7 +406,7 @@ func _activate_shotgun() -> void:
 	_shotgun_cooldown = SHOTGUN_COOLDOWN
 	var dir = (get_global_mouse_position() - global_position).normalized()
 	BulletService.spawn_shotgun(self, dir, SHOTGUN_DAMAGE, SHOTGUN_SPEED, SHOTGUN_SPREAD)
-	velocity += -dir * 300.0
+	velocity += -dir * SHOTGUN_RECOIL
 	velocity = velocity.limit_length(MAX_VELOCITY)
 	CameraService.shake(0.2)
 	gain_adrenaline(ADRENALINE_ON_ATTACK)
