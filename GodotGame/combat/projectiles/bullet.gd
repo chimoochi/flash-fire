@@ -18,6 +18,9 @@ var is_player_bullet: bool = false
 
 var _dead: bool = false
 
+
+	
+
 func _ready() -> void:
 	start_position = global_position
 	var shape := $CollisionShape2D.shape as RectangleShape2D

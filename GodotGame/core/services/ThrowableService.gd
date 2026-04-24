@@ -40,7 +40,7 @@ static func throwing(startpos: Vector2, endpos: Vector2, speed: float, scene: Pa
 	
 	return direction * speed
 
-static func explode(radius: float, position: Vector2, damage: int = 0, push_force: float = 0.0, source_node: Node = null):
+static func explode(radius: float, position: Vector2, damage: int = 0, push_force: float = 0.0, source_node: Node = null, min_damage: int = 0):
 	if not source_node:
 		return
 
@@ -103,8 +103,8 @@ static func explode(radius: float, position: Vector2, damage: int = 0, push_forc
 				var max_hp = collider.EnemyState.get("max_health", 100)
 				final_damage = max_hp * 0.75
 			
-			if collider.has_method("take_damage") and final_damage > 0:
-				collider.take_damage(int(final_damage * falloff), position, source_node if is_instance_valid(source_node) else null)
+			if collider.has_method("take_damage") and (final_damage > 0 or min_damage > 0):
+				collider.take_damage(max(int(final_damage * falloff), min_damage), position, source_node if is_instance_valid(source_node) else null)
 			
 			if push_force > 0:
 				if source_node and source_node is Node2D and collider is Node2D:

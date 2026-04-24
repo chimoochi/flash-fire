@@ -126,6 +126,8 @@ var _stamina_bar: ProgressBar = null
 var _empowered_tween: Tween = null
 
 var debug_hitboxes: bool = false
+var _selected_weapon: int = 0
+var _rt_was_pressed: bool = false
 
 func _ready() -> void:
 	motion_mode = CharacterBody2D.MOTION_MODE_FLOATING
@@ -166,6 +168,7 @@ func _connect_existing_enemies() -> void:
 		_try_connect_enemy(enemy)
 
 func _setup_power_ui() -> void:
+	_hud.set_selected_slot(_selected_weapon)
 	_stamina_bar = $CanvasLayer/HUD/Content/BarsRow/StaminaSection/StaminaBar
 	_stamina_bar.max_value = PlayerState["max_stamina"]
 	_stamina_bar.value = PlayerState["stamina"]
@@ -250,8 +253,15 @@ func _physics_process(delta):
 		velocity = velocity.limit_length(MAX_VELOCITY)
 		move_and_slide()
 
+	_move_mouse_with_stick(delta)
 	look_at(get_global_mouse_position())
 	_process_adrenaline(delta)
+
+
+	var rt := Input.get_joy_axis(0, JOY_AXIS_TRIGGER_RIGHT)
+	if rt > 0.5 and not _rt_was_pressed:
+		_fire_selected_weapon()
+	_rt_was_pressed = rt > 0.5
 
 	if not dash_service.is_dashing:
 		if Input.is_action_just_pressed("Dash") and dash_service.can_dash and PlayerState["stamina"] >= DASH_STAMINA_COST:
@@ -319,6 +329,18 @@ func _handle_push_interaction(delta: float) -> void:
 					velocity -= push_dir * PLAYER_PUSH_RESISTANCE
 					velocity *= 0.9
 
+func _move_mouse_with_stick(delta: float) -> void:
+	var stick := Vector2(
+		Input.get_joy_axis(0, JOY_AXIS_RIGHT_X),
+		Input.get_joy_axis(0, JOY_AXIS_RIGHT_Y)
+	)
+	if stick.length() <= 0.15:
+		return
+	var vp := get_viewport()
+	var new_pos := vp.get_mouse_position() + stick * 2000.0 * delta
+	new_pos = new_pos.clamp(Vector2.ZERO, vp.get_visible_rect().size)
+	vp.warp_mouse(new_pos)
+
 func _handle_movement_physics(direction: Vector2, delta: float, max_speed: float = MAX_SPEED) -> void:
 	if direction != Vector2.ZERO:
 		velocity = velocity.move_toward(direction * max_speed, ACCELERATION * delta)
@@ -326,20 +348,52 @@ func _handle_movement_physics(direction: Vector2, delta: float, max_speed: float
 		velocity = velocity.move_toward(Vector2.ZERO, FRICTION * delta)
 
 
+func _cycle_weapon(dir: int) -> void:
+	_selected_weapon = (_selected_weapon + dir + 4) % 4
+	if _hud:
+		_hud.set_selected_slot(_selected_weapon)
+
 func _input(event: InputEvent) -> void:
-	if event is InputEventKey and event.pressed and not event.echo:
-		if event.keycode == KEY_F1:
-			debug_hitboxes = not debug_hitboxes
-		if event.keycode == KEY_M:
-			music_player.playing = not music_player.playing
-		if event.keycode == KEY_E:
-			var target = _get_nearest_execution_enemy()
-			if target:
-				_perform_glory_kill(target)
-		if event.keycode == KEY_L:
-			var current_scene = get_tree().current_scene.scene_file_path
-			var next_scene = "res://level2.tscn" if "workspace.tscn" in current_scene else "res://workspace.tscn"
-			MapService.change_map(next_scene)
+	if event is InputEventJoypadButton and event.pressed:
+		if event.button_index == JOY_BUTTON_RIGHT_SHOULDER:
+			_cycle_weapon(1)
+		elif event.button_index == JOY_BUTTON_LEFT_SHOULDER:
+			_cycle_weapon(-1)
+
+	if event is InputEventMouseButton and event.pressed:
+		if event.button_index == MOUSE_BUTTON_WHEEL_UP:
+			_cycle_weapon(1)
+		elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
+			_cycle_weapon(-1)
+
+	if event.is_action_pressed("debug_toggle"):
+		debug_hitboxes = not debug_hitboxes
+	if event.is_action_pressed("music_toggle"):
+		music_player.playing = not music_player.playing
+	if event.is_action_pressed("interact"):
+		var target = _get_nearest_execution_enemy()
+		if target:
+			_perform_glory_kill(target)
+	if event.is_action_pressed("dev_level_switch"):
+		var current_scene = get_tree().current_scene.scene_file_path
+		var next_scene = "res://level2.tscn" if "workspace.tscn" in current_scene else "res://workspace.tscn"
+		MapService.change_map(next_scene)
+
+
+func _fire_selected_weapon() -> void:
+	match _selected_weapon:
+		0:
+			if PlayerState["stamina"] >= FIREBALL_STAMINA_COST and _fireball_cooldown <= 0:
+				_activate_fireball()
+		1:
+			if PlayerState["stamina"] >= FIRE_BULLET_STAMINA_COST and not is_fire_bullet:
+				_activate_fire_bullet()
+		2:
+			if PlayerState["stamina"] >= AOE_STAMINA_COST and _aoe_cooldown <= 0:
+				_activate_aoe()
+		3:
+			if PlayerState["stamina"] >= SHOTGUN_STAMINA_COST and _shotgun_cooldown <= 0:
+				_activate_shotgun()
 
 
 func _stop_stream() -> void:
@@ -396,7 +450,7 @@ func _activate_fireball() -> void:
 func _activate_aoe() -> void:
 	PlayerState["stamina"] -= AOE_STAMINA_COST
 	_aoe_cooldown = AOE_COOLDOWN
-	ThrowableService.explode(AOE_RADIUS, global_position, AOE_DAMAGE, AOE_PUSH_FORCE, self)
+	ThrowableService.explode(AOE_RADIUS, global_position, AOE_DAMAGE, AOE_PUSH_FORCE, self, 15)
 	CameraService.shake(0.5)
 	CameraService.kick(Vector2(0.1, 0.1), 0.2)
 	gain_adrenaline(ADRENALINE_ON_ATTACK)
