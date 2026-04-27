@@ -7,7 +7,7 @@ var _level_cleared: bool = false
 func _process(_delta: float) -> void:
 	if _level_cleared:
 		return
-	if get_tree().get_nodes_in_group("EnemyUnit").size() == 0:
+	if get_tree().get_nodes_in_group("EnemyUnit").size() == 0 and get_tree().get_nodes_in_group("EnemyPortal").size() == 0:
 		_level_cleared = true
 		if level_name != "":
 			MapService.complete_level(level_name)

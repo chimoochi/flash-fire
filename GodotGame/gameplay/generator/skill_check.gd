@@ -11,6 +11,7 @@ const NEEDLE_SPEED := PI  # half rotation per second
 var _needle_angle: float = 0.0
 var _zone_start: float = 0.0
 var _running: bool = false
+var _direction: float = 1.0
 
 func start() -> void:
 	_needle_angle = 0.0
@@ -24,6 +25,7 @@ func attempt() -> void:
 	var offset := fmod(_needle_angle - _zone_start + TAU, TAU)
 	if offset < ZONE_SIZE:
 		_zone_start = randf() * TAU
+		_direction *= -1.0
 		succeeded.emit()
 	else:
 		failed.emit()
@@ -31,7 +33,7 @@ func attempt() -> void:
 func _process(delta: float) -> void:
 	if not _running:
 		return
-	_needle_angle = fmod(_needle_angle + NEEDLE_SPEED * delta, TAU)
+	_needle_angle = fmod(_needle_angle + NEEDLE_SPEED * _direction * delta + TAU, TAU)
 	queue_redraw()
 
 func _draw() -> void:

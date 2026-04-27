@@ -1,10 +1,78 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=17 format=3]
 
 [ext_resource type="Script" path="res://gameplay/generator/generator.gd" id="1_gen"]
 [ext_resource type="Script" path="res://gameplay/generator/skill_check.gd" id="2_sc"]
+[ext_resource type="Texture2D" path="res://gameassets/runtime/sprites/8frameportal.png" id="3_portal"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_interact"]
 radius = 90.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
+size = Vector2(60, 60)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0"]
+atlas = ExtResource("3_portal")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1"]
+atlas = ExtResource("3_portal")
+region = Rect2(64, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2"]
+atlas = ExtResource("3_portal")
+region = Rect2(128, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3"]
+atlas = ExtResource("3_portal")
+region = Rect2(192, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4"]
+atlas = ExtResource("3_portal")
+region = Rect2(256, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5"]
+atlas = ExtResource("3_portal")
+region = Rect2(320, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6"]
+atlas = ExtResource("3_portal")
+region = Rect2(384, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7"]
+atlas = ExtResource("3_portal")
+region = Rect2(448, 0, 64, 64)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_portal"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_7")
+}],
+"loop": true,
+"name": &"default",
+"speed": 10.0
+}]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
 bg_color = Color(0.1, 0.08, 0.06, 0.95)
@@ -13,23 +81,50 @@ corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
-[node name="Generator" type="Node2D"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hp"]
+bg_color = Color(0.8, 0.15, 0.1, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[node name="EnemyPortal" type="StaticBody2D"]
+collision_layer = 4
 script = ExtResource("1_gen")
 
-[node name="Box" type="ColorRect" parent="."]
-offset_left = -30.0
-offset_top = -30.0
-offset_right = 30.0
-offset_bottom = 30.0
-color = Color(0.9, 0.45, 0.05, 1)
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_portal")
+animation = &"default"
+autoplay = "default"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_body")
+
+[node name="HealthBar" type="ProgressBar" parent="."]
+offset_left = -40.0
+offset_top = -55.0
+offset_right = 40.0
+offset_bottom = -47.0
+theme_override_styles/fill = SubResource("StyleBoxFlat_hp")
+max_value = 200.0
+value = 200.0
+show_percentage = false
+
+[node name="SpawnCountdownLabel" type="Label" parent="."]
+offset_left = -20.0
+offset_top = -78.0
+offset_right = 20.0
+offset_bottom = -60.0
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 13
 
 [node name="HintLabel" type="Label" parent="."]
-offset_left = -60.0
-offset_top = -60.0
-offset_right = 60.0
-offset_bottom = -44.0
+offset_left = -80.0
+offset_top = -100.0
+offset_right = 80.0
+offset_bottom = -84.0
 horizontal_alignment = 1
-text = "E — Repair"
+text = "Shoot to damage!"
 visible = false
 
 [node name="InteractArea" type="Area2D" parent="."]
@@ -62,7 +157,7 @@ theme_override_constants/separation = 10
 [node name="TitleLabel" type="Label" parent="GeneratorCanvas/Panel/VBox"]
 layout_mode = 2
 horizontal_alignment = 1
-text = "GENERATOR"
+text = "ENEMY PORTAL"
 theme_override_font_sizes/font_size = 14
 
 [node name="SkillCheck" type="Control" parent="GeneratorCanvas/Panel/VBox"]
@@ -74,5 +169,5 @@ script = ExtResource("2_sc")
 [node name="StatusLabel" type="Label" parent="GeneratorCanvas/Panel/VBox"]
 layout_mode = 2
 horizontal_alignment = 1
-text = "Progress: 0 / 5"
+text = "Destroy: 0 / 5"
 theme_override_font_sizes/font_size = 12
