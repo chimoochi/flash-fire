@@ -57,12 +57,15 @@ var _frozen_until: int = 0
 var weapon_visual: WeaponVisual = null
 var _last_damage_source: Node2D = null
 
+var nav_agent: NavigationAgent2D = null
+
 func _ready() -> void:
 	add_to_group("Enemy")
 	add_to_group("EnemyUnit")
 	_acquire_target()
 	_setup_health_bar()
 	_setup_melee()
+	_setup_nav_agent()
 	
 	idle_look_angle = rotation
 	
@@ -85,6 +88,13 @@ func _ready() -> void:
 	if random_passive != "":
 		PassiveService.add_passive(self, random_passive)
 		equipped_passive = random_passive
+
+func _setup_nav_agent() -> void:
+	nav_agent = NavigationAgent2D.new()
+	nav_agent.path_desired_distance = 8.0
+	nav_agent.target_desired_distance = STOPPING_DISTANCE
+	nav_agent.avoidance_enabled = true
+	add_child(nav_agent)
 
 func _setup_melee() -> void:
 	melee_pivot = Node2D.new()
@@ -190,9 +200,14 @@ func _physics_process(delta: float) -> void:
 			else:
 				var dist_to_last_known = global_position.distance_to(last_known_position)
 				if dist_to_last_known > STOPPING_DISTANCE:
-					var dir = global_position.direction_to(last_known_position)
-					_smooth_rotate(dir.angle(), delta)
-					_apply_movement(dir * move_speed)
+					nav_agent.target_position = last_known_position
+					if not nav_agent.is_navigation_finished():
+						var next_pos = nav_agent.get_next_path_position()
+						var dir = global_position.direction_to(next_pos)
+						_smooth_rotate(dir.angle(), delta)
+						_apply_movement(dir * move_speed)
+					else:
+						_apply_movement(Vector2.ZERO)
 				else:
 					_perform_search(delta)
 					_apply_movement(Vector2.ZERO)
@@ -208,28 +223,32 @@ func _apply_movement(drive_velocity: Vector2) -> void:
 	push_velocity = velocity - drive_velocity
 
 func _chase_target(delta: float) -> void:
-	var dir_to_target = global_position.direction_to(target.global_position)
 	var dist_to_target = global_position.distance_to(target.global_position)
-	
-	
 	last_known_position = target.global_position
-	
-	_smooth_rotate(dir_to_target.angle(), delta)
-	
-	var drive = Vector2.ZERO
+
 	var attack_range = equipped_power.settings.get("range", 100.0)
-	
-	if dist_to_target > attack_range * 0.8: # Close enough to use power
-		drive = dir_to_target * move_speed
-	
+	var drive = Vector2.ZERO
+
+	if dist_to_target > attack_range * 0.8:
+		nav_agent.target_position = target.global_position
+		var dir: Vector2
+		if not nav_agent.is_navigation_finished():
+			dir = global_position.direction_to(nav_agent.get_next_path_position())
+		else:
+			dir = global_position.direction_to(target.global_position)
+		_smooth_rotate(dir.angle(), delta)
+		drive = dir * move_speed
+	else:
+		_smooth_rotate(global_position.direction_to(target.global_position).angle(), delta)
+
 	var now = Time.get_ticks_msec()
 	var cooldown_ms = equipped_power.settings.get("cooldown", 1.0) * 1000
-	
+
 	if dist_to_target <= attack_range and Time.get_ticks_msec() >= _frozen_until:
 		if now - last_power_time >= cooldown_ms:
 			last_power_time = now
 			PowerModule.execute_power(equipped_power, self, target.global_position)
-	
+
 	_apply_movement(drive)
 
 func _perform_search(delta: float) -> void:

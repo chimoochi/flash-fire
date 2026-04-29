@@ -48,7 +48,7 @@ func _spawn_enemy() -> void:
 func _on_body_entered(body: Node) -> void:
 	if body.is_in_group("Player"):
 		_in_range = true
-		_hint_label.text = "E — Destroy" if _health <= 0 else "Shoot to damage!"
+		_hint_label.text = "E — Interact" if _health <= 0 else ""
 		_hint_label.visible = true
 
 func _on_body_exited(body: Node) -> void:

@@ -121,9 +121,7 @@ const ADRENALINE_ON_ATTACK := 7.0
 const ADRENALINE_ON_HIT := 10.0 # damage taken
 const EMPOWERED_DAMAGE_MULT := 4.0
 
-var _adrenaline_bar: ProgressBar = null
 var _stamina_bar: ProgressBar = null
-var _empowered_tween: Tween = null
 
 var debug_hitboxes: bool = false
 var _selected_weapon: int = 0
@@ -172,7 +170,6 @@ func _setup_power_ui() -> void:
 	_stamina_bar = $CanvasLayer/HUD/Content/BarsRow/StaminaSection/StaminaBar
 	_stamina_bar.max_value = PlayerState["max_stamina"]
 	_stamina_bar.value = PlayerState["stamina"]
-	_setup_adrenaline_bar()
 
 func _update_cooldown_ui() -> void:
 	if not _hud:
@@ -185,24 +182,6 @@ func _update_cooldown_ui() -> void:
 func _update_scrap_ui() -> void:
 	pass
 
-func _setup_adrenaline_bar() -> void:
-	var bg_style := StyleBoxFlat.new()
-	bg_style.bg_color = Color(0.15, 0.08, 0.05)
-
-	var fill_style := StyleBoxFlat.new()
-	fill_style.bg_color = Color(1.0, 0.45, 0.05)
-
-	_adrenaline_bar = ProgressBar.new()
-	_adrenaline_bar.custom_minimum_size = Vector2(200, 12)
-	_adrenaline_bar.max_value = PlayerState["max_adrenaline"]
-	_adrenaline_bar.value = 0.0
-	_adrenaline_bar.show_percentage = false
-	_adrenaline_bar.position = Vector2(41, 111)
-	_adrenaline_bar.add_theme_stylebox_override("background", bg_style)
-	_adrenaline_bar.add_theme_stylebox_override("fill", fill_style)
-	$CanvasLayer.add_child(_adrenaline_bar)
-
-	$CanvasLayer.add_child(_stamina_bar)
 
 func on_passive_added(passive_name: String) -> void:
 	if not PlayerState["passives"].has(passive_name):
@@ -591,9 +570,6 @@ func heal(amount: int) -> void:
 func gain_adrenaline(amount: float) -> void:
 	var prev = PlayerState["adrenaline"]
 	PlayerState["adrenaline"] = min(PlayerState["max_adrenaline"], PlayerState["adrenaline"] + amount)
-	if _adrenaline_bar:
-		_adrenaline_bar.value = PlayerState["adrenaline"]
-		
 	CameraService.shake(amount * 0.002)
 	if prev < PlayerState["max_adrenaline"] and PlayerState["adrenaline"] >= PlayerState["max_adrenaline"]:
 		_on_empowered_ready()
@@ -602,8 +578,6 @@ func lose_adrenaline(amount: float) -> void:
 	var was_empowered = PlayerState["is_empowered"]
 	PlayerState["adrenaline"] = max(0.0, PlayerState["adrenaline"] - amount)
 	PlayerState["is_empowered"] = PlayerState["adrenaline"] >= PlayerState["max_adrenaline"]
-	if _adrenaline_bar:
-		_adrenaline_bar.value = PlayerState["adrenaline"]
 	if was_empowered and not PlayerState["is_empowered"]:
 		_stop_empowered_pulse()
 
@@ -619,29 +593,16 @@ func _process_adrenaline(delta: float) -> void:
 func _on_empowered_ready() -> void:
 	PlayerState["is_empowered"] = true
 	CameraService.shake(0.2)
-	if _empowered_tween:
-		_empowered_tween.kill()
-	_adrenaline_bar.scale = Vector2(1.1, 1.4)
-	_empowered_tween = create_tween().set_loops()
-	_empowered_tween.tween_property(_adrenaline_bar, "modulate", Color(1.0, 1.0, 0.0, 1.0), 0.2)
-	_empowered_tween.tween_property(_adrenaline_bar, "modulate", Color(1.0, 0.3, 0.0, 1.0), 0.2)
 
 func _consume_empowered() -> void:
 	PlayerState["is_empowered"] = false
 	PlayerState["adrenaline"] = 0.0
-	if _adrenaline_bar:
-		_adrenaline_bar.value = 0.0
 	_stop_empowered_pulse()
 	CameraService.shake(0.9)
 	CameraService.kick(Vector2(0.45, 0.45), 0.35)
 
 func _stop_empowered_pulse() -> void:
-	if _empowered_tween:
-		_empowered_tween.kill()
-		_empowered_tween = null
-	if _adrenaline_bar:
-		_adrenaline_bar.modulate = Color.WHITE
-		_adrenaline_bar.scale = Vector2.ONE
+	pass
 
 func die() -> void:
 	PlayerState["is_alive"] = false
