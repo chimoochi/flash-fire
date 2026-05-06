@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://wl8rnfiuxa0h"
-path="res://.godot/imported/FlashFire.png-248698777846eb0975a25226b5dcd882.ctex"
+uid="uid://c85bij3cl704t"
+path="res://.godot/imported/index.png-7f66f612a88a5e604ffeac6d4ccded38.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://dist/FlashFire.png"
-dest_files=["res://.godot/imported/FlashFire.png-248698777846eb0975a25226b5dcd882.ctex"]
+source_file="res://dist/index.png"
+dest_files=["res://.godot/imported/index.png-7f66f612a88a5e604ffeac6d4ccded38.ctex"]
 
 [params]
 

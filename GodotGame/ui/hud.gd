@@ -112,7 +112,7 @@ func _update_portal_indicators() -> void:
 
 		ind.visible = true
 
-		var edge_pos := _clamp_to_screen_edge(screen_pos, screen_size, margin + _IND_H / 2)
+		var edge_pos := _clamp_to_screen_edge(screen_pos, screen_size, margin + _IND_SIZE.y / 2)
 		ind.position = edge_pos - _IND_SIZE / 2
 
 func _process(delta: float) -> void:
