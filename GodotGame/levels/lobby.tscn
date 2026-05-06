@@ -51,11 +51,6 @@ position = Vector2(-300, -100)
 target_map_path = "res://levels/level1.tscn"
 portal_label = "Level 1"
 
-[node name="Portal_Level2" parent="." instance=ExtResource("2_portal")]
-position = Vector2(300, -100)
-target_map_path = "res://levels/level2.tscn"
-portal_label = "Level 2"
-
 [node name="Shop" parent="." instance=ExtResource("4_shop")]
 position = Vector2(0, -200)
 scale = Vector2(0.85949725, 0.85949725)

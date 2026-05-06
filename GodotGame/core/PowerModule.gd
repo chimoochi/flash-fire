@@ -76,6 +76,7 @@ const POWERS = {
 			"range": 700.0
 		}
 	}
+	
 }
 static func get_random_power() -> Dictionary:
 	return get_random_power_for_level("")

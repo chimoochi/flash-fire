@@ -1,191 +1,232 @@
-[gd_scene load_steps=6 format=3 uid="uid://dq8hud_main01"]
+[gd_scene load_steps=9 format=3 uid="uid://bqcu8nov8xb43"]
 
-[ext_resource type="Script" uid="uid://dq8hud_gd001" path="res://ui/hud.gd" id="1_hud"]
+[ext_resource type="Script" uid="uid://bkyxav6vut7bf" path="res://ui/hud.gd" id="1_hud"]
 [ext_resource type="PackedScene" uid="uid://c6jlkk74smucx" path="res://player/health_bar.tscn" id="2_healthbar"]
-
-[sub_resource type="StyleBoxFlat" id="SF_hp_fill"]
-bg_color = Color(0.22, 0.88, 0.4, 1)
+[ext_resource type="Texture2D" uid="uid://b8168m60sfs48" path="res://gameassets/runtime/hud/HealthBar1.png" id="3_hb1"]
+[ext_resource type="Texture2D" uid="uid://c5vomqcvkahg8" path="res://gameassets/runtime/hud/HealthBar2.png" id="4_hb2"]
 
 [sub_resource type="StyleBoxFlat" id="SF_hp_bg"]
 bg_color = Color(0.1, 0.1, 0.1, 1)
 
-[sub_resource type="StyleBoxFlat" id="SF_st_fill"]
-bg_color = Color(0.25, 0.6, 1.0, 1)
+[sub_resource type="StyleBoxFlat" id="SF_hp_fill"]
+bg_color = Color(0.22, 0.88, 0.4, 1)
 
 [sub_resource type="StyleBoxFlat" id="SF_st_bg"]
 bg_color = Color(0.1, 0.1, 0.1, 1)
 
+[sub_resource type="StyleBoxFlat" id="SF_st_fill"]
+bg_color = Color(0.25, 0.6, 1, 1)
+
 [node name="HUD" type="Control"]
+layout_mode = 3
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
 script = ExtResource("1_hud")
 
-[node name="Content" type="VBoxContainer" parent="."]
-anchor_left = 0.5
-anchor_top = 1.0
-anchor_right = 0.5
-anchor_bottom = 1.0
-offset_left = -150.0
-offset_top = -88.0
-offset_right = 150.0
-offset_bottom = -6.0
-theme_override_constants/separation = 6
-
-[node name="BarsRow" type="HBoxContainer" parent="Content"]
-layout_mode = 2
-theme_override_constants/separation = 8
-
-[node name="HealthSection" type="VBoxContainer" parent="Content/BarsRow"]
-layout_mode = 2
-size_flags_horizontal = 3
+[node name="HealthSection" type="VBoxContainer" parent="."]
+layout_mode = 0
+offset_left = 918.0
+offset_top = 911.99994
+offset_right = 1118.0
+offset_bottom = 951.99994
+scale = Vector2(0.5473827, 2.0347812)
 theme_override_constants/separation = 2
 
-[node name="HealthLabel" type="Label" parent="Content/BarsRow/HealthSection"]
+[node name="HealthLabel" type="Label" parent="HealthSection"]
 layout_mode = 2
-text = "HP"
 theme_override_font_sizes/font_size = 9
+text = " "
 
-[node name="HealthBar" parent="Content/BarsRow/HealthSection" instance=ExtResource("2_healthbar")]
-layout_mode = 2
+[node name="HealthBar" parent="HealthSection" instance=ExtResource("2_healthbar")]
 custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
 size_flags_horizontal = 3
 theme_override_styles/background = SubResource("SF_hp_bg")
 theme_override_styles/fill = SubResource("SF_hp_fill")
 
-[node name="StaminaSection" type="VBoxContainer" parent="Content/BarsRow"]
-layout_mode = 2
-size_flags_horizontal = 3
+[node name="StaminaSection" type="VBoxContainer" parent="."]
+layout_mode = 0
+offset_left = 240.0
+offset_top = 970.0
+offset_right = 440.0
+offset_bottom = 1010.0
 theme_override_constants/separation = 2
 
-[node name="StaminaLabel" type="Label" parent="Content/BarsRow/StaminaSection"]
+[node name="StaminaLabel" type="Label" parent="StaminaSection"]
 layout_mode = 2
-text = "STAMINA"
 theme_override_font_sizes/font_size = 9
+text = "STAMINA"
 
-[node name="StaminaBar" type="ProgressBar" parent="Content/BarsRow/StaminaSection"]
-layout_mode = 2
+[node name="StaminaBar" type="ProgressBar" parent="StaminaSection"]
 custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
 size_flags_horizontal = 3
-max_value = 100.0
-value = 100.0
-show_percentage = false
 theme_override_styles/background = SubResource("SF_st_bg")
 theme_override_styles/fill = SubResource("SF_st_fill")
+value = 100.0
+show_percentage = false
+
+[node name="Content" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -144.0
+offset_top = -50.0
+offset_right = 156.0
+offset_bottom = -3.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_constants/separation = 6
 
 [node name="AttacksRow" type="HBoxContainer" parent="Content"]
 layout_mode = 2
-alignment = 1
 theme_override_constants/separation = 6
+alignment = 1
 
 [node name="Slot1" type="VBoxContainer" parent="Content/AttacksRow"]
 layout_mode = 2
-alignment = 1
 theme_override_constants/separation = 2
+alignment = 1
 
 [node name="IconWrap1" type="Control" parent="Content/AttacksRow/Slot1"]
-layout_mode = 2
-custom_minimum_size = Vector2(56, 32)
 clip_contents = true
+custom_minimum_size = Vector2(56, 32)
+layout_mode = 2
 
 [node name="Icon1" type="ColorRect" parent="Content/AttacksRow/Slot1/IconWrap1"]
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
-color = Color(1.0, 0.38, 0.08, 1)
+color = Color(1, 0.38, 0.08, 1)
 
 [node name="Cooldown1" type="ColorRect" parent="Content/AttacksRow/Slot1/IconWrap1"]
+visible = false
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
-color = Color(0, 0, 0, 0.65)
 mouse_filter = 2
-visible = false
+color = Color(0, 0, 0, 0.65)
 
 [node name="Key1" type="Label" parent="Content/AttacksRow/Slot1"]
 layout_mode = 2
-horizontal_alignment = 1
-text = "1 Fireball"
 theme_override_font_sizes/font_size = 9
+text = "1 Fireball"
+horizontal_alignment = 1
 
 [node name="Slot2" type="VBoxContainer" parent="Content/AttacksRow"]
 layout_mode = 2
-alignment = 1
 theme_override_constants/separation = 2
+alignment = 1
 
 [node name="IconWrap2" type="Control" parent="Content/AttacksRow/Slot2"]
-layout_mode = 2
-custom_minimum_size = Vector2(56, 32)
 clip_contents = true
+custom_minimum_size = Vector2(56, 32)
+layout_mode = 2
 
 [node name="Icon2" type="ColorRect" parent="Content/AttacksRow/Slot2/IconWrap2"]
+layout_mode = 1
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-color = Color(1.0, 0.85, 0.1, 1)
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(1, 0.85, 0.1, 1)
 
 [node name="Cooldown2" type="ColorRect" parent="Content/AttacksRow/Slot2/IconWrap2"]
+visible = false
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
-color = Color(0, 0, 0, 0.65)
 mouse_filter = 2
-visible = false
+color = Color(0, 0, 0, 0.65)
 
 [node name="Key2" type="Label" parent="Content/AttacksRow/Slot2"]
 layout_mode = 2
-horizontal_alignment = 1
-text = "2 Launch"
 theme_override_font_sizes/font_size = 9
+text = "2 Launch"
+horizontal_alignment = 1
 
 [node name="Slot3" type="VBoxContainer" parent="Content/AttacksRow"]
 layout_mode = 2
-alignment = 1
 theme_override_constants/separation = 2
+alignment = 1
 
 [node name="IconWrap3" type="Control" parent="Content/AttacksRow/Slot3"]
-layout_mode = 2
-custom_minimum_size = Vector2(56, 32)
 clip_contents = true
+custom_minimum_size = Vector2(56, 32)
+layout_mode = 2
 
 [node name="Icon3" type="ColorRect" parent="Content/AttacksRow/Slot3/IconWrap3"]
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
-color = Color(0.6, 0.15, 1.0, 1)
+color = Color(0.6, 0.15, 1, 1)
 
 [node name="Cooldown3" type="ColorRect" parent="Content/AttacksRow/Slot3/IconWrap3"]
+visible = false
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
-color = Color(0, 0, 0, 0.65)
 mouse_filter = 2
-visible = false
+color = Color(0, 0, 0, 0.65)
 
 [node name="Key3" type="Label" parent="Content/AttacksRow/Slot3"]
 layout_mode = 2
-horizontal_alignment = 1
-text = "3 AOE"
 theme_override_font_sizes/font_size = 9
+text = "3 AOE"
+horizontal_alignment = 1
 
 [node name="Slot4" type="VBoxContainer" parent="Content/AttacksRow"]
 layout_mode = 2
-alignment = 1
 theme_override_constants/separation = 2
+alignment = 1
 
 [node name="IconWrap4" type="Control" parent="Content/AttacksRow/Slot4"]
-layout_mode = 2
-custom_minimum_size = Vector2(56, 32)
 clip_contents = true
+custom_minimum_size = Vector2(56, 32)
+layout_mode = 2
 
 [node name="Icon4" type="ColorRect" parent="Content/AttacksRow/Slot4/IconWrap4"]
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
-color = Color(0.2, 0.7, 1.0, 1)
+color = Color(0.2, 0.7, 1, 1)
 
 [node name="Cooldown4" type="ColorRect" parent="Content/AttacksRow/Slot4/IconWrap4"]
+visible = false
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
-color = Color(0, 0, 0, 0.65)
 mouse_filter = 2
-visible = false
+color = Color(0, 0, 0, 0.65)
 
 [node name="Key4" type="Label" parent="Content/AttacksRow/Slot4"]
 layout_mode = 2
-horizontal_alignment = 1
-text = "4 Shotgun"
 theme_override_font_sizes/font_size = 9
+text = "4 Shotgun"
+horizontal_alignment = 1
+
+[node name="HealthBar1" type="TextureRect" parent="."]
+layout_mode = 0
+offset_left = 862.0
+offset_top = 902.0
+offset_right = 1502.0
+offset_bottom = 1222.0
+scale = Vector2(0.27086952, 0.27086952)
+mouse_filter = 2
+texture = ExtResource("3_hb1")
+
+[node name="HealthBar2" type="TextureRect" parent="."]
+layout_mode = 0
+offset_left = 862.0
+offset_top = 902.0
+offset_right = 1502.0
+offset_bottom = 1222.0
+scale = Vector2(0.27086952, 0.27086952)
+mouse_filter = 2
+texture = ExtResource("4_hb2")

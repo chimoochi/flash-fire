@@ -59,14 +59,14 @@ func _physics_process(delta: float) -> void:
 	var direction := Vector2.ZERO
 	if Input.is_action_pressed("MoveRight"): direction.x += 1
 	if Input.is_action_pressed("MoveLeft"):  direction.x -= 1
-	if Input.is_action_pressed("MoveDown"):  direction.y += 1
-	if Input.is_action_pressed("MoveUp"):    direction.y -= 1
+	#if Input.is_action_pressed("MoveDown"):  direction.y += 1
+	#if Input.is_action_pressed("MoveUp"):    direction.y -= 1
 	if direction.length() > 0:
 		direction = direction.normalized()
 
 	var is_sprinting := Input.is_action_pressed("Sprint") and direction != Vector2.ZERO and stamina > 0.0
 	_process_stamina(delta, is_sprinting)
-	var top_speed: float = SPRINT_SPEED if is_sprinting else MAX_SPEED
+	var top_speed: float = MAX_SPEED
 
 	push_velocity = push_velocity.move_toward(Vector2.ZERO, PUSH_DECAY * delta)
 
@@ -81,7 +81,7 @@ func _physics_process(delta: float) -> void:
 		velocity = velocity.limit_length(MAX_VELOCITY)
 		move_and_slide()
 
-	look_at(get_global_mouse_position())
+	#look_at(get_global_mouse_position())
 
 	if Input.is_action_just_pressed("Dash") and _dash_service.can_dash:
 		_dash_service.start_dash(self, direction, dash_speed, dash_duration, dash_cooldown, 0.0)

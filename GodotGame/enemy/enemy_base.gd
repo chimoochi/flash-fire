@@ -204,6 +204,8 @@ func _physics_process(delta: float) -> void:
 					if not nav_agent.is_navigation_finished():
 						var next_pos = nav_agent.get_next_path_position()
 						var dir = global_position.direction_to(next_pos)
+						if dir.length_squared() < 0.01:
+							dir = global_position.direction_to(last_known_position)
 						_smooth_rotate(dir.angle(), delta)
 						_apply_movement(dir * move_speed)
 					else:
@@ -233,7 +235,10 @@ func _chase_target(delta: float) -> void:
 		nav_agent.target_position = target.global_position
 		var dir: Vector2
 		if not nav_agent.is_navigation_finished():
-			dir = global_position.direction_to(nav_agent.get_next_path_position())
+			var next_pos = nav_agent.get_next_path_position()
+			dir = global_position.direction_to(next_pos)
+			if dir.length_squared() < 0.01:
+				dir = global_position.direction_to(target.global_position)
 		else:
 			dir = global_position.direction_to(target.global_position)
 		_smooth_rotate(dir.angle(), delta)

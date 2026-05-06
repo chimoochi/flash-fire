@@ -1,9 +1,9 @@
 [gd_scene load_steps=3 format=3 uid="uid://bobs7x2kqm4dn"]
 
-[ext_resource type="Script" path="res://levels/boat_obstacle.gd" id="1_obs"]
+[ext_resource type="Script" uid="uid://b5u73bwmkimcb" path="res://levels/boat_obstacle.gd" id="1_obs"]
 
 [sub_resource type="RectangleShape2D" id="1_shape"]
-size = Vector2(70, 50)
+size = Vector2(70, 216)
 
 [node name="BoatObstacle" type="Area2D"]
 script = ExtResource("1_obs")
@@ -13,7 +13,7 @@ shape = SubResource("1_shape")
 
 [node name="Visual" type="ColorRect" parent="."]
 offset_left = -35.0
-offset_top = -25.0
+offset_top = -108.0
 offset_right = 35.0
-offset_bottom = 25.0
+offset_bottom = 108.0
 color = Color(0.45, 0.28, 0.12, 1)

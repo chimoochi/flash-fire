@@ -1,7 +1,7 @@
-[gd_scene load_steps=8 format=3 uid="uid://0q26hseu155c"]
+[gd_scene load_steps=6 format=3 uid="uid://dp4he25dih0rc"]
 
-[ext_resource type="Script" path="res://levels/level1_5.gd" id="1_lvl"]
-[ext_resource type="PackedScene" path="res://player/minigame_player.tscn" id="2_mgplayer"]
+[ext_resource type="Script" uid="uid://dk5ul7gsevf6k" path="res://levels/level1_5.gd" id="1_lvl"]
+[ext_resource type="PackedScene" uid="uid://b6yyt3gthkt8s" path="res://player/minigame_player.tscn" id="2_mgplayer"]
 
 [sub_resource type="RectangleShape2D" id="1_lwall"]
 size = Vector2(40, 1200)
@@ -9,11 +9,8 @@ size = Vector2(40, 1200)
 [sub_resource type="RectangleShape2D" id="2_rwall"]
 size = Vector2(40, 1200)
 
-[sub_resource type="SystemFont" id="3_font"]
-
 [sub_resource type="LabelSettings" id="4_lblset"]
 font_size = 42
-font_color = Color(1, 1, 1, 1)
 
 [node name="Level1_5" type="Node2D"]
 script = ExtResource("1_lvl")
@@ -65,19 +62,20 @@ offset_bottom = 1080.0
 color = Color(0.22, 0.5, 0.18, 1)
 
 [node name="LeftWall" type="StaticBody2D" parent="."]
-position = Vector2(200.0, 540.0)
+position = Vector2(200, 540)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="LeftWall"]
 shape = SubResource("1_lwall")
 
 [node name="RightWall" type="StaticBody2D" parent="."]
-position = Vector2(1720.0, 540.0)
+position = Vector2(1720, 540)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="RightWall"]
 shape = SubResource("2_rwall")
 
 [node name="BoatPlayer" parent="." instance=ExtResource("2_mgplayer")]
-position = Vector2(960.0, 880.0)
+position = Vector2(960, 880)
+scale = Vector2(2.72, 2.72)
 
 [node name="UI" type="CanvasLayer" parent="."]
 
@@ -96,8 +94,8 @@ horizontal_alignment = 1
 [node name="HintLabel" type="Label" parent="UI"]
 anchors_preset = 7
 anchor_left = 0.5
-anchor_right = 0.5
 anchor_top = 1.0
+anchor_right = 0.5
 anchor_bottom = 1.0
 offset_left = -300.0
 offset_top = -52.0

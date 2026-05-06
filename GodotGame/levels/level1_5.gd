@@ -6,9 +6,11 @@ const LANE_RIGHT := 1700.0
 const PLAYER_Y := 880.0
 const OBSTACLE_SCENE := preload("res://levels/boat_obstacle.tscn")
 
+@export var difficulty: int = 1
+
 var _timer := 0.0
 var _spawn_timer := 0.0
-var _spawn_interval := 1.4
+var _spawn_interval := 1.75
 var _obstacle_speed := 380.0
 var _player: CharacterBody2D
 var _timer_label: Label
@@ -30,8 +32,9 @@ func _process(delta: float) -> void:
 	_timer_label.text = "Survive: %.1f" % maxf(remaining, 0.0)
 
 	var progress := clampf(_timer / SURVIVE_TIME, 0.0, 1.0)
-	_obstacle_speed = lerpf(380.0, 700.0, progress)
-	_spawn_interval = lerpf(1.4, 0.55, progress)
+	var d := clampf(difficulty, 1.0, 10.0)
+	_obstacle_speed = lerpf(380.0 + d * 30.0, 700.0 + d * 40.0, progress)
+	_spawn_interval = lerpf(maxf(1.4 - d * 0.08, 0.4), maxf(0.55 - d * 0.04, 0.2), progress)
 
 	_spawn_timer -= delta
 	if _spawn_timer <= 0.0:
@@ -49,7 +52,8 @@ func _lock_player() -> void:
 	_player.position.x = clampf(_player.position.x, LANE_LEFT + 16.0, LANE_RIGHT - 16.0)
 
 func _spawn_wave() -> void:
-	var count := 1 if _timer < 8.0 else (2 if _timer < 15.0 else 3)
+	var progress := clampf(_timer / SURVIVE_TIME, 0.0, 1.0)
+	var count := 3 + int(progress * float(difficulty + 1))
 	var lanes := _pick_lanes(count)
 	for x in lanes:
 		var obs: Area2D = OBSTACLE_SCENE.instantiate()
@@ -59,9 +63,15 @@ func _spawn_wave() -> void:
 		add_child(obs)
 
 func _pick_lanes(count: int) -> Array:
-	var candidates := [260.0, 460.0, 660.0, 860.0, 1060.0, 1260.0, 1460.0, 1660.0]
-	candidates.shuffle()
-	return candidates.slice(0, count)
+	var num_slots := 8
+	var slot_w := (LANE_RIGHT - LANE_LEFT) / num_slots
+	var slots := range(num_slots)
+	slots.shuffle()
+	var result := []
+	for i in slots.slice(0, count):
+		var base: float = LANE_LEFT + float(i) * slot_w + slot_w * 0.1
+		result.append(base + randf() * slot_w * 0.8)
+	return result
 
 func _on_obstacle_hit(body: Node2D, obs: Node2D) -> void:
 	if _finished:

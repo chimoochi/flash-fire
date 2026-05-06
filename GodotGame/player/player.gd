@@ -62,7 +62,7 @@ const THROW_SPEED = 600.0
 
 @onready var melee_pivot: Node2D = $MeleePivot
 @onready var weapon_visuals: Node2D = $MeleePivot/MeleeHitBox
-@onready var health_bar = $CanvasLayer/HUD/Content/BarsRow/HealthSection/HealthBar
+@onready var health_bar = $CanvasLayer/HUD/HealthSection/HealthBar
 @onready var music_player: AudioStreamPlayer = $MusicPlayer
 @onready var _hud = $CanvasLayer/HUD
 
@@ -107,19 +107,10 @@ var PlayerState: Dictionary = {
 	"is_attacking": false,
 	"is_invincible": false,
 
-	"adrenaline": 0.0,
-	"max_adrenaline": 100.0,
-	"is_empowered": false,
-
 	"stamina": 100.0,
 	"max_stamina": 100.0,
 }
 
-const ADRENALINE_DRAIN_RATE := 1.0
-const ADRENALINE_ON_KILL := 40.0
-const ADRENALINE_ON_ATTACK := 7.0
-const ADRENALINE_ON_HIT := 10.0 # damage taken
-const EMPOWERED_DAMAGE_MULT := 4.0
 
 var _stamina_bar: ProgressBar = null
 
@@ -167,7 +158,7 @@ func _connect_existing_enemies() -> void:
 
 func _setup_power_ui() -> void:
 	_hud.set_selected_slot(_selected_weapon)
-	_stamina_bar = $CanvasLayer/HUD/Content/BarsRow/StaminaSection/StaminaBar
+	_stamina_bar = $CanvasLayer/HUD/StaminaSection/StaminaBar
 	_stamina_bar.max_value = PlayerState["max_stamina"]
 	_stamina_bar.value = PlayerState["stamina"]
 
@@ -234,7 +225,7 @@ func _physics_process(delta):
 
 	_move_mouse_with_stick(delta)
 	look_at(get_global_mouse_position())
-	_process_adrenaline(delta)
+
 
 
 	var rt := Input.get_joy_axis(0, JOY_AXIS_TRIGGER_RIGHT)
@@ -394,7 +385,6 @@ func use_equipped_power() -> void:
 	if equipped_power.name == "Lightning":
 		if not lightning_stream:
 			last_power_time = now
-			gain_adrenaline(ADRENALINE_ON_ATTACK)
 			var stream_script = load("res://combat/attacks/lightning_stream.gd")
 			lightning_stream = stream_script.new()
 			add_child(lightning_stream)
@@ -402,18 +392,7 @@ func use_equipped_power() -> void:
 		return
 
 	last_power_time = now
-	gain_adrenaline(ADRENALINE_ON_ATTACK)
-
-	var empowered: bool = PlayerState["is_empowered"]
-	if empowered:
-		_consume_empowered()
-		var boosted: Dictionary = equipped_power.duplicate(true)
-		var orig_damage: int = boosted.settings.get("damage", -1)
-		if orig_damage > 0:
-			boosted.settings.damage = int(orig_damage * EMPOWERED_DAMAGE_MULT)
-		PowerModule.execute_power(boosted, self , get_global_mouse_position())
-	else:
-		PowerModule.execute_power(equipped_power, self , get_global_mouse_position())
+	PowerModule.execute_power(equipped_power, self , get_global_mouse_position())
 
 
 func _activate_fireball() -> void:
@@ -424,7 +403,7 @@ func _activate_fireball() -> void:
 	velocity += -dir * FIREBALL_RECOIL
 	velocity = velocity.limit_length(MAX_VELOCITY)
 	CameraService.shake(0.15)
-	gain_adrenaline(ADRENALINE_ON_ATTACK)
+
 
 func _activate_aoe() -> void:
 	PlayerState["stamina"] -= AOE_STAMINA_COST
@@ -432,7 +411,7 @@ func _activate_aoe() -> void:
 	ThrowableService.explode(AOE_RADIUS, global_position, AOE_DAMAGE, AOE_PUSH_FORCE, self, 15)
 	CameraService.shake(0.5)
 	CameraService.kick(Vector2(0.1, 0.1), 0.2)
-	gain_adrenaline(ADRENALINE_ON_ATTACK)
+
 
 func _activate_shotgun() -> void:
 	PlayerState["stamina"] -= SHOTGUN_STAMINA_COST
@@ -442,7 +421,7 @@ func _activate_shotgun() -> void:
 	velocity += -dir * SHOTGUN_RECOIL
 	velocity = velocity.limit_length(MAX_VELOCITY)
 	CameraService.shake(0.2)
-	gain_adrenaline(ADRENALINE_ON_ATTACK)
+
 
 func _activate_fire_bullet() -> void:
 	if is_fire_bullet or PlayerState["stamina"] < FIRE_BULLET_STAMINA_COST:
@@ -456,7 +435,7 @@ func _activate_fire_bullet() -> void:
 	var dir = (get_global_mouse_position() - global_position).normalized()
 	velocity = dir * FIRE_BULLET_START_SPEED
 	CameraService.shake(0.15)
-	gain_adrenaline(ADRENALINE_ON_ATTACK)
+
 
 func _process_fire_bullet(delta: float) -> void:
 	fire_bullet_timer -= delta
@@ -544,13 +523,12 @@ func _try_connect_enemy(node: Node) -> void:
 			node.died.connect(_on_enemy_died)
 
 func _on_enemy_died() -> void:
-	gain_adrenaline(ADRENALINE_ON_KILL)
+	pass
 
 func take_damage(amount: int, source_pos: Vector2 = Vector2.ZERO, source: Node2D = null) -> void:
 	if not PlayerState["is_alive"] or PlayerState.get("is_invincible", false):
 		return
 
-	lose_adrenaline(ADRENALINE_ON_HIT)
 	var reduced = max(int(amount * 0.6), 1)
 	PlayerState["health"] -= reduced
 	if health_bar:
@@ -567,42 +545,6 @@ func heal(amount: int) -> void:
 		health_bar.set_health(PlayerState["health"])
 	DamageNumber.spawn(get_tree(), global_position + Vector2(randf_range(-8, 8), -20), amount, Color(0.25, 1.0, 0.25))
 
-func gain_adrenaline(amount: float) -> void:
-	var prev = PlayerState["adrenaline"]
-	PlayerState["adrenaline"] = min(PlayerState["max_adrenaline"], PlayerState["adrenaline"] + amount)
-	CameraService.shake(amount * 0.002)
-	if prev < PlayerState["max_adrenaline"] and PlayerState["adrenaline"] >= PlayerState["max_adrenaline"]:
-		_on_empowered_ready()
-
-func lose_adrenaline(amount: float) -> void:
-	var was_empowered = PlayerState["is_empowered"]
-	PlayerState["adrenaline"] = max(0.0, PlayerState["adrenaline"] - amount)
-	PlayerState["is_empowered"] = PlayerState["adrenaline"] >= PlayerState["max_adrenaline"]
-	if was_empowered and not PlayerState["is_empowered"]:
-		_stop_empowered_pulse()
-
-func _process_adrenaline(delta: float) -> void:
-	if PlayerState["adrenaline"] <= 0.0:
-		return
-	lose_adrenaline(ADRENALINE_DRAIN_RATE * delta)
-	var ratio: float = float(PlayerState["adrenaline"]) / float(PlayerState["max_adrenaline"])
-	if ratio >= 0.7:
-		var floor_trauma: float = remap(ratio, 0.5, 1.0, 0.08, 0.45)
-		CameraService.trauma = max(CameraService.trauma, floor_trauma)
-
-func _on_empowered_ready() -> void:
-	PlayerState["is_empowered"] = true
-	CameraService.shake(0.2)
-
-func _consume_empowered() -> void:
-	PlayerState["is_empowered"] = false
-	PlayerState["adrenaline"] = 0.0
-	_stop_empowered_pulse()
-	CameraService.shake(0.9)
-	CameraService.kick(Vector2(0.45, 0.45), 0.35)
-
-func _stop_empowered_pulse() -> void:
-	pass
 
 func die() -> void:
 	PlayerState["is_alive"] = false

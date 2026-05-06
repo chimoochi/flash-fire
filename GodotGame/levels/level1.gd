@@ -1,0 +1,28 @@
+extends Node2D
+
+@export_file("*.tscn") var next_level_path: String = "res://levels/level2.tscn"
+
+var _player_in_boat := false
+var _advanced := false
+
+func _ready() -> void:
+	$BoatTrigger.body_entered.connect(_on_boat_entered)
+	$BoatTrigger.body_exited.connect(_on_boat_exited)
+
+func _on_boat_entered(body: Node) -> void:
+	if body.is_in_group("Player"):
+		_player_in_boat = true
+
+func _on_boat_exited(body: Node) -> void:
+	if body.is_in_group("Player"):
+		_player_in_boat = false
+
+func _process(_delta: float) -> void:
+	if _advanced or not _player_in_boat:
+		return
+	if get_tree().get_nodes_in_group("EnemyUnit").size() > 0:
+		return
+	if get_tree().get_nodes_in_group("EnemyPortal").size() > 0:
+		return
+	_advanced = true
+	MapService.advance_to(next_level_path)

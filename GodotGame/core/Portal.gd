@@ -8,6 +8,7 @@ var locked: bool = false
 var _entry_cooldown: float = 1.0
 
 func _ready():
+	add_to_group("Portal")
 	body_entered.connect(_on_body_entered)
 	_update_lock_state()
 

@@ -1,19 +1,17 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=4 format=3 uid="uid://b6yyt3gthkt8s"]
 
-[ext_resource type="Script" path="res://player/minigame_player.gd" id="1_mgplayer"]
+[ext_resource type="Script" uid="uid://cwssqtludtdxp" path="res://player/minigame_player.gd" id="1_mgplayer"]
+[ext_resource type="Texture2D" uid="uid://btj4g4afxtp7f" path="res://gameassets/runtime/sprites/boat.png" id="2_boattex"]
 
-[sub_resource type="RectangleShape2D" id="1_shape"]
-size = Vector2(32, 32)
+[sub_resource type="ConvexPolygonShape2D" id="ConvexPolygonShape2D_i4bwx"]
+points = PackedVector2Array(-15.34, 0, -12.25, -15.81, 0, -32.05, 12, -16, 16, 0, 13, 17, 8, 27, 0, 30, -7, 28, -13, 17)
 
 [node name="MinigamePlayer" type="CharacterBody2D"]
 script = ExtResource("1_mgplayer")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-shape = SubResource("1_shape")
+shape = SubResource("ConvexPolygonShape2D_i4bwx")
 
-[node name="ColorRect" type="ColorRect" parent="."]
-offset_left = -16.0
-offset_top = -16.0
-offset_right = 16.0
-offset_bottom = 16.0
-color = Color(0.4, 0.7, 1, 1)
+[node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(0.035, 0.035)
+texture = ExtResource("2_boattex")
