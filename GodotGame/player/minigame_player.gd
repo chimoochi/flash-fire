@@ -59,8 +59,8 @@ func _physics_process(delta: float) -> void:
 	var direction := Vector2.ZERO
 	if Input.is_action_pressed("MoveRight"): direction.x += 1
 	if Input.is_action_pressed("MoveLeft"):  direction.x -= 1
-	#if Input.is_action_pressed("MoveDown"):  direction.y += 1
-	#if Input.is_action_pressed("MoveUp"):    direction.y -= 1
+	if Input.is_action_pressed("MoveDown"):  direction.y += 1
+	if Input.is_action_pressed("MoveUp"):    direction.y -= 1
 	if direction.length() > 0:
 		direction = direction.normalized()
 

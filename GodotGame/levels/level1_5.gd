@@ -46,10 +46,9 @@ func _process(delta: float) -> void:
 		finish()
 
 func _lock_player() -> void:
-	_player.position.y = PLAYER_Y
-	_player.velocity.y = 0.0
 	_player.rotation = 0.0
 	_player.position.x = clampf(_player.position.x, LANE_LEFT + 16.0, LANE_RIGHT - 16.0)
+	_player.position.y = clampf(_player.position.y, 100.0, 1000.0)
 
 func _spawn_wave() -> void:
 	var progress := clampf(_timer / SURVIVE_TIME, 0.0, 1.0)
