@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bh3neh36w8cvn"
-path="res://.godot/imported/FlashFire.apple-touch-icon.png-157e70cf648fa78b72a822a19a595a16.ctex"
+uid="uid://co02hkfwig8r6"
+path="res://.godot/imported/index.icon.png-ebf4ad58b4a2cee8f808e86473c0799b.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://dist/FlashFire.apple-touch-icon.png"
-dest_files=["res://.godot/imported/FlashFire.apple-touch-icon.png-157e70cf648fa78b72a822a19a595a16.ctex"]
+source_file="res://dist/index.icon.png"
+dest_files=["res://.godot/imported/index.icon.png-ebf4ad58b4a2cee8f808e86473c0799b.ctex"]
 
 [params]
 
