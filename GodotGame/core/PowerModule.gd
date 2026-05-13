@@ -75,8 +75,18 @@ const POWERS = {
 			"cooldown": 0.25,
 			"range": 700.0
 		}
+	},
+	"Fireball": {
+		"name": "Fireball",
+		"type": PowerType.RANGED,
+		"settings": {
+			"damage": 10,
+			"speed": 400.0,
+			"cooldown": 2.0,
+			"range": 350.0
+		}
 	}
-	
+
 }
 static func get_random_power() -> Dictionary:
 	return get_random_power_for_level("")
@@ -159,3 +169,14 @@ static func execute_power(power: Dictionary, caller: Node2D, target: Vector2) ->
 
 		"Lightning":
 			LightningService.activate(caller)
+
+		"Fireball":
+			var bullet = BulletService.BULLET_SCENE.instantiate()
+			bullet.direction = dir
+			bullet.speed = power.settings.speed
+			bullet.damage = power.settings.damage
+			bullet.owner_node = caller
+			bullet.is_player_bullet = true
+			bullet.global_position = caller.global_position + dir * 40.0
+			bullet.rotation = dir.angle()
+			caller.get_tree().root.add_child(bullet)

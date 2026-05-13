@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="FlashFire"
-run/main_scene="res://levels/lobby.tscn"
+run/main_scene="res://ui/main_menu.tscn"
 config/features=PackedStringArray("4.5", "GL Compatibility")
 config/icon="res://icon.svg"
 
@@ -21,6 +21,7 @@ CameraService="*res://core/services/CameraService.gd"
 Enviormentservice="*res://core/services/Enviormentservice.gd"
 MapService="*res://core/services/MapService.gd"
 SoundService="*res://core/services/SoundService.gd"
+CheatMenu="*res://ui/cheat_menu.gd"
 
 [display]
 

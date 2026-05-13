@@ -42,13 +42,13 @@ func is_level_completed(level_name: String) -> bool:
 	return level_name in completed_levels
 
 func save_player_status(player: Node2D) -> void:
-	if is_instance_valid(player):
+	if is_instance_valid(player) and player.get("PlayerState") != null:
 		player_data["health"] = player.PlayerState["health"]
 		player_data["equipped_power"] = player.equipped_power
 		player_data["passives"] = player.PlayerState["passives"].duplicate()
 
 func restore_player_status(player: Node2D) -> void:
-	if is_instance_valid(player) and not player_data.is_empty():
+	if is_instance_valid(player) and not player_data.is_empty() and player.get("PlayerState") != null:
 		player.PlayerState["health"] = player_data["health"]
 		player.equipped_power = player_data["equipped_power"]
 		player.PlayerState["passives"] = player_data["passives"].duplicate()

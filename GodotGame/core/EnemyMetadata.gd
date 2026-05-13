@@ -1,11 +1,11 @@
 class_name EnemyMetadata
 
 const ENEMY_LEVELS = {
-	"level1": { 
+	"level1": {
 		"basespeed": 1.0,
-		"damagemult": 0.3,
-		"allowed_weapons": [1], # PowerType.MELEE
-		"allowed_powers": [],
+		"damagemult": 1.0,
+		"allowed_weapons": [],
+		"allowed_powers": ["Fireball"],
 		"drops": [
 			{"type": "scrap", "chance": 0.8, "min": 1, "max": 3},
 			{"type": "health", "chance": 1.0, "amount": 10}

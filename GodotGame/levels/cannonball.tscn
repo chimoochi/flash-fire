@@ -1,0 +1,27 @@
+[gd_scene load_steps=4 format=3 uid="uid://btqn5v8k2x1mp"]
+
+[ext_resource type="Script" path="res://levels/cannonball.gd" id="1_cbscript"]
+[ext_resource type="Texture2D" uid="uid://c3w0vhaqaydvj" path="res://gameplay/cannonball.png" id="2_cbtex"]
+
+[sub_resource type="CircleShape2D" id="1_shape"]
+radius = 14.0
+
+[node name="CannonBall" type="Area2D"]
+position = Vector2(0, -448)
+script = ExtResource("1_cbscript")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(0.25630894, 0.25630894)
+texture = ExtResource("2_cbtex")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(-1, 0)
+scale = Vector2(1.2660406, 1.5929915)
+shape = SubResource("1_shape")
+
+[node name="WarningBeam" type="ColorRect" parent="."]
+offset_left = -4.0
+offset_right = 4.0
+offset_bottom = 1400.0
+scale = Vector2(0.92648876, 1.5479043)
+color = Color(1, 0, 0, 0.28)

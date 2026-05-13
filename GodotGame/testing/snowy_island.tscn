@@ -1,4 +1,4 @@
-[gd_scene load_steps=27 format=3 uid="uid://cyd75lvhygeeo"]
+[gd_scene load_steps=28 format=3 uid="uid://cyd75lvhygeeo"]
 
 [ext_resource type="Texture2D" uid="uid://b8whads1so5t3" path="res://gameassets/textures/world/TX Plant.png" id="1_0n348"]
 [ext_resource type="Texture2D" uid="uid://cwtvwny1q12lk" path="res://gameassets/textures/world/TX Player.png" id="2_n131r"]
@@ -13,6 +13,7 @@
 [ext_resource type="Texture2D" uid="uid://bbps63vu6a278" path="res://gameassets/textures/world/TX Tileset Wall.png" id="10_n4lbq"]
 [ext_resource type="Texture2D" uid="uid://d103s34hu7f8k" path="res://gameassets/textures/world/Water+.png" id="11_6m5g4"]
 [ext_resource type="PackedScene" uid="uid://bq3nv1n2jji1h" path="res://player/player.tscn" id="12_8nwg4"]
+[ext_resource type="PackedScene" uid="uid://cqwewuufhdctl" path="res://enemy/level1.tscn" id="14_vbcmq"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_0k6sk"]
 texture = ExtResource("1_0n348")
@@ -2935,3 +2936,9 @@ layer_3/tile_data = PackedInt32Array(524265, 720906, 0, 589801, 720906, 1, 65533
 
 [node name="Player" parent="." instance=ExtResource("12_8nwg4")]
 position = Vector2(-123, 971)
+
+[node name="Enemy bad" parent="." instance=ExtResource("14_vbcmq")]
+position = Vector2(820, 3934)
+
+[node name="Enemy bad2" parent="." instance=ExtResource("14_vbcmq")]
+position = Vector2(1235, 3723)

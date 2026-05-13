@@ -1,6 +1,136 @@
-[gd_scene load_steps=2 format=3 uid="uid://qlcpa4hb4hei"]
+[gd_scene load_steps=14 format=3 uid="uid://qlcpa4hb4hei"]
 
 [ext_resource type="Script" uid="uid://ck37wff7b7m2a" path="res://ui/main_menu.gd" id="1_06t4h"]
+[ext_resource type="Texture2D" uid="uid://wnroc4pjt2m3" path="res://gameassets/textures/MAIN_MENU/looking1menu.png" id="2_0dkrt"]
+[ext_resource type="Texture2D" uid="uid://dfe0hb1wckdc8" path="res://gameassets/textures/MAIN_MENU/animation portal tear main menu.png" id="3_portal"]
+[ext_resource type="Texture2D" uid="uid://ddtwj4me2kabp" path="res://gameassets/textures/MAIN_MENU/MMSKY.png" id="4_rmr83"]
 
-[node name="MainMenu" type="Node2D"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_0"]
+atlas = ExtResource("3_portal")
+region = Rect2(0, 0, 128, 143)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1"]
+atlas = ExtResource("3_portal")
+region = Rect2(128, 0, 128, 143)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2"]
+atlas = ExtResource("3_portal")
+region = Rect2(256, 0, 128, 143)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3"]
+atlas = ExtResource("3_portal")
+region = Rect2(384, 0, 128, 143)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4"]
+atlas = ExtResource("3_portal")
+region = Rect2(512, 0, 128, 143)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5"]
+atlas = ExtResource("3_portal")
+region = Rect2(640, 0, 128, 143)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6"]
+atlas = ExtResource("3_portal")
+region = Rect2(768, 0, 128, 143)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7"]
+atlas = ExtResource("3_portal")
+region = Rect2(896, 0, 128, 143)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_portal"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_7")
+}],
+"loop": true,
+"name": &"default",
+"speed": 10.0
+}]
+
+[node name="MainMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 script = ExtResource("1_06t4h")
+
+[node name="Background" type="ColorRect" parent="."]
+z_index = -1000
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.12, 0.12, 0.12, 1)
+
+[node name="playerimage" type="TextureRect" parent="."]
+layout_mode = 0
+offset_left = -288.0
+offset_top = 174.0
+offset_right = 736.0
+offset_bottom = 1198.0
+scale = Vector2(1.5622834, 1.5622834)
+mouse_filter = 2
+texture = ExtResource("2_0dkrt")
+
+[node name="PortalAnimation" type="AnimatedSprite2D" parent="."]
+position = Vector2(1395, 228.99998)
+rotation = 1.3422339
+scale = Vector2(0.6179377, 3.4645207)
+sprite_frames = SubResource("SpriteFrames_portal")
+autoplay = "default"
+
+[node name="Title" type="Label" parent="."]
+layout_mode = 0
+offset_left = 80.0
+offset_top = 100.0
+offset_right = 700.0
+offset_bottom = 170.0
+theme_override_font_sizes/font_size = 52
+text = "DUNGEON SHIFTERS"
+
+[node name="StartGame" type="Button" parent="."]
+layout_mode = 0
+offset_left = 80.0
+offset_top = 220.0
+offset_right = 280.0
+offset_bottom = 262.0
+theme_override_font_sizes/font_size = 20
+text = "Start Game"
+
+[node name="TextureRect2" type="TextureRect" parent="."]
+z_index = -999
+layout_mode = 0
+offset_left = -86.0
+offset_top = -455.0
+offset_right = 614.0
+offset_bottom = 245.0
+scale = Vector2(2.9636216, 2.9636216)
+mouse_filter = 2
+texture = ExtResource("4_rmr83")

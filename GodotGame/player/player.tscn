@@ -1,8 +1,9 @@
-[gd_scene load_steps=7 format=3 uid="uid://bq3nv1n2jji1h"]
+[gd_scene load_steps=8 format=3 uid="uid://bq3nv1n2jji1h"]
 
 [ext_resource type="Script" uid="uid://c4af162fdb6yc" path="res://player/player.gd" id="1_player"]
-[ext_resource type="PackedScene" uid="uid://dq8hud_main01" path="res://ui/hud.tscn" id="2_hud"]
+[ext_resource type="PackedScene" uid="uid://bqcu8nov8xb43" path="res://ui/hud.tscn" id="2_hud"]
 [ext_resource type="AudioStream" uid="uid://bxoil7vbca6q8" path="res://audio/music.mp3" id="3_music"]
+[ext_resource type="Texture2D" uid="uid://do7s2g55r02vk" path="res://gameassets/textures/playercharacter/top down char.png" id="4_yw30f"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_player"]
 size = Vector2(32, 32)
@@ -14,10 +15,12 @@ radius = 16.0
 size = Vector2(41, 6)
 
 [node name="Player" type="CharacterBody2D"]
+scale = Vector2(2.5039043, 2.5039043)
 collision_layer = 2
 script = ExtResource("1_player")
 
 [node name="ColorRect" type="ColorRect" parent="."]
+visible = false
 offset_left = -16.0
 offset_top = -16.0
 offset_right = 16.0
@@ -25,12 +28,14 @@ offset_bottom = 16.0
 color = Color(0.2, 0.4, 1, 1)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+visible = false
 shape = SubResource("RectangleShape2D_player")
 
 [node name="CollisionShape2D_Circle" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_player")
 
 [node name="MeleePivot" type="Node2D" parent="."]
+visible = false
 position = Vector2(16, 16)
 rotation = 0.324631
 
@@ -45,6 +50,7 @@ offset_right = 20.490894
 offset_bottom = 2.8377333
 
 [node name="Bullet" type="ColorRect" parent="."]
+visible = false
 offset_left = 16.0
 offset_top = -2.0
 offset_right = 32.0
@@ -59,7 +65,18 @@ drag_vertical_enabled = true
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
 [node name="HUD" parent="CanvasLayer" instance=ExtResource("2_hud")]
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="MusicPlayer" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("3_music")
 volume_db = -6.0
+
+[node name="TextureRect" type="TextureRect" parent="."]
+offset_left = -24.000002
+offset_top = 21.999998
+offset_right = 1000.0
+offset_bottom = 1046.0
+rotation = -1.5767062
+scale = Vector2(0.042425804, 0.03629742)
+texture = ExtResource("4_yw30f")
