@@ -107,8 +107,7 @@ func take_damage(amount: int, source_pos: Vector2 = Vector2.ZERO, _source: Node2
 	DamageNumber.spawn(get_tree(), global_position + Vector2(randf_range(-8, 8), -40), amount, Color(1.0, 0.4, 0.1))
 	if _health <= 0:
 		_countdown_label.visible = false
-		if _in_range:
-			_hint_label.text = "E — Destroy"
+		_destroy()
 
 func _destroy() -> void:
 	_destroyed = true

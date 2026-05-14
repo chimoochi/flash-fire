@@ -46,16 +46,18 @@ func _physics_process(_delta: float) -> void:
 
 	var to_remove = []
 
-	for victim in _victims.keys():
+	for id in _victims.keys():
+		var data = _victims[id]
+		var victim = data.body
 		if not is_instance_valid(victim):
-			to_remove.append(victim)
+			to_remove.append(id)
 			continue
 
-		var next_tick = _victims[victim]
+		var next_tick = data.next_tick
 		if now >= next_tick:
 			var damage_pos = source_node.global_position if is_instance_valid(source_node) else global_position
 			victim.take_damage(BURN_DAMAGE, damage_pos, source_node if is_instance_valid(source_node) else null)
-			_victims[victim] = now + int(BURN_INTERVAL * 1000)
+			data.next_tick = now + int(BURN_INTERVAL * 1000)
 
 	for invalid in to_remove:
 		_victims.erase(invalid)
@@ -67,8 +69,9 @@ func _on_body_entered(body: Node2D) -> void:
 	var now = Time.get_ticks_msec()
 	var damage_pos = source_node.global_position if is_instance_valid(source_node) else global_position
 	body.take_damage(BURN_DAMAGE, damage_pos, source_node if is_instance_valid(source_node) else null)
-	_victims[body] = now + int(BURN_INTERVAL * 1000)
+	_victims[body.get_instance_id()] = { "body": body, "next_tick": now + int(BURN_INTERVAL * 1000) }
 
 func _on_body_exited(body: Node2D) -> void:
-	if _victims.has(body):
-		_victims.erase(body)
+	var id = body.get_instance_id()
+	if _victims.has(id):
+		_victims.erase(id)

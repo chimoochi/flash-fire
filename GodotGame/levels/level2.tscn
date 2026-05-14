@@ -1,6 +1,6 @@
-[gd_scene load_steps=30 format=3 uid="uid://b7e31wa24rvtw"]
+[gd_scene load_steps=33 format=3 uid="uid://b7e31wa24rvtw"]
 
-[ext_resource type="Script" uid="uid://b0nasicy4i5sa" path="res://levels/level3.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://82tvsfn2myas" path="res://levels/level2.gd" id="1_script"]
 [ext_resource type="Texture2D" uid="uid://b8whads1so5t3" path="res://gameassets/textures/world/TX Plant.png" id="2_nq7ub"]
 [ext_resource type="Texture2D" uid="uid://cwtvwny1q12lk" path="res://gameassets/textures/world/TX Player.png" id="3_7ej46"]
 [ext_resource type="Texture2D" uid="uid://dk4si4aikdh31" path="res://gameassets/mana seed seasonal forest sample (winter)/seasonal sample (winter).png" id="4_tq58f"]
@@ -16,6 +16,8 @@
 [ext_resource type="PackedScene" uid="uid://bq3nv1n2jji1h" path="res://player/player.tscn" id="14_u3me6"]
 [ext_resource type="PackedScene" uid="uid://cqwewuufhdctl" path="res://enemy/level1.tscn" id="15_4sv2i"]
 [ext_resource type="Texture2D" uid="uid://btj4g4afxtp7f" path="res://gameassets/runtime/sprites/boat.png" id="16_7ej46"]
+[ext_resource type="PackedScene" path="res://environment/explosive_barrel.tscn" id="17_jj0ry"]
+[ext_resource type="PackedScene" path="res://gameplay/generator/generator.tscn" id="18_w8ofq"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_6slt7"]
 texture = ExtResource("2_nq7ub")
@@ -2920,6 +2922,9 @@ sources/12 = SubResource("TileSetAtlasSource_sv5e8")
 sources/9 = SubResource("TileSetAtlasSource_6ibev")
 sources/10 = SubResource("TileSetAtlasSource_5peto")
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_w8ofq"]
+radius = 130.63632
+
 [node name="Level2" type="Node2D"]
 script = ExtResource("1_script")
 
@@ -2953,3 +2958,49 @@ offset_bottom = 5994.0
 rotation = 0.6802286
 scale = Vector2(0.09033311, 0.09033311)
 texture = ExtResource("16_7ej46")
+
+[node name="investigate" type="Sprite2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="investigate"]
+position = Vector2(507, 2799)
+scale = Vector2(7.489969, 4.787248)
+shape = SubResource("CircleShape2D_w8ofq")
+
+[node name="ExplosiveBarrel" parent="." instance=ExtResource("17_jj0ry")]
+position = Vector2(-592, 3077)
+
+[node name="ExplosiveBarrel2" parent="." instance=ExtResource("17_jj0ry")]
+position = Vector2(1442, 3470)
+
+[node name="ExplosiveBarrel3" parent="." instance=ExtResource("17_jj0ry")]
+position = Vector2(1581, 2270)
+
+[node name="ExplosiveBarrel4" parent="." instance=ExtResource("17_jj0ry")]
+position = Vector2(-39, 2174)
+
+[node name="ExplosiveBarrel5" parent="." instance=ExtResource("17_jj0ry")]
+position = Vector2(398, 3399)
+
+[node name="ExplosiveBarrel6" parent="." instance=ExtResource("17_jj0ry")]
+position = Vector2(321, 2703)
+
+[node name="ExplosiveBarrel7" parent="." instance=ExtResource("17_jj0ry")]
+position = Vector2(935, 3248)
+
+[node name="ExplosiveBarrel8" parent="." instance=ExtResource("17_jj0ry")]
+position = Vector2(-342, 3846)
+
+[node name="ExplosiveBarrel9" parent="." instance=ExtResource("17_jj0ry")]
+position = Vector2(-288, 3576)
+
+[node name="EnemyPortal" parent="." instance=ExtResource("18_w8ofq")]
+position = Vector2(-806, 3402)
+
+[node name="EnemyPortal2" parent="." instance=ExtResource("18_w8ofq")]
+position = Vector2(-595, 2488)
+
+[node name="EnemyPortal3" parent="." instance=ExtResource("18_w8ofq")]
+position = Vector2(274, 1897)
+
+[node name="EnemyPortal4" parent="." instance=ExtResource("18_w8ofq")]
+position = Vector2(1403, 2009)
