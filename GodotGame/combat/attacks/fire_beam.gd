@@ -48,58 +48,62 @@ func _setup_visuals() -> void:
 	add_child(_inner_line)
 
 	_ember_particles = CPUParticles2D.new()
-	_ember_particles.amount = 18
-	_ember_particles.lifetime = 0.38
+	_ember_particles.amount = 30
+	_ember_particles.lifetime = 0.45
 	_ember_particles.explosiveness = 0.0
 	_ember_particles.direction = Vector2(1.0, 0.0)
-	_ember_particles.spread = 40.0
-	_ember_particles.gravity = Vector2(0.0, -35.0)
-	_ember_particles.initial_velocity_min = 40.0
-	_ember_particles.initial_velocity_max = 130.0
-	_ember_particles.scale_amount_min = 1.5
-	_ember_particles.scale_amount_max = 3.5
+	_ember_particles.spread = 50.0
+	_ember_particles.gravity = Vector2(0.0, -55.0)
+	_ember_particles.initial_velocity_min = 60.0
+	_ember_particles.initial_velocity_max = 190.0
+	_ember_particles.scale_amount_min = 2.5
+	_ember_particles.scale_amount_max = 6.0
+	_ember_particles.angular_velocity_min = -120.0
+	_ember_particles.angular_velocity_max = 120.0
 	var ember_ramp := Gradient.new()
-	ember_ramp.set_color(0, Color(1.0, 0.88, 0.3, 1.0))
-	ember_ramp.set_color(1, Color(1.0, 0.2, 0.0, 0.0))
+	ember_ramp.set_color(0, Color(1.0, 0.92, 0.3, 1.0))
+	ember_ramp.set_color(1, Color(1.0, 0.15, 0.0, 0.0))
 	_ember_particles.color_ramp = ember_ramp
-	_ember_particles.color = Color(1.0, 0.55, 0.1, 0.85)
+	_ember_particles.color = Color(1.0, 0.6, 0.1, 0.9)
 	add_child(_ember_particles)
 
 	_tip_particles = CPUParticles2D.new()
-	_tip_particles.amount = 12
-	_tip_particles.lifetime = 0.22
-	_tip_particles.explosiveness = 0.0
+	_tip_particles.amount = 20
+	_tip_particles.lifetime = 0.25
+	_tip_particles.explosiveness = 0.1
 	_tip_particles.direction = Vector2(-1.0, 0.0)
-	_tip_particles.spread = 65.0
+	_tip_particles.spread = 75.0
 	_tip_particles.gravity = Vector2.ZERO
-	_tip_particles.initial_velocity_min = 30.0
-	_tip_particles.initial_velocity_max = 90.0
-	_tip_particles.scale_amount_min = 2.0
-	_tip_particles.scale_amount_max = 4.5
+	_tip_particles.initial_velocity_min = 45.0
+	_tip_particles.initial_velocity_max = 130.0
+	_tip_particles.scale_amount_min = 3.0
+	_tip_particles.scale_amount_max = 7.0
 	var tip_ramp := Gradient.new()
-	tip_ramp.set_color(0, Color(1.0, 0.75, 0.2, 1.0))
-	tip_ramp.set_color(1, Color(1.0, 0.1, 0.0, 0.0))
+	tip_ramp.set_color(0, Color(1.0, 0.9, 0.25, 1.0))
+	tip_ramp.set_color(1, Color(1.0, 0.05, 0.0, 0.0))
 	_tip_particles.color_ramp = tip_ramp
-	_tip_particles.color = Color(1.0, 0.4, 0.05, 0.9)
+	_tip_particles.color = Color(1.0, 0.45, 0.05, 0.95)
 	add_child(_tip_particles)
 
 	_hit_sparks = CPUParticles2D.new()
-	_hit_sparks.amount = 16
-	_hit_sparks.lifetime = 0.18
-	_hit_sparks.explosiveness = 0.7
+	_hit_sparks.amount = 28
+	_hit_sparks.lifetime = 0.22
+	_hit_sparks.explosiveness = 0.8
 	_hit_sparks.direction = Vector2(-1.0, 0.0)
-	_hit_sparks.spread = 80.0
-	_hit_sparks.gravity = Vector2.ZERO
-	_hit_sparks.initial_velocity_min = 60.0
-	_hit_sparks.initial_velocity_max = 180.0
-	_hit_sparks.scale_amount_min = 1.5
-	_hit_sparks.scale_amount_max = 3.0
+	_hit_sparks.spread = 95.0
+	_hit_sparks.gravity = Vector2(0.0, 50.0)
+	_hit_sparks.initial_velocity_min = 90.0
+	_hit_sparks.initial_velocity_max = 260.0
+	_hit_sparks.scale_amount_min = 2.0
+	_hit_sparks.scale_amount_max = 5.0
+	_hit_sparks.angular_velocity_min = -200.0
+	_hit_sparks.angular_velocity_max = 200.0
 	_hit_sparks.emitting = false
 	var sparks_ramp := Gradient.new()
-	sparks_ramp.set_color(0, Color(1.0, 0.95, 0.5, 1.0))
-	sparks_ramp.set_color(1, Color(1.0, 0.15, 0.0, 0.0))
+	sparks_ramp.set_color(0, Color(1.0, 0.98, 0.55, 1.0))
+	sparks_ramp.set_color(1, Color(1.0, 0.1, 0.0, 0.0))
 	_hit_sparks.color_ramp = sparks_ramp
-	_hit_sparks.color = Color(1.0, 0.6, 0.1, 1.0)
+	_hit_sparks.color = Color(1.0, 0.65, 0.1, 1.0)
 	add_child(_hit_sparks)
 
 func _physics_process(delta: float) -> void:
@@ -141,8 +145,8 @@ func _update_beam() -> void:
 	_hit_sparks.position = end_local
 	_hit_sparks.emitting = _is_hitting
 
-	_outer_line.width = 16.0 + randf_range(-2.0, 2.5)
-	_inner_line.width = 5.0 + randf_range(-1.0, 1.2)
+	_outer_line.width = 18.0 + randf_range(-3.0, 4.0)
+	_inner_line.width = 6.0 + randf_range(-1.5, 2.0)
 
 func _deal_damage() -> void:
 	if not is_instance_valid(_player) or _beam_length < 2.0:

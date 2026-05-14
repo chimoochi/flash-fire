@@ -60,6 +60,7 @@ const THROW_SPEED = 600.0
 @onready var music_player: AudioStreamPlayer = $MusicPlayer
 @onready var _hud = $CanvasLayer/HUD
 @onready var _sprite: TextureRect = $TextureRect
+@onready var _camera: Camera2D = $Camera2D
 
 var dash_service: DashService
 var swing_melee: WaterPopper
@@ -67,6 +68,15 @@ var swing_melee: WaterPopper
 var _fire_beam: Node = null
 var _fire_beam_cooldown: float = 0.0
 var _walk_particles: CPUParticles2D
+var _normal_sprite_texture: Texture2D = null
+
+# Attack PNGs
+const FIREBALL_ATTACK_TEX := "res://gameassets/textures/playercharacter/attacks/fireball.png"
+const FIRE_BEAM_ATTACK_TEX := "res://gameassets/textures/playercharacter/attacks/fire beam.png"
+const SHOTGUN_ATTACK_TEX := "res://gameassets/textures/playercharacter/attacks/shotgun.png"
+const STOMP_ATTACK_TEX := "res://gameassets/textures/playercharacter/attacks/stomp.png"
+
+const EXECUTE_BLINK_RANGE := 220.0
 var is_charging: bool = false
 var _fireball_cooldown: float = 0.0
 var _shotgun_cooldown: float = 0.0
@@ -144,6 +154,7 @@ func _ready() -> void:
 	if MapService:
 		MapService.restore_player_status(self )
 	
+	_normal_sprite_texture = _sprite.texture
 	_setup_walk_particles()
 	get_tree().node_added.connect(_on_node_added)
 
@@ -155,23 +166,26 @@ func _connect_existing_enemies() -> void:
 
 func _setup_walk_particles() -> void:
 	_walk_particles = CPUParticles2D.new()
-	_walk_particles.amount = 10
-	_walk_particles.lifetime = 0.28
-	_walk_particles.explosiveness = 0.0
+	_walk_particles.amount = 22
+	_walk_particles.lifetime = 0.38
+	_walk_particles.explosiveness = 0.1
 	_walk_particles.direction = Vector2(0.0, 1.0)
-	_walk_particles.spread = 55.0
-	_walk_particles.gravity = Vector2.ZERO
-	_walk_particles.initial_velocity_min = 20.0
-	_walk_particles.initial_velocity_max = 55.0
-	_walk_particles.scale_amount_min = 1.5
-	_walk_particles.scale_amount_max = 3.5
+	_walk_particles.spread = 65.0
+	_walk_particles.gravity = Vector2(0.0, 30.0)
+	_walk_particles.initial_velocity_min = 30.0
+	_walk_particles.initial_velocity_max = 85.0
+	_walk_particles.scale_amount_min = 2.5
+	_walk_particles.scale_amount_max = 5.5
 	_walk_particles.local_coords = false
 	_walk_particles.emitting = false
+	_walk_particles.angular_velocity_min = -90.0
+	_walk_particles.angular_velocity_max = 90.0
 	var ramp := Gradient.new()
-	ramp.set_color(0, Color(0.72, 0.62, 0.48, 0.55))
-	ramp.set_color(1, Color(0.55, 0.48, 0.38, 0.0))
+	ramp.set_color(0, Color(0.95, 0.82, 0.55, 0.75))
+	ramp.set_color(1, Color(0.65, 0.52, 0.38, 0.0))
 	_walk_particles.color_ramp = ramp
-	_walk_particles.color = Color(0.68, 0.58, 0.44, 0.5)
+	_walk_particles.color = Color(0.90, 0.75, 0.50, 0.7)
+	_walk_particles.z_index = -1
 	add_child(_walk_particles)
 
 func _setup_power_ui() -> void:
@@ -259,6 +273,12 @@ func _physics_process(delta):
 	_move_mouse_with_stick(delta)
 	look_at(get_global_mouse_position())
 
+	# Soft camera follow: nudge camera offset toward mouse slightly
+	_update_camera_follow(delta)
+
+	# Execute-range blink: only blink enemies within range
+	_update_execute_blink()
+
 	var speed_len := velocity.length()
 	var is_walking := speed_len > 55.0 and not dash_service.is_dashing
 	_walk_particles.emitting = is_walking
@@ -342,6 +362,31 @@ func _move_mouse_with_stick(delta: float) -> void:
 	var new_pos := vp.get_mouse_position() + stick * 2000.0 * delta
 	new_pos = new_pos.clamp(Vector2.ZERO, vp.get_visible_rect().size)
 	vp.warp_mouse(new_pos)
+
+func _update_camera_follow(delta: float) -> void:
+	if not _camera:
+		return
+	# Soft look-ahead: offset camera partially toward mouse in local space
+	var mouse_world := get_global_mouse_position()
+	var to_mouse := (mouse_world - global_position)
+	var max_offset := 55.0
+	var target_offset := to_mouse.limit_length(max_offset) * 0.35
+	_camera.offset = _camera.offset.lerp(target_offset, delta * 4.5)
+
+func _update_execute_blink() -> void:
+	var enemies := get_tree().get_nodes_in_group("Enemy")
+	for enemy in enemies:
+		if not is_instance_valid(enemy):
+			continue
+		if not enemy.get("is_execution_ready"):
+			continue
+		var dist := global_position.distance_to(enemy.global_position)
+		if dist <= EXECUTE_BLINK_RANGE:
+			if enemy.has_method("resume_pulse"):
+				enemy.resume_pulse()
+		else:
+			if enemy.has_method("pause_pulse"):
+				enemy.pause_pulse()
 
 func _handle_movement_physics(direction: Vector2, delta: float, max_speed: float = MAX_SPEED) -> void:
 	if direction != Vector2.ZERO:
@@ -427,6 +472,27 @@ func use_equipped_power() -> void:
 	PowerModule.execute_power(equipped_power, self , get_global_mouse_position())
 
 
+var _attack_sprite_timer: SceneTreeTimer = null
+
+func _show_attack_sprite(tex_path: String, duration: float = 2.0) -> void:
+	# Cancel any in-progress sprite timer so the new attack overrides immediately
+	if _attack_sprite_timer != null:
+		# Disconnect old timeout so it doesn't reset texture prematurely
+		if _attack_sprite_timer.timeout.get_connections().size() > 0:
+			for conn in _attack_sprite_timer.timeout.get_connections():
+				_attack_sprite_timer.timeout.disconnect(conn["callable"])
+		_attack_sprite_timer = null
+	var tex := load(tex_path) as Texture2D
+	if tex:
+		_sprite.texture = tex
+	var t := get_tree().create_timer(duration)
+	_attack_sprite_timer = t
+	t.timeout.connect(func():
+		if _attack_sprite_timer == t:
+			_sprite.texture = _normal_sprite_texture
+			_attack_sprite_timer = null
+	)
+
 func _activate_fireball() -> void:
 	PlayerState["stamina"] -= FIREBALL_STAMINA_COST
 	_fireball_cooldown = FIREBALL_COOLDOWN
@@ -436,14 +502,16 @@ func _activate_fireball() -> void:
 	velocity = velocity.limit_length(MAX_VELOCITY)
 	CameraService.shake(0.15)
 	_spawn_muzzle_particles(global_position + dir * 22.0, dir)
+	_show_attack_sprite(FIREBALL_ATTACK_TEX, 1.0)
 
 
 func _activate_aoe() -> void:
 	PlayerState["stamina"] -= AOE_STAMINA_COST
 	_aoe_cooldown = AOE_COOLDOWN
-	ThrowableService.explode(AOE_RADIUS, global_position, AOE_DAMAGE, AOE_PUSH_FORCE, self, 15)
 	CameraService.shake(0.5)
 	CameraService.kick(Vector2(0.1, 0.1), 0.2)
+	_show_attack_sprite(STOMP_ATTACK_TEX, 1.0)
+	_spawn_stomp_chain()
 
 
 func _activate_shotgun() -> void:
@@ -454,6 +522,8 @@ func _activate_shotgun() -> void:
 	velocity += -dir * SHOTGUN_RECOIL
 	velocity = velocity.limit_length(MAX_VELOCITY)
 	CameraService.shake(0.2)
+	_spawn_muzzle_particles(global_position + dir * 22.0, dir)
+	_show_attack_sprite(SHOTGUN_ATTACK_TEX, 1.0)
 
 
 func _activate_fire_beam() -> void:
@@ -467,31 +537,121 @@ func _activate_fire_beam() -> void:
 	_fire_beam = beam_script.new()
 	get_tree().root.add_child(_fire_beam)
 	_fire_beam.start(self)
-	_fire_beam.beam_ended.connect(func(): _fire_beam = null)
+	# Show beam sprite for the full beam duration — clear when beam ends
+	var beam_tex := load(FIRE_BEAM_ATTACK_TEX) as Texture2D
+	if beam_tex:
+		_sprite.texture = beam_tex
+		if _attack_sprite_timer != null:
+			for conn in _attack_sprite_timer.timeout.get_connections():
+				_attack_sprite_timer.timeout.disconnect(conn["callable"])
+			_attack_sprite_timer = null
+	_fire_beam.beam_ended.connect(func():
+		_fire_beam = null
+		_sprite.texture = _normal_sprite_texture
+		_attack_sprite_timer = null
+	)
 
 
 func _spawn_muzzle_particles(pos: Vector2, dir: Vector2) -> void:
+	# Core flash burst
 	var particles := CPUParticles2D.new()
 	particles.global_position = pos
 	particles.emitting = true
 	particles.one_shot = true
-	particles.explosiveness = 0.92
-	particles.amount = 14
-	particles.lifetime = 0.32
+	particles.explosiveness = 0.95
+	particles.amount = 22
+	particles.lifetime = 0.28
 	particles.direction = Vector2(dir.x, dir.y)
-	particles.spread = 28.0
+	particles.spread = 32.0
 	particles.gravity = Vector2.ZERO
-	particles.initial_velocity_min = 90.0
-	particles.initial_velocity_max = 210.0
-	particles.scale_amount_min = 2.5
-	particles.scale_amount_max = 5.5
+	particles.initial_velocity_min = 120.0
+	particles.initial_velocity_max = 320.0
+	particles.scale_amount_min = 3.0
+	particles.scale_amount_max = 7.0
+	particles.angular_velocity_min = -180.0
+	particles.angular_velocity_max = 180.0
 	var ramp := Gradient.new()
-	ramp.set_color(0, Color(1.0, 0.92, 0.45, 1.0))
-	ramp.set_color(1, Color(1.0, 0.2, 0.0, 0.0))
+	ramp.set_color(0, Color(1.0, 0.98, 0.7, 1.0))
+	ramp.set_color(1, Color(1.0, 0.25, 0.0, 0.0))
 	particles.color_ramp = ramp
-	particles.color = Color(1.0, 0.55, 0.1, 1.0)
+	particles.color = Color(1.0, 0.65, 0.1, 1.0)
 	get_tree().root.add_child(particles)
 	particles.finished.connect(particles.queue_free)
+	# Back-scatter sparks
+	var back := CPUParticles2D.new()
+	back.global_position = pos
+	back.emitting = true
+	back.one_shot = true
+	back.explosiveness = 0.85
+	back.amount = 8
+	back.lifetime = 0.18
+	back.direction = -dir
+	back.spread = 55.0
+	back.gravity = Vector2.ZERO
+	back.initial_velocity_min = 40.0
+	back.initial_velocity_max = 100.0
+	back.scale_amount_min = 1.5
+	back.scale_amount_max = 3.5
+	var back_ramp := Gradient.new()
+	back_ramp.set_color(0, Color(1.0, 0.85, 0.3, 0.9))
+	back_ramp.set_color(1, Color(1.0, 0.1, 0.0, 0.0))
+	back.color_ramp = back_ramp
+	back.color = Color(1.0, 0.5, 0.05, 0.8)
+	get_tree().root.add_child(back)
+	back.finished.connect(back.queue_free)
+
+func _spawn_stomp_chain() -> void:
+	var dir := (get_global_mouse_position() - global_position).normalized()
+
+	# Step 1: full explosion at player feet (immediate)
+	ThrowableService.explode(AOE_RADIUS, global_position, AOE_DAMAGE, AOE_PUSH_FORCE, self, 15)
+	_spawn_stomp_burst(global_position, AOE_RADIUS, 5, 10)
+
+	# Step 2: medium explosion 90px forward
+	var pos2 := global_position + dir * 90.0
+	var timer2 := get_tree().create_timer(0.18)
+	timer2.timeout.connect(func():
+		if not is_instance_valid(self): return
+		ThrowableService.explode(80.0, pos2, int(AOE_DAMAGE * 0.7), AOE_PUSH_FORCE * 0.7, self, 10)
+		_spawn_stomp_burst(pos2, 80.0, 4, 7)
+		CameraService.shake(0.3)
+	)
+
+	# Step 3: small explosion 165px forward
+	var pos3 := global_position + dir * 165.0
+	var timer3 := get_tree().create_timer(0.34)
+	timer3.timeout.connect(func():
+		if not is_instance_valid(self): return
+		ThrowableService.explode(55.0, pos3, int(AOE_DAMAGE * 0.45), AOE_PUSH_FORCE * 0.45, self, 6)
+		_spawn_stomp_burst(pos3, 55.0, 3, 5)
+		CameraService.shake(0.18)
+	)
+
+func _spawn_stomp_burst(pos: Vector2, radius: float, ray_count: int, particles_per_ray: int) -> void:
+	for i in range(ray_count):
+		var angle := (TAU / ray_count) * i
+		var burst_dir := Vector2.RIGHT.rotated(angle)
+		var p := CPUParticles2D.new()
+		p.global_position = pos
+		p.emitting = true
+		p.one_shot = true
+		p.explosiveness = 0.9
+		p.amount = particles_per_ray
+		p.lifetime = 0.38 + (radius / AOE_RADIUS) * 0.15
+		p.direction = burst_dir
+		p.spread = 28.0
+		p.gravity = Vector2.ZERO
+		p.initial_velocity_min = 80.0 + radius * 0.6
+		p.initial_velocity_max = 200.0 + radius * 0.8
+		p.scale_amount_min = 2.0 * (radius / AOE_RADIUS)
+		p.scale_amount_max = 6.0 * (radius / AOE_RADIUS)
+		var ramp := Gradient.new()
+		ramp.set_color(0, Color(1.0, 0.80, 0.15, 1.0))
+		ramp.set_color(1, Color(1.0, 0.12, 0.0, 0.0))
+		p.color_ramp = ramp
+		p.color = Color(1.0, 0.55, 0.05, 0.95)
+		get_tree().root.add_child(p)
+		p.finished.connect(p.queue_free)
 
 func absorb_loadout(power: Dictionary, passive_name: String) -> void:
 	if kill_sound_player:

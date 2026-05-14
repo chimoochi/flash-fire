@@ -9,6 +9,22 @@ func _ready() -> void:
 	$BoatTrigger.body_entered.connect(_on_boat_entered)
 	$BoatTrigger.body_exited.connect(_on_boat_exited)
 	call_deferred("_start_spawn_intro")
+	TaskService.set_tasks([
+		{
+			"label": "Kill all enemies",
+			"type": "count_group",
+			"group": "EnemyUnit",
+		},
+		{
+			"label": "Destroy all portals",
+			"type": "count_group",
+			"group": "EnemyPortal",
+		},
+		{
+			"label": "Board the boat",
+			"type": "static",
+		},
+	])
 
 func _start_spawn_intro() -> void:
 	var players := get_tree().get_nodes_in_group("Player")
@@ -31,4 +47,6 @@ func _process(_delta: float) -> void:
 	if get_tree().get_nodes_in_group("EnemyPortal").size() > 0:
 		return
 	_advanced = true
+	TaskService.clear_tasks()
 	MapService.advance_to(next_level_path)
+

@@ -361,11 +361,24 @@ func take_damage(amount: int, source_pos: Vector2 = Vector2.ZERO, source: Node2D
 	if EnemyState["health"] <= 0:
 		die()
 
+var _pulse_tween: Tween = null
+
 func start_low_health_pulse() -> void:
 	is_execution_ready = true
-	var tween = create_tween().set_loops()
-	tween.tween_property(self, "modulate", Color.CYAN, 0.5)
-	tween.tween_property(self, "modulate", Color.WHITE, 0.5)
+	# Don't start yet; player will call resume_pulse() when in range
+
+func resume_pulse() -> void:
+	if _pulse_tween != null and _pulse_tween.is_running():
+		return
+	_pulse_tween = create_tween().set_loops()
+	_pulse_tween.tween_property(self, "modulate", Color.CYAN, 0.4)
+	_pulse_tween.tween_property(self, "modulate", Color.WHITE, 0.4)
+
+func pause_pulse() -> void:
+	if _pulse_tween != null:
+		_pulse_tween.kill()
+		_pulse_tween = null
+	modulate = Color.WHITE
 
 func stun(duration: float) -> void:
 	_frozen_until = Time.get_ticks_msec() + int(duration * 1000)

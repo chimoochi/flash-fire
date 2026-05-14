@@ -22,6 +22,7 @@ Enviormentservice="*res://core/services/Enviormentservice.gd"
 MapService="*res://core/services/MapService.gd"
 SoundService="*res://core/services/SoundService.gd"
 CheatMenu="*res://ui/cheat_menu.gd"
+TaskService="*res://core/services/TaskService.gd"
 
 [display]
 

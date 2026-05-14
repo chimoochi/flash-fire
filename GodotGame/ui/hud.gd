@@ -27,6 +27,45 @@ var _portal_indicators: Dictionary = {}
 
 const _IND_SIZE := Vector2(120.0, 28.0)
 
+# ── Task Panel ─────────────────────────────────────────────────────────────
+var _task_container: VBoxContainer
+
+func _ready() -> void:
+	_build_task_panel()
+	TaskService.tasks_changed.connect(_refresh_task_panel)
+	_refresh_task_panel()
+
+func _build_task_panel() -> void:
+	_task_container = VBoxContainer.new()
+	_task_container.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_task_container.set_anchors_preset(Control.PRESET_TOP_LEFT)
+	_task_container.offset_left = 14
+	_task_container.offset_top = 14
+	_task_container.add_theme_constant_override("separation", 2)
+	add_child(_task_container)
+
+func _refresh_task_panel() -> void:
+	for child in _task_container.get_children():
+		child.queue_free()
+
+	var tasks := TaskService.task_list
+	_task_container.visible = tasks.size() > 0
+
+	for task in tasks:
+		var done: bool = task.get("done", false)
+		var remaining: int = task.get("remaining", -1)
+		var text: String = ("[ ] " if not done else "[x] ") + str(task.get("label", ""))
+		if remaining >= 0:
+			text += " (" + str(remaining) + ")"
+
+		var lbl := Label.new()
+		lbl.text = text
+		lbl.add_theme_font_size_override("font_size", 13)
+		lbl.modulate.a = 0.45 if done else 1.0
+		_task_container.add_child(lbl)
+
+
+# ── Portal Indicators ───────────────────────────────────────────────────────
 func _create_enemy_portal_indicator() -> Control:
 	var root = Control.new()
 	root.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -125,6 +164,9 @@ func _process(delta: float) -> void:
 		_beat_timer = _beat_intervals[_beat_index]
 
 	_update_portal_indicators()
+	# Live-refresh task counts every frame (TaskService already polls, this just redraws)
+	if TaskService.task_list.size() > 0:
+		_refresh_task_panel()
 
 func set_selected_slot(slot: int) -> void:
 	for i in _wraps.size():
