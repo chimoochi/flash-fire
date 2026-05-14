@@ -9,6 +9,7 @@ const BLINK_INTERVAL := 0.07
 
 var elapsed := 0.0
 var blink_elapsed := 0.0
+var _smoke: CPUParticles2D
 
 @onready var beam: ColorRect = $WarningBeam
 @onready var sprite: Sprite2D = $Sprite2D
@@ -17,6 +18,27 @@ func _ready() -> void:
 	sprite.visible = false
 	beam.visible = true
 	body_entered.connect(_on_body_entered)
+	_setup_smoke()
+
+func _setup_smoke() -> void:
+	_smoke = CPUParticles2D.new()
+	_smoke.emitting = false
+	_smoke.amount = 14
+	_smoke.lifetime = 0.55
+	_smoke.explosiveness = 0.0
+	_smoke.direction = Vector2(0.0, -1.0)
+	_smoke.spread = 22.0
+	_smoke.gravity = Vector2.ZERO
+	_smoke.initial_velocity_min = 35.0
+	_smoke.initial_velocity_max = 90.0
+	_smoke.scale_amount_min = 3.0
+	_smoke.scale_amount_max = 7.0
+	var ramp := Gradient.new()
+	ramp.set_color(0, Color(0.85, 0.82, 0.78, 0.7))
+	ramp.set_color(1, Color(0.5, 0.5, 0.5, 0.0))
+	_smoke.color_ramp = ramp
+	_smoke.color = Color(0.8, 0.78, 0.74, 0.6)
+	add_child(_smoke)
 
 func _process(delta: float) -> void:
 	elapsed += delta
@@ -36,6 +58,7 @@ func _process(delta: float) -> void:
 				sprite.visible = true
 				state = "firing"
 				elapsed = 0.0
+				_smoke.emitting = true
 		"firing":
 			position.y += speed * delta
 			if position.y > 1400.0:

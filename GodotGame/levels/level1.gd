@@ -8,6 +8,12 @@ var _advanced := false
 func _ready() -> void:
 	$BoatTrigger.body_entered.connect(_on_boat_entered)
 	$BoatTrigger.body_exited.connect(_on_boat_exited)
+	call_deferred("_start_spawn_intro")
+
+func _start_spawn_intro() -> void:
+	var players := get_tree().get_nodes_in_group("Player")
+	if players.size() > 0:
+		players[0].play_spawn_intro()
 
 func _on_boat_entered(body: Node) -> void:
 	if body.is_in_group("Player"):

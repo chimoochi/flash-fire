@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://gijm5hgddq08"
-path="res://.godot/imported/top down char.png-15f167c1cea1813944e675c31ad98be3.ctex"
+uid="uid://bnpwyspcl8523"
+path="res://.godot/imported/sleeping.png-69fa559148fc06b62e4a410f71b99022.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://gameassets/textures/playercharacter/top down char.png"
-dest_files=["res://.godot/imported/top down char.png-15f167c1cea1813944e675c31ad98be3.ctex"]
+source_file="res://gameassets/textures/playercharacter/sleeping.png"
+dest_files=["res://.godot/imported/sleeping.png-69fa559148fc06b62e4a410f71b99022.ctex"]
 
 [params]
 

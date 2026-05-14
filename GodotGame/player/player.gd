@@ -9,15 +9,9 @@ var FRICTION = 4000.0
 const STAMINA_PASSIVE_REGEN = 12.0
 const STAMINA_CHARGE_REGEN = 35.0
 
-const FIRE_BULLET_STAMINA_COST = 20.0
-const FIRE_BULLET_START_SPEED = 150.0
-const FIRE_BULLET_SPEED = 1400.0
-const FIRE_BULLET_ACCEL = 4000.0
-const FIRE_BULLET_STEER = 0.05
-const FIRE_BULLET_KNOCKBACK = 2000.0
-const FIRE_BULLET_DAMAGE = 40
-const FIRE_BULLET_SELF_DAMAGE = 12
-const FIRE_BULLET_DURATION = 0.7
+const FIRE_BEAM_STAMINA_COST = 25.0
+const FIRE_BEAM_COOLDOWN = 2.0
+const FIRE_BEAM_RECOIL = 700.0
 
 const SHOTGUN_STAMINA_COST = 15.0
 const SHOTGUN_DAMAGE = 12
@@ -65,13 +59,14 @@ const THROW_SPEED = 600.0
 @onready var health_bar = $CanvasLayer/HUD/HealthSection/HealthBar
 @onready var music_player: AudioStreamPlayer = $MusicPlayer
 @onready var _hud = $CanvasLayer/HUD
+@onready var _sprite: TextureRect = $TextureRect
 
 var dash_service: DashService
 var swing_melee: WaterPopper
 
-var is_fire_bullet: bool = false
-var fire_bullet_timer: float = 0.0
-var _fire_bullet_hit: Array = []
+var _fire_beam: Node = null
+var _fire_beam_cooldown: float = 0.0
+var _walk_particles: CPUParticles2D
 var is_charging: bool = false
 var _fireball_cooldown: float = 0.0
 var _shotgun_cooldown: float = 0.0
@@ -113,6 +108,7 @@ var PlayerState: Dictionary = {
 
 
 var _stamina_bar: ProgressBar = null
+var _spawning: bool = false
 
 var debug_hitboxes: bool = false
 var _selected_weapon: int = 0
@@ -148,13 +144,35 @@ func _ready() -> void:
 	if MapService:
 		MapService.restore_player_status(self )
 	
+	_setup_walk_particles()
 	get_tree().node_added.connect(_on_node_added)
-	
+
 	call_deferred("_connect_existing_enemies")
 
 func _connect_existing_enemies() -> void:
 	for enemy in get_tree().get_nodes_in_group("Enemy"):
 		_try_connect_enemy(enemy)
+
+func _setup_walk_particles() -> void:
+	_walk_particles = CPUParticles2D.new()
+	_walk_particles.amount = 10
+	_walk_particles.lifetime = 0.28
+	_walk_particles.explosiveness = 0.0
+	_walk_particles.direction = Vector2(0.0, 1.0)
+	_walk_particles.spread = 55.0
+	_walk_particles.gravity = Vector2.ZERO
+	_walk_particles.initial_velocity_min = 20.0
+	_walk_particles.initial_velocity_max = 55.0
+	_walk_particles.scale_amount_min = 1.5
+	_walk_particles.scale_amount_max = 3.5
+	_walk_particles.local_coords = false
+	_walk_particles.emitting = false
+	var ramp := Gradient.new()
+	ramp.set_color(0, Color(0.72, 0.62, 0.48, 0.55))
+	ramp.set_color(1, Color(0.55, 0.48, 0.38, 0.0))
+	_walk_particles.color_ramp = ramp
+	_walk_particles.color = Color(0.68, 0.58, 0.44, 0.5)
+	add_child(_walk_particles)
 
 func _setup_power_ui() -> void:
 	_hud.set_selected_slot(_selected_weapon)
@@ -166,7 +184,7 @@ func _update_cooldown_ui() -> void:
 	if not _hud:
 		return
 	_hud.set_slot_cooldown(0, _fireball_cooldown / FIREBALL_COOLDOWN if _fireball_cooldown > 0.0 else 0.0)
-	_hud.set_slot_cooldown(1, fire_bullet_timer / FIRE_BULLET_DURATION if is_fire_bullet else 0.0)
+	_hud.set_slot_cooldown(1, _fire_beam_cooldown / FIRE_BEAM_COOLDOWN if _fire_beam_cooldown > 0.0 else 0.0)
 	_hud.set_slot_cooldown(2, _aoe_cooldown / AOE_COOLDOWN if _aoe_cooldown > 0.0 else 0.0)
 	_hud.set_slot_cooldown(3, _shotgun_cooldown / SHOTGUN_COOLDOWN if _shotgun_cooldown > 0.0 else 0.0)
 
@@ -188,23 +206,40 @@ func _update_passive_ui() -> void:
 	pass
 
 
+func play_spawn_intro() -> void:
+	_spawning = true
+	var sleeping_tex := load("res://gameassets/textures/playercharacter/sleeping.png") as Texture2D
+	var normal_tex := _sprite.texture
+	var normal_rotation := _sprite.rotation
+	var normal_scale := _sprite.scale
+	_sprite.texture = sleeping_tex
+	_sprite.rotation = normal_rotation + PI / 2.0
+	_sprite.scale = normal_scale * 1.4
+	await get_tree().create_timer(3.0).timeout
+	_sprite.texture = normal_tex
+	_sprite.rotation = normal_rotation
+	_sprite.scale = normal_scale
+	_spawning = false
+
 func _physics_process(delta):
+	if _spawning:
+		return
 	var direction = Vector2.ZERO
 
-	if not is_fire_bullet:
-		if Input.is_action_pressed("MoveRight"): direction.x += 1
-		if Input.is_action_pressed("MoveLeft"): direction.x -= 1
-		if Input.is_action_pressed("MoveDown"): direction.y += 1
-		if Input.is_action_pressed("MoveUp"): direction.y -= 1
-		if direction.length() > 0:
-			direction = direction.normalized()
+	if Input.is_action_pressed("MoveRight"): direction.x += 1
+	if Input.is_action_pressed("MoveLeft"): direction.x -= 1
+	if Input.is_action_pressed("MoveDown"): direction.y += 1
+	if Input.is_action_pressed("MoveUp"): direction.y -= 1
+	if direction.length() > 0:
+		direction = direction.normalized()
 
-	is_charging = Input.is_action_pressed("Sprint") and not is_fire_bullet
+	is_charging = Input.is_action_pressed("Sprint")
 	_process_stamina(delta, is_charging)
 
 	if _fireball_cooldown > 0: _fireball_cooldown -= delta
 	if _shotgun_cooldown > 0: _shotgun_cooldown -= delta
 	if _aoe_cooldown > 0: _aoe_cooldown -= delta
+	if _fire_beam_cooldown > 0: _fire_beam_cooldown -= delta
 	_update_cooldown_ui()
 
 	if debug_hitboxes:
@@ -213,9 +248,7 @@ func _physics_process(delta):
 	_handle_push_interaction(delta)
 	push_velocity = push_velocity.move_toward(Vector2.ZERO, PUSH_DECAY * delta)
 
-	if is_fire_bullet:
-		_process_fire_bullet(delta)
-	elif dash_service.is_dashing:
+	if dash_service.is_dashing:
 		dash_service.process_dash_physics(self, delta)
 	else:
 		_handle_movement_physics(direction, delta, MAX_SPEED)
@@ -226,7 +259,11 @@ func _physics_process(delta):
 	_move_mouse_with_stick(delta)
 	look_at(get_global_mouse_position())
 
-
+	var speed_len := velocity.length()
+	var is_walking := speed_len > 55.0 and not dash_service.is_dashing
+	_walk_particles.emitting = is_walking
+	if is_walking:
+		_walk_particles.direction = (-velocity / speed_len).rotated(-rotation)
 
 	var rt := Input.get_joy_axis(0, JOY_AXIS_TRIGGER_RIGHT)
 	if rt > 0.5 and not _rt_was_pressed:
@@ -241,8 +278,8 @@ func _physics_process(delta):
 	if Input.is_action_just_pressed("shoot") and PlayerState["stamina"] >= FIREBALL_STAMINA_COST and _fireball_cooldown <= 0:
 		_activate_fireball()
 
-	if Input.is_action_just_pressed("fire_bullet") and PlayerState["stamina"] >= FIRE_BULLET_STAMINA_COST and not is_fire_bullet:
-		_activate_fire_bullet()
+	if Input.is_action_just_pressed("fire_bullet") and PlayerState["stamina"] >= FIRE_BEAM_STAMINA_COST and _fire_beam_cooldown <= 0 and _fire_beam == null:
+		_activate_fire_beam()
 
 	if Input.is_action_just_pressed("shotgun") and PlayerState["stamina"] >= SHOTGUN_STAMINA_COST and _shotgun_cooldown <= 0:
 		_activate_shotgun()
@@ -281,12 +318,7 @@ func _handle_push_interaction(delta: float) -> void:
 		if collider.has_method("push"):
 			var push_dir = (collider.global_position - global_position).normalized()
 
-			if is_fire_bullet and collider.is_in_group("Enemy"):
-				collider.push(push_dir * FIRE_BULLET_KNOCKBACK)
-				if not _fire_bullet_hit.has(collider) and collider.has_method("take_damage"):
-					_fire_bullet_hit.append(collider)
-					collider.take_damage(FIRE_BULLET_DAMAGE, global_position, self)
-			else:
+			if true:
 				var force_mag = PUSH_FORCE
 				if dash_service.is_dashing:
 					force_mag = dash_service.dash_push_force
@@ -356,8 +388,8 @@ func _fire_selected_weapon() -> void:
 			if PlayerState["stamina"] >= FIREBALL_STAMINA_COST and _fireball_cooldown <= 0:
 				_activate_fireball()
 		1:
-			if PlayerState["stamina"] >= FIRE_BULLET_STAMINA_COST and not is_fire_bullet:
-				_activate_fire_bullet()
+			if PlayerState["stamina"] >= FIRE_BEAM_STAMINA_COST and _fire_beam_cooldown <= 0 and _fire_beam == null:
+				_activate_fire_beam()
 		2:
 			if PlayerState["stamina"] >= AOE_STAMINA_COST and _aoe_cooldown <= 0:
 				_activate_aoe()
@@ -403,6 +435,7 @@ func _activate_fireball() -> void:
 	velocity += -dir * FIREBALL_RECOIL
 	velocity = velocity.limit_length(MAX_VELOCITY)
 	CameraService.shake(0.15)
+	_spawn_muzzle_particles(global_position + dir * 22.0, dir)
 
 
 func _activate_aoe() -> void:
@@ -423,46 +456,42 @@ func _activate_shotgun() -> void:
 	CameraService.shake(0.2)
 
 
-func _activate_fire_bullet() -> void:
-	if is_fire_bullet or PlayerState["stamina"] < FIRE_BULLET_STAMINA_COST:
-		return
-	PlayerState["stamina"] -= FIRE_BULLET_STAMINA_COST
-	is_fire_bullet = true
-	fire_bullet_timer = FIRE_BULLET_DURATION
-	_fire_bullet_hit.clear()
-	set_collision_mask_value(3, false)
-	push_velocity = Vector2.ZERO
-	var dir = (get_global_mouse_position() - global_position).normalized()
-	velocity = dir * FIRE_BULLET_START_SPEED
-	CameraService.shake(0.15)
+func _activate_fire_beam() -> void:
+	PlayerState["stamina"] -= FIRE_BEAM_STAMINA_COST
+	_fire_beam_cooldown = FIRE_BEAM_COOLDOWN
+	var dir := (get_global_mouse_position() - global_position).normalized()
+	velocity += -dir * FIRE_BEAM_RECOIL
+	velocity = velocity.limit_length(MAX_VELOCITY)
+	CameraService.shake(0.2)
+	var beam_script := load("res://combat/attacks/fire_beam.gd")
+	_fire_beam = beam_script.new()
+	get_tree().root.add_child(_fire_beam)
+	_fire_beam.start(self)
+	_fire_beam.beam_ended.connect(func(): _fire_beam = null)
 
 
-func _process_fire_bullet(delta: float) -> void:
-	fire_bullet_timer -= delta
-	var current_speed = velocity.length()
-	current_speed = min(current_speed + FIRE_BULLET_ACCEL * delta, FIRE_BULLET_SPEED)
-	var target_dir = (get_global_mouse_position() - global_position).normalized()
-	var steered_dir = velocity.normalized().lerp(target_dir, FIRE_BULLET_STEER).normalized()
-	velocity = steered_dir * current_speed
-	move_and_slide()
-	if get_slide_collision_count() > 0:
-		_on_fire_bullet_wall_hit()
-		return
-	if fire_bullet_timer <= 0:
-		_end_fire_bullet()
-
-func _on_fire_bullet_wall_hit() -> void:
-	ThrowableService.explode(80.0, global_position, 0, 900.0, self)
-	take_damage(FIRE_BULLET_SELF_DAMAGE, global_position)
-	velocity = -velocity.normalized() * 400.0
-	CameraService.shake(0.4)
-	_end_fire_bullet()
-
-func _end_fire_bullet() -> void:
-	is_fire_bullet = false
-	fire_bullet_timer = 0.0
-	_fire_bullet_hit.clear()
-	set_collision_mask_value(3, true)
+func _spawn_muzzle_particles(pos: Vector2, dir: Vector2) -> void:
+	var particles := CPUParticles2D.new()
+	particles.global_position = pos
+	particles.emitting = true
+	particles.one_shot = true
+	particles.explosiveness = 0.92
+	particles.amount = 14
+	particles.lifetime = 0.32
+	particles.direction = Vector2(dir.x, dir.y)
+	particles.spread = 28.0
+	particles.gravity = Vector2.ZERO
+	particles.initial_velocity_min = 90.0
+	particles.initial_velocity_max = 210.0
+	particles.scale_amount_min = 2.5
+	particles.scale_amount_max = 5.5
+	var ramp := Gradient.new()
+	ramp.set_color(0, Color(1.0, 0.92, 0.45, 1.0))
+	ramp.set_color(1, Color(1.0, 0.2, 0.0, 0.0))
+	particles.color_ramp = ramp
+	particles.color = Color(1.0, 0.55, 0.1, 1.0)
+	get_tree().root.add_child(particles)
+	particles.finished.connect(particles.queue_free)
 
 func absorb_loadout(power: Dictionary, passive_name: String) -> void:
 	if kill_sound_player:
