@@ -144,4 +144,3 @@ func _apply_damage(amount: float) -> void:
 		damage_accumulator -= damage_to_deal
 		if player.has_method("take_damage"):
 			player.take_damage(damage_to_deal)
-
