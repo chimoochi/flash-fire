@@ -3,7 +3,9 @@ extends StaticBody2D
 const CHECKS_REQUIRED := 5
 const MAX_HEALTH := 200
 const SPAWN_INTERVAL := 12.0
-const ENEMY_SCENE = preload("res://enemy/level1.tscn")
+
+@export_file("*.tscn") var enemy_scene_path: String = "res://actors/enemies/level1.tscn"
+@export var max_enemies_in_level: int = -1
 
 var _in_range: bool = false
 var _open: bool = false
@@ -41,7 +43,12 @@ func _process(delta: float) -> void:
 		_spawn_timer = SPAWN_INTERVAL
 
 func _spawn_enemy() -> void:
-	var enemy = ENEMY_SCENE.instantiate()
+	if max_enemies_in_level > 0 and get_tree().get_nodes_in_group("Enemy").size() >= max_enemies_in_level:
+		return
+	var scene = load(enemy_scene_path) as PackedScene
+	if not scene:
+		return
+	var enemy = scene.instantiate()
 	get_tree().current_scene.add_child(enemy)
 	enemy.global_position = global_position + Vector2(randf_range(-50, 50), randf_range(-50, 50))
 

@@ -1,7 +1,7 @@
 [gd_scene load_steps=6 format=3 uid="uid://dp4he25dih0rc"]
 
 [ext_resource type="Script" uid="uid://dk5ul7gsevf6k" path="res://levels/level1_5.gd" id="1_lvl"]
-[ext_resource type="PackedScene" uid="uid://b6yyt3gthkt8s" path="res://player/minigame_player.tscn" id="2_mgplayer"]
+[ext_resource type="PackedScene" uid="uid://b6yyt3gthkt8s" path="res://actors/player/minigame_player.tscn" id="2_mgplayer"]
 
 [sub_resource type="RectangleShape2D" id="1_lwall"]
 size = Vector2(40, 1200)

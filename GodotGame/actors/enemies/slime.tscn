@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://csr6fua6sknbl"]
 
-[ext_resource type="Script" uid="uid://bdmvib7us7itt" path="res://enemy/slime.gd" id="1_slime"]
+[ext_resource type="Script" uid="uid://bdmvib7us7itt" path="res://actors/enemies/slime.gd" id="1_slime"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_slime"]
 size = Vector2(48, 48)

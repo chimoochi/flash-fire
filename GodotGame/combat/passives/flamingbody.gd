@@ -47,6 +47,8 @@ func _physics_process(_delta: float) -> void:
 	var to_remove = []
 
 	for id in _victims.keys():
+		if not _victims.has(id):
+			continue
 		var data = _victims[id]
 		var victim = data.body
 		if not is_instance_valid(victim):

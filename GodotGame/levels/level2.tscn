@@ -13,11 +13,11 @@
 [ext_resource type="Texture2D" uid="uid://cym3wwitii6cu" path="res://gameassets/textures/world/TX Tileset Stone Ground.png" id="11_x6jsp"]
 [ext_resource type="Texture2D" uid="uid://bbps63vu6a278" path="res://gameassets/textures/world/TX Tileset Wall.png" id="12_rg68n"]
 [ext_resource type="Texture2D" uid="uid://d103s34hu7f8k" path="res://gameassets/textures/world/Water+.png" id="13_g38f6"]
-[ext_resource type="PackedScene" uid="uid://bq3nv1n2jji1h" path="res://player/player.tscn" id="14_u3me6"]
-[ext_resource type="PackedScene" uid="uid://cqwewuufhdctl" path="res://enemy/level1.tscn" id="15_4sv2i"]
+[ext_resource type="PackedScene" uid="uid://bq3nv1n2jji1h" path="res://actors/player/player.tscn" id="14_u3me6"]
+[ext_resource type="PackedScene" uid="uid://brcc8l5gk2amj" path="res://actors/enemies/level2water.tscn" id="15_4sv2i"]
 [ext_resource type="Texture2D" uid="uid://btj4g4afxtp7f" path="res://gameassets/runtime/sprites/boat.png" id="16_7ej46"]
 [ext_resource type="PackedScene" path="res://environment/explosive_barrel.tscn" id="17_jj0ry"]
-[ext_resource type="PackedScene" path="res://gameplay/generator/generator.tscn" id="18_w8ofq"]
+[ext_resource type="PackedScene" path="res://gameplay/minigame/generator.tscn" id="18_w8ofq"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_6slt7"]
 texture = ExtResource("2_nq7ub")
@@ -2995,12 +2995,20 @@ position = Vector2(-288, 3576)
 
 [node name="EnemyPortal" parent="." instance=ExtResource("18_w8ofq")]
 position = Vector2(-806, 3402)
+enemy_scene_path = "res://actors/enemies/level2water.tscn"
+max_enemies_in_level = 7
 
 [node name="EnemyPortal2" parent="." instance=ExtResource("18_w8ofq")]
 position = Vector2(-595, 2488)
+enemy_scene_path = "res://actors/enemies/level2water.tscn"
+max_enemies_in_level = 7
 
 [node name="EnemyPortal3" parent="." instance=ExtResource("18_w8ofq")]
 position = Vector2(274, 1897)
+enemy_scene_path = "res://actors/enemies/level2water.tscn"
+max_enemies_in_level = 7
 
 [node name="EnemyPortal4" parent="." instance=ExtResource("18_w8ofq")]
 position = Vector2(1403, 2009)
+enemy_scene_path = "res://actors/enemies/level2water.tscn"
+max_enemies_in_level = 7

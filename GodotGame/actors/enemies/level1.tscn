@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://cqwewuufhdctl"]
 
-[ext_resource type="Script" uid="uid://co2phkmqb6vfv" path="res://enemy/level1.gd" id="1_7643s"]
+[ext_resource type="Script" uid="uid://co2phkmqb6vfv" path="res://actors/enemies/level1.gd" id="1_7643s"]
 [ext_resource type="Texture2D" uid="uid://cf8he0nc4ic7r" path="res://gameassets/textures/enemies/fireball enemy.png" id="2_texture"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_enemy"]

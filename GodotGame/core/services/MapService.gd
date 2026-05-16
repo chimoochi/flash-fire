@@ -88,6 +88,7 @@ func _load_scene(scene_path: String) -> void:
 	out.tween_property(_fade_overlay, "modulate:a", 1.0, 0.5).set_trans(Tween.TRANS_SINE)
 	await out.finished
 
+	_cleanup_root_orphans()
 	current_map_scene = scene_path
 	get_tree().change_scene_to_file(scene_path)
 
@@ -101,6 +102,19 @@ func _load_scene(scene_path: String) -> void:
 
 	_fade_overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_transitioning = false
+
+func _cleanup_root_orphans() -> void:
+	# Free anything sitting directly on root that isn't an autoload or the current scene.
+	# This catches projectiles, enemies, loot, and other nodes spawned via root.add_child()
+	# that would otherwise survive the scene change and attack/collide in the next level.
+	const AUTOLOADS := ["CameraService", "EnvironmentService", "MapService",
+		"SoundService", "CheatMenu", "TaskService"]
+	for child in get_tree().root.get_children():
+		if child.name in AUTOLOADS:
+			continue
+		if child == get_tree().current_scene:
+			continue
+		child.queue_free()
 
 func _get_level_number(scene_path: String) -> float:
 	var fname := scene_path.get_file().get_basename()

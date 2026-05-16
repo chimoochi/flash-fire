@@ -20,5 +20,15 @@ const ENEMY_LEVELS = {
 			{"type": "scrap", "chance": 1.0, "min": 5, "max": 10},
 			{"type": "health", "chance": 1.0, "amount": 10}
 		]
+	},
+	"level2water": {
+		"basespeed": 0.9,
+		"damagemult": 1.0,
+		"allowed_weapons": [],
+		"allowed_powers": [],
+		"drops": [
+			{"type": "scrap", "chance": 0.9, "min": 2, "max": 5},
+			{"type": "health", "chance": 0.6, "amount": 15}
+		]
 	}
 }

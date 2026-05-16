@@ -10,7 +10,7 @@
 [ext_resource type="Texture2D" uid="uid://d3eh4a1vn0jkh" path="res://gameassets/textures/world/TX Tileset Grass.png" id="7_q8txa"]
 [ext_resource type="Texture2D" uid="uid://cym3wwitii6cu" path="res://gameassets/textures/world/TX Tileset Stone Ground.png" id="8_1c8vf"]
 [ext_resource type="Texture2D" uid="uid://bbps63vu6a278" path="res://gameassets/textures/world/TX Tileset Wall.png" id="9_0i4y6"]
-[ext_resource type="PackedScene" uid="uid://bq3nv1n2jji1h" path="res://player/player.tscn" id="10_3eb7v"]
+[ext_resource type="PackedScene" uid="uid://bq3nv1n2jji1h" path="res://actors/player/player.tscn" id="10_3eb7v"]
 [ext_resource type="Texture2D" uid="uid://d103s34hu7f8k" path="res://gameassets/textures/world/Water+.png" id="11_5b3yj"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_0k6sk"]

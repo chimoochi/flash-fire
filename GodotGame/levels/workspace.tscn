@@ -1,11 +1,11 @@
 [gd_scene load_steps=8 format=3 uid="uid://1ywan04ntsa7"]
 
-[ext_resource type="PackedScene" uid="uid://bq3nv1n2jji1h" path="res://player/player.tscn" id="1_nf4vs"]
+[ext_resource type="PackedScene" uid="uid://bq3nv1n2jji1h" path="res://actors/player/player.tscn" id="1_nf4vs"]
 [ext_resource type="PackedScene" uid="uid://buq31qg2ywauu" path="res://environment/wall.tscn" id="2_cn5mv"]
-[ext_resource type="PackedScene" uid="uid://b1u2ycrngix7o" path="res://enemy/level1.tscn" id="3_enemy"]
+[ext_resource type="PackedScene" uid="uid://b1u2ycrngix7o" path="res://actors/enemies/level1.tscn" id="3_enemy"]
 [ext_resource type="PackedScene" path="res://environment/explosive_barrel.tscn" id="4_barrel"]
-[ext_resource type="PackedScene" path="res://enemy/level2heavy.tscn" id="5_j8etk"]
-[ext_resource type="PackedScene" uid="uid://csr6fua6sknbl" path="res://enemy/slime.tscn" id="6_slime"]
+[ext_resource type="PackedScene" path="res://actors/enemies/level2heavy.tscn" id="5_j8etk"]
+[ext_resource type="PackedScene" uid="uid://csr6fua6sknbl" path="res://actors/enemies/slime.tscn" id="6_slime"]
 [ext_resource type="PackedScene" path="res://environment/wall_circle.tscn" id="7_r0yns"]
 
 [node name="Workspace" type="Node2D"]

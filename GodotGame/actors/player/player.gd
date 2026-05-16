@@ -136,7 +136,7 @@ func _ready() -> void:
 	add_child(dash_service)
 	
 	kill_sound_player = AudioStreamPlayer.new()
-	kill_sound_player.stream = load("res://gameassets/kill.mp3")
+	kill_sound_player.stream = load("res://audio/kill.mp3")
 	add_child(kill_sound_player)
 	
 	health_bar.max_value = PlayerState["max_health"]
@@ -411,7 +411,7 @@ func _input(event: InputEvent) -> void:
 			_perform_glory_kill(target)
 	if event.is_action_pressed("dev_level_switch"):
 		var current_scene = get_tree().current_scene.scene_file_path
-		var next_scene = "res://level2.tscn" if "workspace.tscn" in current_scene else "res://workspace.tscn"
+		var next_scene = "res://levels/level2.tscn" if "workspace.tscn" in current_scene else "res://levels/workspace.tscn"
 		MapService.change_map(next_scene)
 
 

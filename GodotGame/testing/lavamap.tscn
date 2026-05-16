@@ -14,7 +14,7 @@
 [ext_resource type="Texture2D" uid="uid://cym3wwitii6cu" path="res://gameassets/textures/world/TX Tileset Stone Ground.png" id="10_oc3yd"]
 [ext_resource type="Texture2D" uid="uid://bbps63vu6a278" path="res://gameassets/textures/world/TX Tileset Wall.png" id="11_im7i8"]
 [ext_resource type="Texture2D" uid="uid://d103s34hu7f8k" path="res://gameassets/textures/world/Water+.png" id="12_norvi"]
-[ext_resource type="PackedScene" uid="uid://bq3nv1n2jji1h" path="res://player/player.tscn" id="13_5j6ii"]
+[ext_resource type="PackedScene" uid="uid://bq3nv1n2jji1h" path="res://actors/player/player.tscn" id="13_5j6ii"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_0k6sk"]
 texture = ExtResource("1_vfcp1")

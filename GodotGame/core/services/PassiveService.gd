@@ -2,9 +2,9 @@ class_name PassiveService
 extends RefCounted
 
 const PASSIVE_SCRIPTS = {
-	"FlamingBody": "res://passives/flamingbody.gd",
-	"Superspeed": "res://passives/superspeed.gd",
-	"Vampirism": "res://passives/vampirism.gd"
+	"FlamingBody": "res://combat/passives/flamingbody.gd",
+	"Superspeed": "res://combat/passives/superspeed.gd",
+	"Vampirism": "res://combat/passives/vampirism.gd"
 }
 
 static var OVERRIDE = ""

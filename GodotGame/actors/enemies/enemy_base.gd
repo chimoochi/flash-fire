@@ -41,7 +41,7 @@ var scan_angle := 0.0
 var idle_look_angle := 0.0
 
 @onready var ray_cast: RayCast2D = $RayCast2D
-var health_bar_scene = preload("res://enemy/health_bar.tscn")
+var health_bar_scene = preload("res://actors/enemies/health_bar.tscn")
 var health_bar: ProgressBar
 
 var push_velocity: Vector2 = Vector2.ZERO

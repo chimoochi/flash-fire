@@ -1,6 +1,6 @@
 [gd_scene load_steps=7 format=3 uid="uid://bfwo66nrqflfc"]
 
-[ext_resource type="PackedScene" uid="uid://bq3nv1n2jji1h" path="res://player/player.tscn" id="2_dniuu"]
+[ext_resource type="PackedScene" uid="uid://bq3nv1n2jji1h" path="res://actors/player/player.tscn" id="2_dniuu"]
 [ext_resource type="Texture2D" uid="uid://lxl1h5ik2pk0" path="res://gameassets/RHKW.png" id="3_rss15"]
 [ext_resource type="PackedScene" uid="uid://buq31qg2ywauu" path="res://environment/wall.tscn" id="4_ol1q4"]
 [ext_resource type="PackedScene" path="res://environment/wall_circle.tscn" id="5_gq0g6"]
