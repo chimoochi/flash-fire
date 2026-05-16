@@ -273,9 +273,6 @@ func _physics_process(delta):
 	_move_mouse_with_stick(delta)
 	look_at(get_global_mouse_position())
 
-	# Soft camera follow: nudge camera offset toward mouse slightly
-	_update_camera_follow(delta)
-
 	# Execute-range blink: only blink enemies within range
 	_update_execute_blink()
 
@@ -363,15 +360,6 @@ func _move_mouse_with_stick(delta: float) -> void:
 	new_pos = new_pos.clamp(Vector2.ZERO, vp.get_visible_rect().size)
 	vp.warp_mouse(new_pos)
 
-func _update_camera_follow(delta: float) -> void:
-	if not _camera:
-		return
-	# Soft look-ahead: offset camera partially toward mouse in local space
-	var mouse_world := get_global_mouse_position()
-	var to_mouse := (mouse_world - global_position)
-	var max_offset := 55.0
-	var target_offset := to_mouse.limit_length(max_offset) * 0.35
-	_camera.offset = _camera.offset.lerp(target_offset, delta * 4.5)
 
 func _update_execute_blink() -> void:
 	var enemies := get_tree().get_nodes_in_group("Enemy")

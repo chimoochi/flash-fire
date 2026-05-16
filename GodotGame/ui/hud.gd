@@ -28,6 +28,7 @@ var _portal_indicators: Dictionary = {}
 const _IND_SIZE := Vector2(120.0, 28.0)
 
 # ── Task Panel ─────────────────────────────────────────────────────────────
+var _task_bg: ColorRect
 var _task_container: VBoxContainer
 
 func _ready() -> void:
@@ -36,6 +37,15 @@ func _ready() -> void:
 	_refresh_task_panel()
 
 func _build_task_panel() -> void:
+	_task_bg = ColorRect.new()
+	_task_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_task_bg.color = Color(0.18, 0.18, 0.18, 0.7)
+	_task_bg.set_anchors_preset(Control.PRESET_TOP_LEFT)
+	_task_bg.offset_left = 8
+	_task_bg.offset_top = 8
+	_task_bg.visible = false
+	add_child(_task_bg)
+
 	_task_container = VBoxContainer.new()
 	_task_container.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_task_container.set_anchors_preset(Control.PRESET_TOP_LEFT)
@@ -49,7 +59,9 @@ func _refresh_task_panel() -> void:
 		child.queue_free()
 
 	var tasks := TaskService.task_list
-	_task_container.visible = tasks.size() > 0
+	var has_tasks := tasks.size() > 0
+	_task_container.visible = has_tasks
+	_task_bg.visible = has_tasks
 
 	for task in tasks:
 		var done: bool = task.get("done", false)
@@ -120,8 +132,16 @@ func _update_portal_indicators() -> void:
 	var screen_size := get_viewport_rect().size
 	var margin := 28.0
 
-	# sync with EnemyPortal group
-	var current_portals := get_tree().get_nodes_in_group("EnemyPortal")
+	var should_show_portals := false
+	for task in TaskService.task_list:
+		if task.get("group", "") == "EnemyPortal" and not task.get("done", false):
+			should_show_portals = true
+			break
+
+	var current_portals := []
+	if should_show_portals:
+		current_portals = get_tree().get_nodes_in_group("EnemyPortal")
+
 	for portal in current_portals:
 		if not _portal_indicators.has(portal):
 			var ind := _create_enemy_portal_indicator()
@@ -164,9 +184,11 @@ func _process(delta: float) -> void:
 		_beat_timer = _beat_intervals[_beat_index]
 
 	_update_portal_indicators()
-	# Live-refresh task counts every frame (TaskService already polls, this just redraws)
 	if TaskService.task_list.size() > 0:
 		_refresh_task_panel()
+		if _task_bg.visible:
+			var pad := Vector2(12, 8)
+			_task_bg.size = _task_container.size + pad * 2
 
 func set_selected_slot(slot: int) -> void:
 	for i in _wraps.size():

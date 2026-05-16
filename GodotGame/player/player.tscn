@@ -60,8 +60,6 @@ offset_bottom = 2.0
 color = Color(1, 1, 0.2, 1)
 
 [node name="Camera2D" type="Camera2D" parent="."]
-position_smoothing_enabled = true
-position_smoothing_speed = 10.0
 drag_horizontal_enabled = true
 drag_vertical_enabled = true
 drag_horizontal_offset = 0.0

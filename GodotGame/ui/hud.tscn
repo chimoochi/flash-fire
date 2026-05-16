@@ -148,7 +148,7 @@ color = Color(0, 0, 0, 0.65)
 [node name="Key2" type="Label" parent="Content/AttacksRow/Slot2"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 9
-text = "2 Launch"
+text = "2 Fire Beam"
 horizontal_alignment = 1
 
 [node name="Slot3" type="VBoxContainer" parent="Content/AttacksRow"]

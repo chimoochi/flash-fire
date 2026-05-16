@@ -163,12 +163,15 @@ func _deal_damage() -> void:
 	query.collision_mask = 4
 
 	var results := space_state.intersect_shape(query, 16)
+	var hit_target := false
 	for result in results:
 		var collider = result["collider"]
-		if collider.is_in_group("Enemy") and collider.has_method("take_damage"):
+		if collider != _player and collider.has_method("take_damage"):
 			collider.take_damage(BEAM_DAMAGE_PER_TICK, global_position, _player)
-	if results.size() > 0:
-		CameraService.shake(0.08)
+			hit_target = true
+	if hit_target:
+		CameraService.shake(0.14)
+		CameraService.kick(Vector2(randf_range(-0.02, 0.02), randf_range(-0.02, 0.02)), 0.05)
 
 func _finish() -> void:
 	_ember_particles.emitting = false
