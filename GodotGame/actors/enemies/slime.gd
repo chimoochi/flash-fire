@@ -1,7 +1,7 @@
 extends EnemyBase
 
 const SPLIT_COUNT = 3
-const LEVEL1_SCENE = preload("res://actors/enemies/level1.tscn")
+const FIRE_ENEMY_SCENE = preload("res://actors/enemies/fire_enemy.tscn")
 
 const SLAM_RANGE := 48.0
 const SLAM_DAMAGE := 18
@@ -14,7 +14,7 @@ var _slam_cooldown_until: int = 0
 var _is_slamming: bool = false
 
 func _init() -> void:
-	enemy_level = "level1"
+	enemy_level = "fire"
 
 func _ready() -> void:
 	super._ready()
@@ -91,7 +91,7 @@ func die() -> void:
 	died.emit()
 
 	for i in range(SPLIT_COUNT):
-		var child = LEVEL1_SCENE.instantiate()
+		var child = FIRE_ENEMY_SCENE.instantiate()
 		get_tree().current_scene.add_child(child)
 		var angle = (TAU / SPLIT_COUNT) * i
 		child.global_position = global_position + Vector2.RIGHT.rotated(angle) * 30.0

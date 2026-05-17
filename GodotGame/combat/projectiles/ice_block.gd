@@ -1,6 +1,7 @@
 extends CharacterBody2D
 
 const IceShardScript = preload("res://combat/projectiles/ice_shard.gd")
+const ICE_BLOCK_TEXTURE = preload("res://gameassets/textures/enemies/ice block.png")
 
 enum BlockState { MOVING, DORMANT }
 
@@ -16,7 +17,7 @@ var shatter_damage: int = 8
 
 var _state := BlockState.MOVING
 var _speed := THROW_SPEED
-var _visual: ColorRect
+var _visual: Sprite2D
 var _player_detector: Area2D
 var _pulse_tween: Tween
 var _shattering := false
@@ -27,10 +28,11 @@ func _ready() -> void:
 	# Only stop on World layer walls; player collision handled by detector area
 	collision_mask = 1
 
-	_visual = ColorRect.new()
-	_visual.size = Vector2(22.0, 22.0)
-	_visual.position = Vector2(-11.0, -11.0)
-	_visual.color = Color(0.55, 0.88, 1.0, 0.88)
+	_visual = Sprite2D.new()
+	_visual.texture = ICE_BLOCK_TEXTURE
+	_visual.scale = Vector2(0.035, 0.035)
+	_visual.rotation = direction.angle()
+	_visual.modulate = Color(0.8, 0.95, 1.0, 0.95)
 	add_child(_visual)
 
 	var col := CollisionShape2D.new()
@@ -76,10 +78,10 @@ func _become_dormant() -> void:
 	_state = BlockState.DORMANT
 	velocity = Vector2.ZERO
 	_speed = 0.0
-	_visual.color = Color(0.7, 0.95, 1.0, 1.0)
+	_visual.modulate = Color(1.0, 1.0, 1.0, 1.0)
 	_pulse_tween = create_tween().set_loops()
-	_pulse_tween.tween_property(_visual, "color", Color(0.35, 0.75, 1.0, 1.0), 0.6)
-	_pulse_tween.tween_property(_visual, "color", Color(0.7, 0.95, 1.0, 1.0), 0.6)
+	_pulse_tween.tween_property(_visual, "modulate", Color(0.55, 0.85, 1.0, 1.0), 0.6)
+	_pulse_tween.tween_property(_visual, "modulate", Color(1.0, 1.0, 1.0, 1.0), 0.6)
 
 func _on_detector_body_entered(body: Node) -> void:
 	if not body.is_in_group("Player"):

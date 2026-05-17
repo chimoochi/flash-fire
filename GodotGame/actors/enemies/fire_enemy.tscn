@@ -1,0 +1,29 @@
+[gd_scene load_steps=4 format=3 uid="uid://cqwewuufhdctl"]
+
+[ext_resource type="Script" uid="uid://co2phkmqb6vfv" path="res://actors/enemies/fire_enemy.gd" id="1_7643s"]
+[ext_resource type="Texture2D" uid="uid://cf8he0nc4ic7r" path="res://gameassets/textures/enemies/fireball enemy.png" id="2_texture"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_enemy"]
+size = Vector2(32, 32)
+
+[node name="FireEnemy" type="CharacterBody2D"]
+collision_layer = 4
+collision_mask = 3
+script = ExtResource("1_7643s")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+rotation = 1.571134
+scale = Vector2(0.14609376, 0.14609376)
+texture = ExtResource("2_texture")
+
+[node name="LookVector" type="ColorRect" parent="."]
+offset_left = 25.0
+offset_top = -2.0
+offset_right = 30.0
+offset_bottom = 2.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_enemy")
+
+[node name="RayCast2D" type="RayCast2D" parent="."]
+collision_mask = 3

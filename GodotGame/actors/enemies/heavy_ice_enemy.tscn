@@ -1,0 +1,30 @@
+[gd_scene load_steps=4 format=3 uid="uid://brcc8l5gk2amj"]
+
+[ext_resource type="Script" uid="uid://xcxixbyenv6j" path="res://actors/enemies/heavy_ice_enemy.gd" id="1_fep16"]
+[ext_resource type="Texture2D" uid="uid://bjvcd1kf3emcu" path="res://gameassets/textures/enemies/ice enemy heavy.png" id="2_heavy_ice"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_enemy"]
+size = Vector2(32, 32)
+
+[node name="HeavyIceEnemy" type="CharacterBody2D"]
+collision_layer = 4
+collision_mask = 3
+script = ExtResource("1_fep16")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+rotation = -1.5707964
+scale = Vector2(0.04, 0.04)
+texture = ExtResource("2_heavy_ice")
+
+[node name="LookVector" type="ColorRect" parent="."]
+visible = false
+offset_left = 25.0
+offset_top = -2.0
+offset_right = 30.0
+offset_bottom = 2.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_enemy")
+
+[node name="RayCast2D" type="RayCast2D" parent="."]
+collision_mask = 3

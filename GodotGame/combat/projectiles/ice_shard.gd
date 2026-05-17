@@ -1,5 +1,6 @@
 extends Area2D
 
+const ICE_SHARD_TEXTURE = preload("res://gameassets/textures/enemies/ice.png")
 const SPEED := 580.0
 const MAX_DISTANCE := 450.0
 
@@ -21,11 +22,10 @@ func _ready() -> void:
 	col.shape = shape
 	add_child(col)
 
-	var rect := ColorRect.new()
-	rect.size = Vector2(14, 6)
-	rect.position = Vector2(-7.0, -3.0)
-	rect.color = Color(0.5, 0.88, 1.0, 0.92)
-	add_child(rect)
+	var sprite := Sprite2D.new()
+	sprite.texture = ICE_SHARD_TEXTURE
+	sprite.scale = Vector2(0.035, 0.035)
+	add_child(sprite)
 
 	rotation = direction.angle()
 	body_entered.connect(_on_body_entered)

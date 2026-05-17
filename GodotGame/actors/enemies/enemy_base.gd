@@ -6,7 +6,7 @@ signal died
 
 @export var move_speed := 175.0
 @export var turn_speed := 8.0
-@export var enemy_level: String = "level1"
+@export var enemy_level: String = "fire"
 
 @export var vision_range := 400.0
 @export var fov_angle := 70.0

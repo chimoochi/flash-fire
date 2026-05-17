@@ -1,0 +1,39 @@
+[gd_scene load_steps=5 format=3 uid="uid://ceu7fnsavgpaw"]
+
+[ext_resource type="Script" uid="uid://dm31s1i2rti85" path="res://actors/enemies/ice_creeper_enemy.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://cwy4ngfy5uxv6" path="res://gameassets/textures/enemies/ice weak.png" id="2_weak_ice"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_enemy"]
+size = Vector2(28, 28)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_player_detector"]
+radius = 32.0
+
+[node name="IceCreeperEnemy" type="CharacterBody2D"]
+collision_layer = 4
+script = ExtResource("1_script")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+rotation = -1.5707964
+scale = Vector2(0.07, 0.07)
+texture = ExtResource("2_weak_ice")
+
+[node name="LookVector" type="ColorRect" parent="."]
+visible = false
+offset_left = 25.0
+offset_top = -2.0
+offset_right = 30.0
+offset_bottom = 2.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_enemy")
+
+[node name="RayCast2D" type="RayCast2D" parent="."]
+collision_mask = 3
+
+[node name="PlayerDetector" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PlayerDetector"]
+shape = SubResource("CircleShape2D_player_detector")

@@ -4,7 +4,8 @@ const CHECKS_REQUIRED := 5
 const MAX_HEALTH := 200
 const SPAWN_INTERVAL := 12.0
 
-@export_file("*.tscn") var enemy_scene_path: String = "res://actors/enemies/level1.tscn"
+@export_file("*.tscn") var enemy_scene_path: String = "res://actors/enemies/fire_enemy.tscn"
+@export var enemy_scene_paths: PackedStringArray = PackedStringArray()
 @export var max_enemies_in_level: int = -1
 
 var _in_range: bool = false
@@ -43,14 +44,24 @@ func _process(delta: float) -> void:
 		_spawn_timer = SPAWN_INTERVAL
 
 func _spawn_enemy() -> void:
-	if max_enemies_in_level > 0 and get_tree().get_nodes_in_group("Enemy").size() >= max_enemies_in_level:
+	if max_enemies_in_level > 0 and get_tree().get_nodes_in_group("EnemyUnit").size() >= max_enemies_in_level:
 		return
-	var scene = load(enemy_scene_path) as PackedScene
+	var scene_path := _pick_enemy_scene_path()
+	var scene = load(scene_path) as PackedScene
 	if not scene:
 		return
 	var enemy = scene.instantiate()
 	get_tree().current_scene.add_child(enemy)
 	enemy.global_position = global_position + Vector2(randf_range(-50, 50), randf_range(-50, 50))
+
+func _pick_enemy_scene_path() -> String:
+	var candidates: Array[String] = []
+	for path in enemy_scene_paths:
+		if path != "":
+			candidates.append(path)
+	if candidates.is_empty():
+		return enemy_scene_path
+	return candidates[randi() % candidates.size()]
 
 func _on_body_entered(body: Node) -> void:
 	if body.is_in_group("Player"):

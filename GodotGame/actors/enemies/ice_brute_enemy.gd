@@ -1,4 +1,4 @@
 extends EnemyBase
 
 func _init() -> void:
-	enemy_level = "level1"
+	enemy_level = "ice_brute"

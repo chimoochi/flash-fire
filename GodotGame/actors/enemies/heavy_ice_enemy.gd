@@ -10,42 +10,25 @@ const ICE_BLOCK_THROW_DAMAGE := 10
 const ICE_BLOCK_SHATTER_DAMAGE := 4
 const ICE_SHARD_RANGE := 350.0
 const ICE_BLOCK_RANGE := 420.0
-const WATER_ENEMY_HEALTH := 80
+const PREFERRED_RANGE := 170.0
+const HEAVY_ICE_ENEMY_HEALTH := 80
 
 var _shard_timer := 0.0
 var _block_timer := 0.0
 
 func _init() -> void:
-	enemy_level = "level2water"
+	enemy_level = "heavy_ice"
 
 func _ready() -> void:
 	super._ready()
-	EnemyState["health"] = WATER_ENEMY_HEALTH
-	EnemyState["max_health"] = WATER_ENEMY_HEALTH
+	vision_range = 900.0
+	fov_angle = 360.0
+	hearing_range = 900.0
+	EnemyState["health"] = HEAVY_ICE_ENEMY_HEALTH
+	EnemyState["max_health"] = HEAVY_ICE_ENEMY_HEALTH
 	if health_bar:
-		health_bar.max_value = WATER_ENEMY_HEALTH
-		health_bar.value = WATER_ENEMY_HEALTH
-	_add_placeholder_visual()
-
-func _add_placeholder_visual() -> void:
-	# Placeholder body: blue circle drawn with Polygon2D
-	var poly := Polygon2D.new()
-	var points := PackedVector2Array()
-	var segments := 16
-	var radius := 14.0
-	for i in segments:
-		var angle := (TAU / segments) * i
-		points.append(Vector2(cos(angle), sin(angle)) * radius)
-	poly.polygon = points
-	poly.color = Color(0.3, 0.7, 1.0, 0.9)
-	add_child(poly)
-
-	# Direction nub so you can see which way the enemy faces
-	var nub := ColorRect.new()
-	nub.size = Vector2(8.0, 4.0)
-	nub.position = Vector2(14.0, -2.0)
-	nub.color = Color(0.1, 0.4, 0.9, 1.0)
-	add_child(nub)
+		health_bar.max_value = HEAVY_ICE_ENEMY_HEALTH
+		health_bar.value = HEAVY_ICE_ENEMY_HEALTH
 
 func _physics_process(delta: float) -> void:
 	_shard_timer = max(0.0, _shard_timer - delta)
@@ -60,18 +43,14 @@ func _chase_target(delta: float) -> void:
 	var dist := global_position.distance_to(target.global_position)
 	last_known_position = target.global_position
 
-	# Kite at comfortable range — close enough to use shards, far enough to feel like a ranged enemy
-	var preferred_range := ICE_SHARD_RANGE * 0.75
-	if dist > preferred_range:
+	if dist > PREFERRED_RANGE:
 		nav_agent.target_position = target.global_position
-		var move_dir: Vector2
+		var move_dir := global_position.direction_to(target.global_position)
 		if not nav_agent.is_navigation_finished():
 			var next_pos := nav_agent.get_next_path_position()
-			move_dir = global_position.direction_to(next_pos)
-			if move_dir.length_squared() < 0.01:
-				move_dir = global_position.direction_to(target.global_position)
-		else:
-			move_dir = global_position.direction_to(target.global_position)
+			var path_dir := global_position.direction_to(next_pos)
+			if path_dir.length_squared() >= 0.01:
+				move_dir = path_dir
 		_smooth_rotate(move_dir.angle(), delta)
 		_apply_movement(move_dir * move_speed)
 	else:
