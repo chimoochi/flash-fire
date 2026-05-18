@@ -706,11 +706,11 @@ func take_damage(amount: int, source_pos: Vector2 = Vector2.ZERO, source: Node2D
 	if not PlayerState["is_alive"] or PlayerState.get("is_invincible", false):
 		return
 
-	var reduced = max(int(amount * 0.6), 1)
-	PlayerState["health"] -= reduced
+	var damage_to_apply = max(amount, 1)
+	PlayerState["health"] -= damage_to_apply
 	if health_bar:
 		health_bar.set_health(PlayerState["health"])
-	DamageNumber.spawn(get_tree(), global_position + Vector2(randf_range(-8, 8), -20), reduced, Color(1.0, 0.25, 0.25))
+	DamageNumber.spawn(get_tree(), global_position + Vector2(randf_range(-8, 8), -20), damage_to_apply, Color(1.0, 0.25, 0.25))
 	CameraService.shake(0.35)
 
 	if PlayerState["health"] <= 0:

@@ -12,7 +12,7 @@ var _start_pos: Vector2
 
 func _ready() -> void:
 	collision_layer = 2
-	collision_mask = 3
+	collision_mask = 7
 	_start_pos = global_position
 	add_to_group("Projectiles")
 
@@ -37,8 +37,6 @@ func _physics_process(delta: float) -> void:
 
 func _on_body_entered(body: Node) -> void:
 	if body == owner_node:
-		return
-	if body.is_in_group("Enemy"):
 		return
 	if body.is_in_group("Projectiles"):
 		return

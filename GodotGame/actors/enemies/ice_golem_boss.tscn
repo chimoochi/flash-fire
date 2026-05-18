@@ -1,0 +1,27 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" uid="uid://du3golemguard2" path="res://actors/enemies/ice_golem_boss.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://gameassets/textures/enemies/icegolem.png" id="2_golem"]
+[ext_resource type="Texture2D" path="res://gameassets/textures/enemies/icegolemstomp.png" id="3_stomp"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_body"]
+radius = 34.0
+
+[node name="IceGolemBoss" type="CharacterBody2D"]
+collision_layer = 4
+collision_mask = 3
+script = ExtResource("1_script")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+rotation = -1.5707964
+scale = Vector2(0.09, 0.09)
+texture = ExtResource("2_golem")
+
+[node name="StompSprite" type="Sprite2D" parent="."]
+visible = false
+rotation = -1.5707964
+scale = Vector2(0.09, 0.09)
+texture = ExtResource("3_stomp")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_body")

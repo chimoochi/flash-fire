@@ -2,8 +2,9 @@ extends EnemyBase
 
 const WEAK_ICE_HEALTH := 45
 const EXPLODE_RANGE := 48.0
+const CONTACT_DAMAGE := 25
 const EXPLOSION_RADIUS := 120.0
-const EXPLOSION_DAMAGE := 35
+const EXPLOSION_DAMAGE := 0
 const EXPLOSION_PUSH := 1400.0
 
 var _exploded := false
@@ -48,7 +49,7 @@ func _physics_process(delta: float) -> void:
 	last_known_position = target.global_position
 	var dist := global_position.distance_to(target.global_position)
 	if dist <= EXPLODE_RANGE:
-		_explode()
+		_explode(target)
 		return
 
 	nav_agent.target_position = target.global_position
@@ -61,10 +62,12 @@ func _physics_process(delta: float) -> void:
 	_smooth_rotate(dir.angle(), delta)
 	_apply_movement(dir * move_speed)
 
-func _explode() -> void:
+func _explode(hit_body: Node = null) -> void:
 	if _exploded:
 		return
 	_exploded = true
+	if is_instance_valid(hit_body) and hit_body.has_method("take_damage"):
+		hit_body.take_damage(CONTACT_DAMAGE, global_position, self)
 	EnemyState["is_alive"] = false
 	died.emit()
 	ThrowableService.explode(EXPLOSION_RADIUS, global_position, EXPLOSION_DAMAGE, EXPLOSION_PUSH, self)
@@ -72,4 +75,4 @@ func _explode() -> void:
 
 func _on_player_detector_body_entered(body: Node) -> void:
 	if body.is_in_group("Player"):
-		_explode()
+		_explode(body)

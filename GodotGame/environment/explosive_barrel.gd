@@ -15,6 +15,7 @@ func take_damage(_amount: int, _source_pos: Vector2 = Vector2.ZERO, _source: Nod
 		return
 	_exploded = true
 	_explode()
+	
 
 func _explode() -> void:
 	var pos = global_position

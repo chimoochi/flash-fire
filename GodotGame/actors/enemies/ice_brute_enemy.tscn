@@ -13,7 +13,7 @@ script = ExtResource("1_7643s")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 rotation = -1.5707964
-scale = Vector2(0.04, 0.04)
+scale = Vector2(0.032352615, 0.032352615)
 texture = ExtResource("2_heavy_ice")
 
 [node name="LookVector" type="ColorRect" parent="."]

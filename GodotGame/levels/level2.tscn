@@ -1,4 +1,4 @@
-[gd_scene load_steps=32 format=3 uid="uid://b7e31wa24rvtw"]
+[gd_scene load_steps=33 format=3 uid="uid://b7e31wa24rvtw"]
 
 [ext_resource type="Script" uid="uid://82tvsfn2myas" path="res://levels/level2.gd" id="1_script"]
 [ext_resource type="Texture2D" uid="uid://b8whads1so5t3" path="res://gameassets/textures/world/TX Plant.png" id="2_nq7ub"]
@@ -2924,6 +2924,9 @@ sources/10 = SubResource("TileSetAtlasSource_5peto")
 [sub_resource type="CircleShape2D" id="CircleShape2D_w8ofq"]
 radius = 130.63632
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_cave_guard_detection"]
+radius = 190.0
+
 [node name="Level2" type="Node2D"]
 script = ExtResource("1_script")
 
@@ -3009,3 +3012,18 @@ position = Vector2(1403, 2009)
 enemy_scene_path = "res://actors/enemies/heavy_ice_enemy.tscn"
 enemy_scene_paths = PackedStringArray("res://actors/enemies/heavy_ice_enemy.tscn", "res://actors/enemies/ice_creeper_enemy.tscn")
 max_enemies_in_level = 7
+
+[node name="CaveGuardDetectionArea" type="Area2D" parent="."]
+position = Vector2(-23, 1028)
+scale = Vector2(2.4566543, 1.8479946)
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CaveGuardDetectionArea"]
+shape = SubResource("CircleShape2D_cave_guard_detection")
+
+[node name="CaveGuardSpawnPoint" type="Marker2D" parent="."]
+position = Vector2(-24, 1030)
+
+[node name="CaveGuardCameraTarget" type="Marker2D" parent="."]
+position = Vector2(-24, 1030)
