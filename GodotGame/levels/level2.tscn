@@ -1,4 +1,4 @@
-[gd_scene load_steps=33 format=3 uid="uid://b7e31wa24rvtw"]
+[gd_scene load_steps=34 format=3 uid="uid://b7e31wa24rvtw"]
 
 [ext_resource type="Script" uid="uid://82tvsfn2myas" path="res://levels/level2.gd" id="1_script"]
 [ext_resource type="Texture2D" uid="uid://b8whads1so5t3" path="res://gameassets/textures/world/TX Plant.png" id="2_nq7ub"]
@@ -2927,6 +2927,9 @@ radius = 130.63632
 [sub_resource type="CircleShape2D" id="CircleShape2D_cave_guard_detection"]
 radius = 190.0
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_level_2_5_teleporter"]
+radius = 120.0
+
 [node name="Level2" type="Node2D"]
 script = ExtResource("1_script")
 
@@ -3027,3 +3030,17 @@ position = Vector2(-24, 1030)
 
 [node name="CaveGuardCameraTarget" type="Marker2D" parent="."]
 position = Vector2(-24, 1030)
+
+[node name="CaveExitCameraTarget" type="Marker2D" parent="."]
+position = Vector2(-195, 782)
+
+[node name="Level2_5Teleporter" type="Area2D" parent="."]
+position = Vector2(-210, 758)
+collision_layer = 0
+collision_mask = 2
+monitoring = false
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Level2_5Teleporter"]
+shape = SubResource("CircleShape2D_level_2_5_teleporter")
+disabled = true

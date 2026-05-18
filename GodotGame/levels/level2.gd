@@ -3,8 +3,9 @@ extends Node2D
 const ICE_GOLEM_BOSS_SCENE = preload("res://actors/enemies/ice_golem_boss.tscn")
 const BOSS_CAMERA_PAN_TIME := 1.0
 const BOSS_CAMERA_HOLD_TIME := 1.0
+const LEVEL_2_5_PATH := "res://levels/level2_5.tscn"
 
-enum Phase {INVESTIGATE, COMBAT, BOSS_REVEAL, BOSS}
+enum Phase {INVESTIGATE, COMBAT, BOSS_REVEAL, BOSS, CAVE_REVEAL, CAVE_EXIT}
 
 var _phase: Phase = Phase.INVESTIGATE
 var _player: Node2D = null
@@ -12,9 +13,12 @@ var _investigate_area: Node = null
 var _boss_detection_area: Area2D = null
 var _boss_spawn_point: Node2D = null
 var _boss_camera_target: Node2D = null
+var _cave_camera_target: Node2D = null
+var _level_2_5_teleporter: Area2D = null
 var _investigated: bool = false
 var _advanced: bool = false
 var _boss_spawned: bool = false
+var _cave_revealed: bool = false
 var _startup_timer: float = 0.5
 
 func _ready() -> void:
@@ -22,6 +26,9 @@ func _ready() -> void:
 	_boss_detection_area = get_node_or_null("CaveGuardDetectionArea")
 	_boss_spawn_point = get_node_or_null("CaveGuardSpawnPoint")
 	_boss_camera_target = get_node_or_null("CaveGuardCameraTarget")
+	_cave_camera_target = get_node_or_null("CaveExitCameraTarget")
+	_level_2_5_teleporter = get_node_or_null("Level2_5Teleporter")
+	_setup_level_2_5_teleporter()
 	call_deferred("_deferred_ready")
 
 func _deferred_ready() -> void:
@@ -171,6 +178,74 @@ func _check_boss_cleared() -> void:
 		return
 	if get_tree().get_nodes_in_group("CaveGuard").size() > 0:
 		return
-	_advanced = true
-	TaskService.clear_tasks()
-	MapService.advance_to("res://levels/level3.tscn")
+	if get_tree().get_nodes_in_group("EnemyUnit").size() > 0:
+		return
+	_begin_cave_reveal()
+
+func _begin_cave_reveal() -> void:
+	if _cave_revealed or _phase == Phase.CAVE_REVEAL:
+		return
+	_phase = Phase.CAVE_REVEAL
+	_cave_revealed = true
+	await _pan_to_cave_and_enable_teleporter()
+	_phase = Phase.CAVE_EXIT
+	TaskService.set_tasks([
+		{"label": "Enter the cave", "type": "static"},
+	])
+
+func _pan_to_cave_and_enable_teleporter() -> void:
+	var cave_pos := _cave_camera_target.global_position if is_instance_valid(_cave_camera_target) else _get_boss_spawn_position()
+	await _pan_camera_to_point_and_back(cave_pos, BOSS_CAMERA_HOLD_TIME)
+	_set_level_2_5_teleporter_enabled(true)
+
+func _pan_camera_to_point_and_back(target_pos: Vector2, hold_time: float) -> void:
+	var player_camera := get_viewport().get_camera_2d()
+	if not player_camera:
+		await get_tree().create_timer(hold_time).timeout
+		return
+
+	var cutscene_camera := Camera2D.new()
+	cutscene_camera.name = "Level2PanCamera"
+	cutscene_camera.global_position = player_camera.get_screen_center_position()
+	cutscene_camera.zoom = player_camera.zoom
+	add_child(cutscene_camera)
+	cutscene_camera.make_current()
+	CameraService.current_camera = cutscene_camera
+
+	var pan_to_target := create_tween()
+	pan_to_target.tween_property(cutscene_camera, "global_position", target_pos, BOSS_CAMERA_PAN_TIME).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	await pan_to_target.finished
+	await get_tree().create_timer(hold_time).timeout
+
+	var player_return_pos := _player.global_position if is_instance_valid(_player) else player_camera.get_screen_center_position()
+	var pan_to_player := create_tween()
+	pan_to_player.tween_property(cutscene_camera, "global_position", player_return_pos, BOSS_CAMERA_PAN_TIME).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	await pan_to_player.finished
+
+	if is_instance_valid(player_camera):
+		player_camera.make_current()
+		CameraService.current_camera = player_camera
+	cutscene_camera.queue_free()
+
+func _setup_level_2_5_teleporter() -> void:
+	if not is_instance_valid(_level_2_5_teleporter):
+		return
+	_level_2_5_teleporter.body_entered.connect(_on_level_2_5_teleporter_body_entered)
+	_set_level_2_5_teleporter_enabled(false)
+
+func _set_level_2_5_teleporter_enabled(enabled: bool) -> void:
+	if not is_instance_valid(_level_2_5_teleporter):
+		return
+	_level_2_5_teleporter.monitoring = enabled
+	_level_2_5_teleporter.monitorable = enabled
+	var shape := _level_2_5_teleporter.get_node_or_null("CollisionShape2D")
+	if shape:
+		shape.disabled = not enabled
+
+func _on_level_2_5_teleporter_body_entered(body: Node) -> void:
+	if _phase != Phase.CAVE_EXIT:
+		return
+	if body.is_in_group("Player"):
+		_advanced = true
+		TaskService.clear_tasks()
+		MapService.change_map(LEVEL_2_5_PATH)

@@ -1,7 +1,5 @@
 extends CanvasLayer
 
-var _easy_mode: bool = false
-var _easy_btn: Button
 var _panel: PanelContainer
 
 func _ready() -> void:
@@ -15,10 +13,6 @@ func _input(event: InputEvent) -> void:
 			visible = !visible
 
 func _process(_delta: float) -> void:
-	if _easy_mode:
-		for p in get_tree().get_nodes_in_group("Player"):
-			if p.get("PlayerState") != null:
-				p.PlayerState["is_invincible"] = true
 	if _panel:
 		var vp_size := get_viewport().get_visible_rect().size
 		_panel.position = Vector2(vp_size.x - _panel.size.x - 20, 20)
@@ -55,8 +49,7 @@ func _build_ui() -> void:
 	vbox.add_child(HSeparator.new())
 
 	_add_button(vbox, "Kill All Enemies", _kill_all_enemies)
-	_add_button(vbox, "Presenting", _presenting)
-	_easy_btn = _add_button(vbox, "Easy Mode: OFF", _toggle_easy_mode)
+	_add_button(vbox, "Destroy All Portals", _destroy_all_portals)
 	_add_button(vbox, "Next Level", _next_level)
 
 	var hint := Label.new()
@@ -79,22 +72,10 @@ func _kill_all_enemies() -> void:
 		if is_instance_valid(enemy) and enemy.has_method("die"):
 			enemy.die()
 
-func _presenting() -> void:
-	for enemy in get_tree().get_nodes_in_group("EnemyUnit"):
-		if not is_instance_valid(enemy):
-			continue
-		if enemy.get("is_execution_ready") == true:
-			continue
-		enemy.EnemyState["health"] = 1
-		if enemy.has_method("start_low_health_pulse"):
-			enemy.start_low_health_pulse()
-		if enemy.get("health_bar") != null:
-			enemy.health_bar.value = 1
-
-func _toggle_easy_mode() -> void:
-	_easy_mode = !_easy_mode
-	if _easy_btn:
-		_easy_btn.text = "Easy Mode: ON" if _easy_mode else "Easy Mode: OFF"
+func _destroy_all_portals() -> void:
+	for portal in get_tree().get_nodes_in_group("EnemyPortal"):
+		if is_instance_valid(portal):
+			portal.queue_free()
 
 func _next_level() -> void:
 	var current := MapService.current_map_scene

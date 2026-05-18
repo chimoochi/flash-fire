@@ -37,12 +37,20 @@ func _ready() -> void:
 
 func _find_player() -> void:
 	var players = get_tree().get_nodes_in_group("Player")
-	if players.size() > 0:
-		player = players[0]
-		original_speed = player.MAX_SPEED
-	else:
+	for candidate in players:
+		if _is_environment_player(candidate):
+			player = candidate
+			original_speed = player.MAX_SPEED
+			return
+	player = null
+	if players.size() == 0:
 		await get_tree().create_timer(1.0).timeout
 		_find_player()
+
+func _is_environment_player(candidate: Node) -> bool:
+	if not candidate is CharacterBody2D:
+		return false
+	return candidate.get("PlayerState") != null and candidate.get("MAX_SPEED") != null
 
 func add_snow_zone(pos: Vector2, radius: float) -> void:
 	snow_zones.append({"pos": pos, "radius": radius})
@@ -56,7 +64,7 @@ func _cycle_environment() -> void:
 	_enter_environment(current_environment)
 
 func _enter_environment(type: int) -> void:
-	if not is_instance_valid(player):
+	if not _is_environment_player(player):
 		_find_player()
 		return
 	
@@ -66,7 +74,7 @@ func _enter_environment(type: int) -> void:
 			pass # Handled in physics process for zones
 
 func _exit_environment(type: int) -> void:
-	if not is_instance_valid(player): 
+	if not _is_environment_player(player): 
 		return
 
 	match type:
@@ -76,7 +84,9 @@ func _exit_environment(type: int) -> void:
 				is_slowed = false
 
 func _physics_process(delta: float) -> void:
-	if not is_instance_valid(player):
+	if not _is_environment_player(player):
+		if get_tree().get_nodes_in_group("Player").size() > 0:
+			_find_player()
 		return
 
 	if poison_stacks > 0:
