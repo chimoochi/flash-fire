@@ -1,0 +1,31 @@
+[gd_scene load_steps=4 format=3 uid="uid://boyu5fpv1pa6l"]
+
+[ext_resource type="Script" uid="uid://d324r88gmbuuu" path="res://actors/enemies/fire_heavy_enemy.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://btd5ud5lwklpp" path="res://gameassets/textures/enemies/fire heavy.png" id="2_texture"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_enemy"]
+size = Vector2(34, 34)
+
+[node name="FireHeavyEnemy" type="CharacterBody2D"]
+scale = Vector2(1.5052207, 1.5052207)
+collision_layer = 4
+collision_mask = 3
+script = ExtResource("1_script")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+rotation = 4.712389
+scale = Vector2(0.023019131, 0.023019131)
+texture = ExtResource("2_texture")
+
+[node name="LookVector" type="ColorRect" parent="."]
+visible = false
+offset_left = 25.0
+offset_top = -2.0
+offset_right = 30.0
+offset_bottom = 2.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_enemy")
+
+[node name="RayCast2D" type="RayCast2D" parent="."]
+collision_mask = 3

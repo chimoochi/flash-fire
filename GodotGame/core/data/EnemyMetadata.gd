@@ -11,6 +11,26 @@ const ENEMY_LEVELS = {
 			{"type": "health", "chance": 1.0, "amount": 10}
 		]
 	},
+	"fire_weak": {
+		"basespeed": 1.05,
+		"damagemult": 1.0,
+		"allowed_weapons": [],
+		"allowed_powers": [],
+		"drops": [
+			{"type": "scrap", "chance": 0.8, "min": 1, "max": 3},
+			{"type": "health", "chance": 0.45, "amount": 10}
+		]
+	},
+	"fire_heavy": {
+		"basespeed": 0.85,
+		"damagemult": 1.0,
+		"allowed_weapons": [],
+		"allowed_powers": [],
+		"drops": [
+			{"type": "scrap", "chance": 0.95, "min": 2, "max": 6},
+			{"type": "health", "chance": 0.6, "amount": 15}
+		]
+	},
 	"ice_brute": {
 		"basespeed": 0.7,
 		"damagemult": 1.0,

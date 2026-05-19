@@ -22,16 +22,18 @@ layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("1_hud")
 
 [node name="HealthSection" type="VBoxContainer" parent="."]
 layout_mode = 0
-offset_left = 918.0
-offset_top = 911.99994
-offset_right = 1118.0
-offset_bottom = 951.99994
-scale = Vector2(0.5473827, 2.0347812)
+offset_left = 311.99988
+offset_top = 771.0
+offset_right = 511.99994
+offset_bottom = 811.0
+scale = Vector2(0.9043817, 3.527871)
 theme_override_constants/separation = 2
 
 [node name="HealthLabel" type="Label" parent="HealthSection"]
@@ -48,10 +50,11 @@ theme_override_styles/fill = SubResource("SF_hp_fill")
 
 [node name="StaminaSection" type="VBoxContainer" parent="."]
 layout_mode = 0
-offset_left = 240.0
-offset_top = 970.0
-offset_right = 440.0
-offset_bottom = 1010.0
+offset_left = 241.0
+offset_top = 918.0
+offset_right = 441.0
+offset_bottom = 958.0
+scale = Vector2(1.2960744, 1.2960744)
 theme_override_constants/separation = 2
 
 [node name="StaminaLabel" type="Label" parent="StaminaSection"]
@@ -75,12 +78,13 @@ anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -144.0
-offset_top = -50.0
-offset_right = 156.0
-offset_bottom = -3.0
+offset_left = -280.99994
+offset_top = -146.99994
+offset_right = 19.000061
+offset_bottom = -99.99994
 grow_horizontal = 2
 grow_vertical = 0
+scale = Vector2(1.9541804, 1.9541804)
 theme_override_constants/separation = 6
 
 [node name="AttacksRow" type="HBoxContainer" parent="Content"]
@@ -178,7 +182,7 @@ color = Color(0, 0, 0, 0.65)
 [node name="Key3" type="Label" parent="Content/AttacksRow/Slot3"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 9
-text = "3 AOE"
+text = "3 STOMP"
 horizontal_alignment = 1
 
 [node name="Slot4" type="VBoxContainer" parent="Content/AttacksRow"]
@@ -213,20 +217,20 @@ horizontal_alignment = 1
 
 [node name="HealthBar1" type="TextureRect" parent="."]
 layout_mode = 0
-offset_left = 862.0
-offset_top = 902.0
-offset_right = 1502.0
-offset_bottom = 1222.0
-scale = Vector2(0.27086952, 0.27086952)
+offset_left = 206.0
+offset_top = 756.0
+offset_right = 846.0
+offset_bottom = 1076.0
+scale = Vector2(0.46765602, 0.46765602)
 mouse_filter = 2
 texture = ExtResource("3_hb1")
 
 [node name="HealthBar2" type="TextureRect" parent="."]
 layout_mode = 0
-offset_left = 862.0
-offset_top = 902.0
-offset_right = 1502.0
-offset_bottom = 1222.0
-scale = Vector2(0.27086952, 0.27086952)
+offset_left = 206.0
+offset_top = 756.0
+offset_right = 846.0
+offset_bottom = 1076.0
+scale = Vector2(0.46765602, 0.46765602)
 mouse_filter = 2
 texture = ExtResource("4_hb2")

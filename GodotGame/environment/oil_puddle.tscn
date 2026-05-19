@@ -1,0 +1,21 @@
+[gd_scene load_steps=4 format=3 uid="uid://c5f6v5aekr6xb"]
+
+[ext_resource type="Script" uid="uid://qat373ajtkx0" path="res://environment/oil_puddle.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://6or5yuy81lqw" path="res://gameassets/runtime/sprites/oil puddle.png" id="2_oil"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_oil"]
+radius = 58.0
+
+[node name="OilPuddle" type="Area2D"]
+collision_layer = 0
+collision_mask = 6
+script = ExtResource("1_script")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+modulate = Color(1, 1, 1, 0.86)
+scale = Vector2(0.03202928, 0.03202928)
+texture = ExtResource("2_oil")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+scale = Vector2(0.5129923, 0.1875118)
+shape = SubResource("CircleShape2D_oil")
