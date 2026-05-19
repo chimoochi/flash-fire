@@ -41,17 +41,17 @@ func _build_task_panel() -> void:
 	_task_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_task_bg.color = Color(0.18, 0.18, 0.18, 0.7)
 	_task_bg.set_anchors_preset(Control.PRESET_TOP_LEFT)
-	_task_bg.offset_left = 8
-	_task_bg.offset_top = 8
+	_task_bg.offset_left = 16
+	_task_bg.offset_top = 16
 	_task_bg.visible = false
 	add_child(_task_bg)
 
 	_task_container = VBoxContainer.new()
 	_task_container.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_task_container.set_anchors_preset(Control.PRESET_TOP_LEFT)
-	_task_container.offset_left = 14
-	_task_container.offset_top = 14
-	_task_container.add_theme_constant_override("separation", 2)
+	_task_container.offset_left = 28
+	_task_container.offset_top = 28
+	_task_container.add_theme_constant_override("separation", 4)
 	add_child(_task_container)
 
 func _refresh_task_panel() -> void:
@@ -72,7 +72,7 @@ func _refresh_task_panel() -> void:
 
 		var lbl := Label.new()
 		lbl.text = text
-		lbl.add_theme_font_size_override("font_size", 13)
+		lbl.add_theme_font_size_override("font_size", 26)
 		lbl.modulate.a = 0.45 if done else 1.0
 		_task_container.add_child(lbl)
 
@@ -187,7 +187,7 @@ func _process(delta: float) -> void:
 	if TaskService.task_list.size() > 0:
 		_refresh_task_panel()
 		if _task_bg.visible:
-			var pad := Vector2(12, 8)
+			var pad := Vector2(24, 16)
 			_task_bg.size = _task_container.size + pad * 2
 
 func set_selected_slot(slot: int) -> void:
