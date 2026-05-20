@@ -20,12 +20,33 @@ var playing_sounds: Dictionary = {}
 var _next_id: int = 0
 
 var _music_player: AudioStreamPlayer = null
+var _music_enabled := true
+var _music_sound_name := "music"
+var _music_volume_db := -10.0
 
 func _ready() -> void:
 	play_music()
 
 func has_sound(sound_name: String) -> bool:
 	return SOUNDS.has(sound_name)
+
+func is_music_enabled() -> bool:
+	return _music_enabled
+
+func set_music_enabled(enabled: bool) -> void:
+	_music_enabled = enabled
+	if _music_enabled:
+		if _music_player and is_instance_valid(_music_player):
+			_music_player.play()
+		else:
+			play_music(_music_sound_name, _music_volume_db)
+	else:
+		if _music_player and is_instance_valid(_music_player):
+			_music_player.stop()
+
+func toggle_music() -> bool:
+	set_music_enabled(not _music_enabled)
+	return _music_enabled
 
 func play_sound(sound_name: String, volume_db: float = 0.0, start_time: float = 0.0) -> int:
 	if not SOUNDS.has(sound_name):
@@ -97,6 +118,9 @@ func stop_all() -> void:
 		stop_sound(id)
 
 func play_music(sound_name: String = "music", volume_db: float = -10.0) -> void:
+	_music_enabled = true
+	_music_sound_name = sound_name
+	_music_volume_db = volume_db
 	if _music_player and is_instance_valid(_music_player):
 		_music_player.queue_free()
 
@@ -108,6 +132,7 @@ func play_music(sound_name: String = "music", volume_db: float = -10.0) -> void:
 	_music_player.play()
 
 func stop_music() -> void:
+	_music_enabled = false
 	if _music_player and is_instance_valid(_music_player):
 		_music_player.stop()
 

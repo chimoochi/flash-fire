@@ -128,6 +128,7 @@ var _rt_was_pressed: bool = false
 func _ready() -> void:
 	motion_mode = CharacterBody2D.MOTION_MODE_FLOATING
 	add_to_group("Player")
+	_lock_camera_to_player()
 	swing_melee = WaterPopper.new()
 	add_child(swing_melee)
 	
@@ -160,6 +161,17 @@ func _ready() -> void:
 	get_tree().node_added.connect(_on_node_added)
 
 	call_deferred("_connect_existing_enemies")
+
+func _lock_camera_to_player() -> void:
+	_camera.position = Vector2.ZERO
+	_camera.offset = Vector2.ZERO
+	_camera.position_smoothing_enabled = false
+	_camera.drag_horizontal_enabled = false
+	_camera.drag_vertical_enabled = false
+	_camera.drag_horizontal_offset = 0.0
+	_camera.drag_vertical_offset = 0.0
+	_camera.make_current()
+	CameraService.current_camera = _camera
 
 func _connect_existing_enemies() -> void:
 	for enemy in get_tree().get_nodes_in_group("Enemy"):
@@ -405,7 +417,7 @@ func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("debug_toggle"):
 		debug_hitboxes = not debug_hitboxes
 	if event.is_action_pressed("music_toggle"):
-		music_player.playing = not music_player.playing
+		SoundService.toggle_music()
 	if event.is_action_pressed("interact"):
 		var target = _get_nearest_execution_enemy()
 		if target:

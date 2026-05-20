@@ -1,6 +1,7 @@
 extends CanvasLayer
 
 var _panel: PanelContainer
+var _music_toggle: CheckButton
 
 func _ready() -> void:
 	layer = 100
@@ -11,6 +12,8 @@ func _input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo:
 		if event.keycode == KEY_SHIFT and event.location == KEY_LOCATION_RIGHT:
 			visible = !visible
+			if visible:
+				_sync_music_toggle()
 
 func _process(_delta: float) -> void:
 	if _panel:
@@ -52,6 +55,12 @@ func _build_ui() -> void:
 	_add_button(vbox, "Destroy All Portals", _destroy_all_portals)
 	_add_button(vbox, "Next Level", _next_level)
 
+	_music_toggle = CheckButton.new()
+	_music_toggle.custom_minimum_size = Vector2(200, 34)
+	_music_toggle.toggled.connect(_on_music_toggled)
+	vbox.add_child(_music_toggle)
+	_sync_music_toggle()
+
 	var hint := Label.new()
 	hint.text = "[Right Shift] to toggle"
 	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -66,6 +75,17 @@ func _add_button(parent: VBoxContainer, lbl: String, cb: Callable) -> Button:
 	btn.pressed.connect(cb)
 	parent.add_child(btn)
 	return btn
+
+func _sync_music_toggle() -> void:
+	if not _music_toggle:
+		return
+	var enabled := SoundService.is_music_enabled()
+	_music_toggle.set_pressed_no_signal(enabled)
+	_music_toggle.text = "Music: ON" if enabled else "Music: OFF"
+
+func _on_music_toggled(enabled: bool) -> void:
+	SoundService.set_music_enabled(enabled)
+	_sync_music_toggle()
 
 func _kill_all_enemies() -> void:
 	for enemy in get_tree().get_nodes_in_group("EnemyUnit"):
