@@ -43,6 +43,7 @@ static func activate(player: Node2D, range_dist: float = 400.0, fov: float = 70.
 			var width = 3.0 if i == 0 else 2.0
 			var parent = player.get_parent()
 			create_bolt(parent, current_position, best_candidate.global_position, width)
+			ParticleService.pulse_light(best_candidate.global_position, Color(0.35, 0.65, 1.0), 1.4, 0.16, 1.25)
 			
 			if best_candidate.has_method("take_damage"):
 				best_candidate.take_damage(8, current_position)

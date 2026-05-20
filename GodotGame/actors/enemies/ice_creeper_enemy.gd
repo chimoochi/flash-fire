@@ -69,6 +69,8 @@ func _explode(hit_body: Node = null) -> void:
 	if is_instance_valid(hit_body) and hit_body.has_method("take_damage"):
 		hit_body.take_damage(CONTACT_DAMAGE, global_position, self)
 	EnemyState["is_alive"] = false
+	VisualEffectsService.enemy_killed(global_position, "ice")
+	ParticleService.ice_shatter(global_position, 1.45)
 	died.emit()
 	ThrowableService.explode(EXPLOSION_RADIUS, global_position, EXPLOSION_DAMAGE, EXPLOSION_PUSH, self)
 	queue_free()

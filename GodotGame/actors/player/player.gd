@@ -712,6 +712,9 @@ func take_damage(amount: int, source_pos: Vector2 = Vector2.ZERO, source: Node2D
 		health_bar.set_health(PlayerState["health"])
 	DamageNumber.spawn(get_tree(), global_position + Vector2(randf_range(-8, 8), -20), damage_to_apply, Color(1.0, 0.25, 0.25))
 	CameraService.shake(0.35)
+	VisualEffectsService.player_hurt(_damage_flavor(source))
+	if PlayerState["health"] <= PlayerState["max_health"] * 0.3:
+		VisualEffectsService.set_mood("low_health")
 
 	if PlayerState["health"] <= 0:
 		die()
@@ -721,10 +724,14 @@ func heal(amount: int) -> void:
 	if health_bar:
 		health_bar.set_health(PlayerState["health"])
 	DamageNumber.spawn(get_tree(), global_position + Vector2(randf_range(-8, 8), -20), amount, Color(0.25, 1.0, 0.25))
+	VisualEffectsService.player_healed()
+	if PlayerState["health"] > PlayerState["max_health"] * 0.3:
+		VisualEffectsService.set_mood("normal")
 
 
 func die() -> void:
 	PlayerState["is_alive"] = false
+	VisualEffectsService.death_flash()
 	visible = false
 	set_physics_process(false)
 	
@@ -735,6 +742,7 @@ func respawn() -> void:
 	
 	PlayerState["health"] = PlayerState["max_health"]
 	PlayerState["is_alive"] = true
+	VisualEffectsService.set_mood("normal")
 	
 	if health_bar:
 		health_bar.set_health(PlayerState["health"])
@@ -748,6 +756,22 @@ func respawn() -> void:
 	
 	visible = true
 	set_physics_process(true)
+
+func _damage_flavor(source: Node2D) -> String:
+	if not is_instance_valid(source):
+		return "normal"
+	var source_level = source.get("enemy_level")
+	if source_level is String and source_level.contains("ice"):
+		return "ice"
+	if source_level is String and source_level.contains("fire"):
+		return "fire"
+	var source_script: Script = source.get_script()
+	var source_path: String = source_script.resource_path if source_script else ""
+	if "ice" in source_path:
+		return "ice"
+	if "fire" in source_path:
+		return "fire"
+	return "normal"
 
 func _get_nearest_execution_enemy() -> Node2D:
 	var enemies = get_tree().get_nodes_in_group("Enemy")

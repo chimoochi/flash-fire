@@ -1,6 +1,6 @@
 extends StageScene
 
-const SURVIVE_TIME := 20.0
+const SURVIVE_TIME := 10.0
 const LANE_LEFT := 220.0
 const LANE_RIGHT := 1700.0
 const PLAYER_Y := 880.0
@@ -52,7 +52,8 @@ func _lock_player() -> void:
 
 func _spawn_wave() -> void:
 	var progress := clampf(_timer / SURVIVE_TIME, 0.0, 1.0)
-	var count := 3 + int(progress * float(difficulty + 1))
+	var base_count := 3 + int(progress * float(difficulty + 1))
+	var count := maxi(1, ceili(float(base_count) * 0.5))
 	var lanes := _pick_lanes(count)
 	for x in lanes:
 		var obs: Area2D = OBSTACLE_SCENE.instantiate()

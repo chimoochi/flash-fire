@@ -47,7 +47,9 @@ func _find_player() -> void:
 		await get_tree().create_timer(1.0).timeout
 		_find_player()
 
-func _is_environment_player(candidate: Node) -> bool:
+func _is_environment_player(candidate) -> bool:
+	if not is_instance_valid(candidate):
+		return false
 	if not candidate is CharacterBody2D:
 		return false
 	return candidate.get("PlayerState") != null and candidate.get("MAX_SPEED") != null

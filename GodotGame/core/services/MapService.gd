@@ -89,6 +89,7 @@ func _load_scene(scene_path: String) -> void:
 	await out.finished
 
 	_cleanup_root_orphans()
+	VisualEffectsService.reset()
 	current_map_scene = scene_path
 	get_tree().change_scene_to_file(scene_path)
 
@@ -108,7 +109,8 @@ func _cleanup_root_orphans() -> void:
 	# This catches projectiles, enemies, loot, and other nodes spawned via root.add_child()
 	# that would otherwise survive the scene change and attack/collide in the next level.
 	const AUTOLOADS := ["CameraService", "EnvironmentService", "MapService",
-		"SoundService", "CheatMenu", "TaskService"]
+		"SoundService", "CheatMenu", "TaskService", "ParticleService",
+		"VisualEffectsService"]
 	for child in get_tree().root.get_children():
 		if child.name in AUTOLOADS:
 			continue

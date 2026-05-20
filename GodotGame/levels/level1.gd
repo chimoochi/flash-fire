@@ -49,4 +49,3 @@ func _process(_delta: float) -> void:
 	_advanced = true
 	TaskService.clear_tasks()
 	MapService.advance_to(next_level_path)
-

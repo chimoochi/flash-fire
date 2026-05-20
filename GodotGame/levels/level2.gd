@@ -146,6 +146,7 @@ func _pan_to_boss_and_spawn() -> void:
 	var boss := _spawn_boss(spawn_pos)
 	if is_instance_valid(boss):
 		boss.set_physics_process(false)
+		VisualEffectsService.boss_intro(spawn_pos)
 	await get_tree().create_timer(BOSS_CAMERA_HOLD_TIME).timeout
 
 	var player_return_pos := _player.global_position if is_instance_valid(_player) else player_camera.get_screen_center_position()

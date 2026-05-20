@@ -38,6 +38,9 @@ var _state_timer := 0.0
 var _tornado_dir := Vector2.RIGHT
 var _tornado_start := Vector2.ZERO
 var _tornado_hits: Array[Node] = []
+var _tornado_particles: CPUParticles2D = null
+var _hit_flash_tween: Tween = null
+var _dead := false
 
 @onready var _sprite: Sprite2D = $Sprite2D
 @onready var _stomp_sprite: Sprite2D = $StompSprite
@@ -53,6 +56,7 @@ func _ready() -> void:
 	add_child(_health_bar)
 	_health_bar.max_value = MAX_HEALTH
 	_health_bar.value = health
+	VisualEffectsService.boss_intro(global_position)
 
 func _physics_process(delta: float) -> void:
 	if not is_instance_valid(target):
@@ -118,6 +122,9 @@ func _process_summoning(delta: float) -> void:
 func _enter_summoning() -> void:
 	_state = BossState.SUMMONING
 	_state_timer = CREEPER_SLOW_TIME
+	VisualEffectsService.set_mood("boss")
+	ParticleService.boss_shockwave(global_position, Color(0.55, 0.92, 1.0, 0.75), 130.0)
+	ParticleService.ice_shatter(global_position, 0.9)
 	_spawn_random_ice_blocks()
 
 func _enter_tornado_windup() -> void:
@@ -125,17 +132,25 @@ func _enter_tornado_windup() -> void:
 	_state_timer = TORNADO_WINDUP
 	_tornado_dir = _predict_tornado_direction()
 	velocity = Vector2.ZERO
+	VisualEffectsService.set_mood("boss")
+	ParticleService.pulse_light(global_position, Color(0.45, 0.9, 1.0), 2.2, TORNADO_WINDUP, 1.9)
+	_start_tornado_particles()
 
 func _process_tornado_windup(delta: float) -> void:
 	_state_timer -= delta
 	rotation += TAU * 2.5 * delta
+	if is_instance_valid(_tornado_particles):
+		_tornado_particles.global_position = global_position
 	if _state_timer <= 0.0:
 		_state = BossState.TORNADO_CHARGE
 		_tornado_start = global_position
 		_tornado_hits.clear()
+		ParticleService.boss_shockwave(global_position, Color(0.62, 0.95, 1.0, 0.86), 175.0)
 
 func _process_tornado_charge(delta: float) -> void:
 	rotation += TAU * 4.0 * delta
+	if is_instance_valid(_tornado_particles):
+		_tornado_particles.global_position = global_position
 	velocity = _tornado_dir * TORNADO_SPEED
 	move_and_slide()
 	for i in get_slide_collision_count():
@@ -161,6 +176,8 @@ func _enter_tornado_recover() -> void:
 	_state_timer = TORNADO_RECOVER
 	velocity = Vector2.ZERO
 	_tornado_timer = TORNADO_COOLDOWN
+	_stop_tornado_particles()
+	ParticleService.dust_puff(global_position, 1.2)
 
 func _process_tornado_recover(delta: float) -> void:
 	_state_timer -= delta
@@ -182,16 +199,23 @@ func _stomp() -> void:
 	_stomp_sprite.visible = true
 	_sprite.visible = false
 	CameraService.shake(0.55)
+	ParticleService.pulse_light(global_position, Color(0.65, 0.92, 1.0), 1.9, 0.34, 1.6)
+	ParticleService.boss_shockwave(global_position, Color(0.48, 0.86, 1.0, 0.56), 100.0)
 	var tween := create_tween()
 	tween.tween_interval(0.18)
 	tween.tween_callback(_apply_stomp_hit)
 	tween.tween_interval(0.2)
 	tween.tween_callback(func():
-		_stomp_sprite.visible = false
-		_sprite.visible = true
+		if is_instance_valid(_stomp_sprite):
+			_stomp_sprite.visible = false
+		if is_instance_valid(_sprite):
+			_sprite.visible = true
 	)
 
 func _apply_stomp_hit() -> void:
+	ParticleService.boss_shockwave(global_position, Color(0.74, 0.95, 1.0, 0.9), 210.0)
+	ParticleService.dust_puff(global_position, 1.8)
+	VisualEffectsService.boss_hit(global_position)
 	var space_state := get_world_2d().direct_space_state
 	var shape := CircleShape2D.new()
 	shape.radius = STOMP_RANGE
@@ -227,12 +251,14 @@ func _throw_ice_block(dir: Vector2) -> void:
 	block.shatter_damage = 8
 	get_tree().root.add_child(block)
 	block.add_collision_exception_with(self)
+	ParticleService.ice_shatter(block.global_position, 0.55)
 	NoiseService.emit_noise(get_tree(), global_position, 450.0)
 
 func _spawn_creeper() -> void:
 	var creeper := ICE_CREEPER_SCENE.instantiate()
 	get_tree().current_scene.add_child(creeper)
 	creeper.global_position = global_position + Vector2.RIGHT.rotated(randf() * TAU) * 85.0
+	ParticleService.ice_shatter(creeper.global_position, 0.75)
 
 func _acquire_target() -> void:
 	target = get_tree().get_first_node_in_group("Player")
@@ -241,13 +267,75 @@ func push(force: Vector2) -> void:
 	push_velocity += force
 
 func take_damage(amount: int, source_pos: Vector2 = Vector2.ZERO, source: Node2D = null) -> void:
+	if _dead:
+		return
 	health -= amount
 	if _health_bar:
 		_health_bar.value = health
 	DamageNumber.spawn(get_tree(), global_position + Vector2(randf_range(-14, 14), -48), amount, Color(0.5, 0.9, 1.0))
+	VisualEffectsService.boss_hit(global_position)
+	_flash_hit()
 	if health <= 0:
 		die()
 
 func die() -> void:
+	if _dead:
+		return
+	_dead = true
+	_stop_tornado_particles()
+	VisualEffectsService.enemy_killed(global_position, "ice")
+	VisualEffectsService.boss_death(global_position)
+	CameraService.kick(Vector2(0.1, 0.1), 0.22)
 	died.emit()
 	queue_free()
+
+func _flash_hit() -> void:
+	if _hit_flash_tween != null and _hit_flash_tween.is_running():
+		_hit_flash_tween.kill()
+	modulate = Color(0.62, 0.95, 1.35, 1.0)
+	_hit_flash_tween = create_tween()
+	_hit_flash_tween.tween_property(self, "modulate", Color.WHITE, 0.14)
+
+func _start_tornado_particles() -> void:
+	if is_instance_valid(_tornado_particles):
+		_tornado_particles.emitting = true
+		return
+	_tornado_particles = null
+	_tornado_particles = CPUParticles2D.new()
+	_tornado_particles.name = "TornadoIceWake"
+	_tornado_particles.amount = 54
+	_tornado_particles.lifetime = 0.55
+	_tornado_particles.explosiveness = 0.0
+	_tornado_particles.direction = Vector2.UP
+	_tornado_particles.spread = 180.0
+	_tornado_particles.gravity = Vector2(0.0, 20.0)
+	_tornado_particles.initial_velocity_min = 70.0
+	_tornado_particles.initial_velocity_max = 240.0
+	_tornado_particles.scale_amount_min = 2.0
+	_tornado_particles.scale_amount_max = 7.5
+	_tornado_particles.angular_velocity_min = -520.0
+	_tornado_particles.angular_velocity_max = 520.0
+	_tornado_particles.local_coords = false
+	var ramp := Gradient.new()
+	ramp.set_color(0, Color(0.86, 1.0, 1.0, 0.95))
+	ramp.set_color(1, Color(0.18, 0.58, 1.0, 0.0))
+	_tornado_particles.color_ramp = ramp
+	_tornado_particles.color = Color(0.55, 0.9, 1.0, 0.88)
+	if get_tree().current_scene:
+		get_tree().current_scene.add_child(_tornado_particles)
+	else:
+		get_tree().root.add_child(_tornado_particles)
+	_tornado_particles.global_position = global_position
+
+func _stop_tornado_particles() -> void:
+	if not is_instance_valid(_tornado_particles):
+		_tornado_particles = null
+		return
+	_tornado_particles.emitting = false
+	var particles_ref := weakref(_tornado_particles)
+	_tornado_particles = null
+	get_tree().create_timer(0.7).timeout.connect(func() -> void:
+		var particles = particles_ref.get_ref()
+		if is_instance_valid(particles):
+			particles.queue_free()
+	)

@@ -18,12 +18,13 @@ config/icon="res://icon.svg"
 [autoload]
 
 CameraService="*res://core/services/CameraService.gd"
-Enviormentservice="*res://core/services/Enviormentservice.gd"
 MapService="*res://core/services/MapService.gd"
 SoundService="*res://core/services/SoundService.gd"
 CheatMenu="*res://ui/cheat_menu.gd"
 TaskService="*res://core/services/TaskService.gd"
 EnvironmentService="*res://core/services/EnvironmentService.gd"
+ParticleService="*res://core/services/ParticleService.gd"
+VisualEffectsService="*res://core/services/VisualEffectsService.gd"
 
 [display]
 

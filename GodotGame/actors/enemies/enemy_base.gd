@@ -58,6 +58,9 @@ var weapon_visual: WeaponVisual = null
 var _last_damage_source: Node2D = null
 
 var nav_agent: NavigationAgent2D = null
+var _execution_particles: CPUParticles2D = null
+var _hit_flash_tween: Tween = null
+var _execution_base_scale := Vector2.ONE
 
 func _ready() -> void:
 	add_to_group("Enemy")
@@ -342,6 +345,8 @@ func take_damage(amount: int, source_pos: Vector2 = Vector2.ZERO, source: Node2D
 	if health_bar:
 		health_bar.value = EnemyState["health"]
 	DamageNumber.spawn(get_tree(), global_position + Vector2(randf_range(-8, 8), -20), amount, Color(1.0, 0.85, 0.1))
+	VisualEffectsService.enemy_hit(global_position, clampf(float(amount) / 18.0, 0.7, 2.0))
+	_flash_hit()
 	
 	if source_pos != Vector2.ZERO:
 		var dir_to_source = global_position.direction_to(source_pos)
@@ -365,20 +370,29 @@ var _pulse_tween: Tween = null
 
 func start_low_health_pulse() -> void:
 	is_execution_ready = true
+	_setup_execution_particles()
 	# Don't start yet; player will call resume_pulse() when in range
 
 func resume_pulse() -> void:
 	if _pulse_tween != null and _pulse_tween.is_running():
 		return
+	_execution_base_scale = scale
 	_pulse_tween = create_tween().set_loops()
-	_pulse_tween.tween_property(self, "modulate", Color.CYAN, 0.4)
+	_pulse_tween.tween_property(self, "modulate", Color(0.35, 1.0, 1.35, 1.0), 0.22)
+	_pulse_tween.tween_property(self, "scale", _execution_base_scale * 1.06, 0.22)
 	_pulse_tween.tween_property(self, "modulate", Color.WHITE, 0.4)
+	_pulse_tween.tween_property(self, "scale", _execution_base_scale, 0.4)
+	if _execution_particles:
+		_execution_particles.emitting = true
 
 func pause_pulse() -> void:
 	if _pulse_tween != null:
 		_pulse_tween.kill()
 		_pulse_tween = null
 	modulate = Color.WHITE
+	scale = _execution_base_scale
+	if _execution_particles:
+		_execution_particles.emitting = false
 
 func stun(duration: float) -> void:
 	_frozen_until = Time.get_ticks_msec() + int(duration * 1000)
@@ -392,11 +406,63 @@ func stun(duration: float) -> void:
 
 func die() -> void:
 	EnemyState["is_alive"] = false
+	VisualEffectsService.enemy_killed(global_position, _effect_flavor())
+	_spawn_death_effects()
 	_drop_loot()
 	died.emit()
 	if is_instance_valid(_last_damage_source) and _last_damage_source.is_in_group("Player"):
 		killed_by_player.emit(equipped_power, equipped_passive)
 	queue_free()
+
+func _flash_hit() -> void:
+	if is_execution_ready:
+		return
+	if _hit_flash_tween != null and _hit_flash_tween.is_running():
+		_hit_flash_tween.kill()
+	modulate = Color(1.0, 0.88, 0.42, 1.0)
+	_hit_flash_tween = create_tween()
+	_hit_flash_tween.tween_property(self, "modulate", Color.WHITE, 0.12)
+
+func _setup_execution_particles() -> void:
+	if _execution_particles:
+		return
+	_execution_particles = CPUParticles2D.new()
+	_execution_particles.name = "ExecutionReadyParticles"
+	_execution_particles.amount = 18
+	_execution_particles.lifetime = 0.42
+	_execution_particles.explosiveness = 0.0
+	_execution_particles.direction = Vector2.UP
+	_execution_particles.spread = 75.0
+	_execution_particles.gravity = Vector2(0.0, -35.0)
+	_execution_particles.initial_velocity_min = 20.0
+	_execution_particles.initial_velocity_max = 90.0
+	_execution_particles.scale_amount_min = 2.0
+	_execution_particles.scale_amount_max = 5.0
+	_execution_particles.local_coords = false
+	_execution_particles.emitting = false
+	var ramp := Gradient.new()
+	ramp.set_color(0, Color(0.55, 1.0, 1.0, 0.9))
+	ramp.set_color(1, Color(0.1, 0.9, 1.0, 0.0))
+	_execution_particles.color_ramp = ramp
+	_execution_particles.color = Color(0.35, 1.0, 1.0, 0.85)
+	add_child(_execution_particles)
+
+func _spawn_death_effects() -> void:
+	var effect_strength := 1.35
+	if _effect_flavor() == "ice":
+		ParticleService.ice_shatter(global_position, effect_strength)
+	elif _effect_flavor() == "fire":
+		ParticleService.fire_burst(global_position, effect_strength)
+	else:
+		ParticleService.dust_puff(global_position, effect_strength)
+		ParticleService.hit_sparks(global_position, Vector2.ZERO, 1.0)
+
+func _effect_flavor() -> String:
+	if enemy_level.contains("ice"):
+		return "ice"
+	if enemy_level.contains("fire"):
+		return "fire"
+	return "normal"
 
 func _drop_loot() -> void:
 	if not EnemyMetadata.ENEMY_LEVELS.has(enemy_level):

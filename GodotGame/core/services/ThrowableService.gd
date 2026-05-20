@@ -53,6 +53,8 @@ static func explode(radius: float, position: Vector2, damage: int = 0, push_forc
 	explosion.global_position = position
 	explosion.radius = radius # Set the radius for visualization
 	tree.root.add_child(explosion)
+	ParticleService.fire_burst(position, clampf(radius / 110.0, 0.8, 2.2))
+	ParticleService.boss_shockwave(position, Color(1.0, 0.45, 0.08, 0.72), radius)
 
 	NoiseService.emit_noise(tree, position, 1000.0)
 
