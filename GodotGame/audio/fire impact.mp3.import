@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://b72n6w64js142"
+path="res://.godot/imported/fire impact.mp3-3e8d20909a3e9ed035a95c48cb6564c2.mp3str"
+
+[deps]
+
+source_file="res://audio/fire impact.mp3"
+dest_files=["res://.godot/imported/fire impact.mp3-3e8d20909a3e9ed035a95c48cb6564c2.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

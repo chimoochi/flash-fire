@@ -62,4 +62,5 @@ func _throw_barrel(dir: Vector2) -> void:
 	barrel.owner_node = self
 	get_tree().root.add_child(barrel)
 	barrel.add_collision_exception_with(self)
+	SoundService.play_sound_at("throw", global_position, -5.0)
 	NoiseService.emit_noise(get_tree(), global_position, 400.0)

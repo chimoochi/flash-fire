@@ -71,6 +71,7 @@ func _explode(hit_body: Node = null) -> void:
 	EnemyState["is_alive"] = false
 	VisualEffectsService.enemy_killed(global_position, "ice")
 	ParticleService.ice_shatter(global_position, 1.45)
+	SoundService.play_sound_at("ice_crack", global_position, -2.0)
 	died.emit()
 	ThrowableService.explode(EXPLOSION_RADIUS, global_position, EXPLOSION_DAMAGE, EXPLOSION_PUSH, self)
 	queue_free()

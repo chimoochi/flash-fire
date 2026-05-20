@@ -56,7 +56,7 @@ func set_mood(mode: String) -> void:
 			mood_tint = Color(1.28, 0.32, 0.22, 0.18)
 			world_tint = Color(1.0, 0.92, 0.92, 1.0)
 			vignette = 0.28
-			grain = 0.17
+			grain = 0.28
 			contrast = 0.12
 			saturation_loss = 0.08
 		"minigame":

@@ -42,4 +42,5 @@ func _on_body_entered(body: Node) -> void:
 		return
 	if body.has_method("take_damage"):
 		body.take_damage(damage, _start_pos, owner_node if is_instance_valid(owner_node) else null)
+	SoundService.play_sound_at("ice_crack", global_position, -9.0)
 	queue_free()

@@ -73,6 +73,7 @@ func _process(delta: float) -> void:
 				elapsed = 0.0
 				_smoke.emitting = true
 				_fire_trail.emitting = true
+				SoundService.play_sound_at("throw", global_position, -4.0)
 				ParticleService.fire_burst(global_position, 0.75)
 				ParticleService.pulse_light(global_position, Color(1.0, 0.36, 0.05), 2.0, 0.34, 1.7)
 		"firing":
@@ -87,6 +88,7 @@ func _on_body_entered(body: Node2D) -> void:
 		body.take_damage(9999, global_position)
 	else:
 		get_tree().reload_current_scene()
+	SoundService.play_sound_at("explode", global_position, -1.0)
 	ParticleService.fire_burst(global_position, 1.8)
 	ParticleService.boss_shockwave(global_position, Color(1.0, 0.35, 0.04, 0.78), 95.0)
 	queue_free()

@@ -67,6 +67,7 @@ var swing_melee: WaterPopper
 
 var _fire_beam: Node = null
 var _fire_beam_cooldown: float = 0.0
+var _fire_beam_sound_id: int = -1
 var _walk_particles: CPUParticles2D
 var _normal_sprite_texture: Texture2D = null
 
@@ -436,6 +437,7 @@ func _stop_stream() -> void:
 		lightning_stream.stop()
 		lightning_stream.queue_free()
 		lightning_stream = null
+	_stop_fire_beam_sound()
 
 func use_equipped_power() -> void:
 	if not PlayerState["is_alive"]:
@@ -486,6 +488,7 @@ func _activate_fireball() -> void:
 	_fireball_cooldown = FIREBALL_COOLDOWN
 	var dir = (get_global_mouse_position() - global_position).normalized()
 	BulletService.spawn_bullet(self, dir, FIREBALL_DAMAGE, FIREBALL_SPEED)
+	SoundService.play_sound_at("fireball", global_position, -3.0, 0.5)
 	velocity += -dir * FIREBALL_RECOIL
 	velocity = velocity.limit_length(MAX_VELOCITY)
 	CameraService.shake(0.15)
@@ -496,6 +499,7 @@ func _activate_fireball() -> void:
 func _activate_aoe() -> void:
 	PlayerState["stamina"] -= AOE_STAMINA_COST
 	_aoe_cooldown = AOE_COOLDOWN
+	SoundService.play_sound_at("stomp", global_position, -1.5)
 	CameraService.shake(0.5)
 	CameraService.kick(Vector2(0.1, 0.1), 0.2)
 	_show_attack_sprite(STOMP_ATTACK_TEX, 1.0)
@@ -507,6 +511,7 @@ func _activate_shotgun() -> void:
 	_shotgun_cooldown = SHOTGUN_COOLDOWN
 	var dir = (get_global_mouse_position() - global_position).normalized()
 	BulletService.spawn_shotgun(self, dir, SHOTGUN_DAMAGE, SHOTGUN_SPEED, SHOTGUN_SPREAD)
+	SoundService.play_sound_at("shotgun", global_position, -2.0)
 	velocity += -dir * SHOTGUN_RECOIL
 	velocity = velocity.limit_length(MAX_VELOCITY)
 	CameraService.shake(0.2)
@@ -518,6 +523,8 @@ func _activate_fire_beam() -> void:
 	PlayerState["stamina"] -= FIRE_BEAM_STAMINA_COST
 	_fire_beam_cooldown = FIRE_BEAM_COOLDOWN
 	var dir := (get_global_mouse_position() - global_position).normalized()
+	_stop_fire_beam_sound()
+	_fire_beam_sound_id = SoundService.play_sound_at("fire_beam", global_position, -4.0, 1.0)
 	velocity += -dir * FIRE_BEAM_RECOIL
 	velocity = velocity.limit_length(MAX_VELOCITY)
 	CameraService.shake(0.2)
@@ -535,9 +542,16 @@ func _activate_fire_beam() -> void:
 			_attack_sprite_timer = null
 	_fire_beam.beam_ended.connect(func():
 		_fire_beam = null
+		_stop_fire_beam_sound()
 		_sprite.texture = _normal_sprite_texture
 		_attack_sprite_timer = null
 	)
+
+func _stop_fire_beam_sound() -> void:
+	if _fire_beam_sound_id == -1:
+		return
+	SoundService.stop_sound(_fire_beam_sound_id)
+	_fire_beam_sound_id = -1
 
 
 func _spawn_muzzle_particles(pos: Vector2, dir: Vector2) -> void:
@@ -600,6 +614,7 @@ func _spawn_stomp_chain() -> void:
 	var timer2 := get_tree().create_timer(0.18)
 	timer2.timeout.connect(func():
 		if not is_instance_valid(self): return
+		SoundService.play_sound_at("stomp", pos2, -4.0)
 		ThrowableService.explode(80.0, pos2, int(AOE_DAMAGE * 0.7), AOE_PUSH_FORCE * 0.7, self, 10)
 		_spawn_stomp_burst(pos2, 80.0, 4, 7)
 		CameraService.shake(0.3)
@@ -610,6 +625,7 @@ func _spawn_stomp_chain() -> void:
 	var timer3 := get_tree().create_timer(0.34)
 	timer3.timeout.connect(func():
 		if not is_instance_valid(self): return
+		SoundService.play_sound_at("stomp", pos3, -7.0)
 		ThrowableService.explode(55.0, pos3, int(AOE_DAMAGE * 0.45), AOE_PUSH_FORCE * 0.45, self, 6)
 		_spawn_stomp_burst(pos3, 55.0, 3, 5)
 		CameraService.shake(0.18)
@@ -642,8 +658,7 @@ func _spawn_stomp_burst(pos: Vector2, radius: float, ray_count: int, particles_p
 		p.finished.connect(p.queue_free)
 
 func absorb_loadout(power: Dictionary, passive_name: String) -> void:
-	if kill_sound_player:
-		kill_sound_player.play()
+	SoundService.play_sound_at("kill", global_position, -2.0)
 	_stop_stream()
 	equipped_power = power
 	last_power_time = 0
@@ -712,7 +727,9 @@ func take_damage(amount: int, source_pos: Vector2 = Vector2.ZERO, source: Node2D
 		health_bar.set_health(PlayerState["health"])
 	DamageNumber.spawn(get_tree(), global_position + Vector2(randf_range(-8, 8), -20), damage_to_apply, Color(1.0, 0.25, 0.25))
 	CameraService.shake(0.35)
-	VisualEffectsService.player_hurt(_damage_flavor(source))
+	var flavor := _damage_flavor(source)
+	VisualEffectsService.player_hurt(flavor)
+	_play_hurt_sound(flavor)
 	if PlayerState["health"] <= PlayerState["max_health"] * 0.3:
 		VisualEffectsService.set_mood("low_health")
 
@@ -727,6 +744,12 @@ func heal(amount: int) -> void:
 	VisualEffectsService.player_healed()
 	if PlayerState["health"] > PlayerState["max_health"] * 0.3:
 		VisualEffectsService.set_mood("normal")
+
+func _play_hurt_sound(flavor: String) -> void:
+	if flavor == "fire":
+		SoundService.play_sound_at("fire_hurt", global_position, -2.0)
+	elif flavor == "ice":
+		SoundService.play_sound_at("ice_crack", global_position, -8.0)
 
 
 func die() -> void:
@@ -810,6 +833,7 @@ func _perform_glory_kill(target: Node2D) -> void:
 		return
 	
 	ThrowableService.explode(GLORY_KILL_RADIUS, global_position, GLORY_KILL_DAMAGE, GLORY_KILL_PUSH_FORCE, self )
+	SoundService.play_sound_at("kill", global_position, -1.0)
 	CameraService.shake(0.7)
 	CameraService.kick(Vector2(0.08, 0.08), 0.2)
 

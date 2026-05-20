@@ -78,6 +78,7 @@ func _become_dormant() -> void:
 	_state = BlockState.DORMANT
 	velocity = Vector2.ZERO
 	_speed = 0.0
+	SoundService.play_sound_at("ice_crack", global_position, -11.0)
 	_visual.modulate = Color(1.0, 1.0, 1.0, 1.0)
 	_pulse_tween = create_tween().set_loops()
 	_pulse_tween.tween_property(_visual, "modulate", Color(0.55, 0.85, 1.0, 1.0), 0.6)
@@ -110,6 +111,7 @@ func shatter() -> void:
 
 	if _pulse_tween:
 		_pulse_tween.kill()
+	SoundService.play_sound_at("ice_crack", global_position, -4.0)
 
 	for i in SHATTER_SHARD_COUNT:
 		var angle := (TAU / SHATTER_SHARD_COUNT) * i

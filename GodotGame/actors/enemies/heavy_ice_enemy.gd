@@ -77,6 +77,7 @@ func _fire_ice_shard(dir: Vector2) -> void:
 	shard.damage = ICE_SHARD_DAMAGE
 	shard.owner_node = self
 	get_tree().root.add_child(shard)
+	SoundService.play_sound_at("ice_crack", global_position, -12.0)
 	NoiseService.emit_noise(get_tree(), global_position, 300.0)
 
 func _throw_ice_block(dir: Vector2) -> void:
@@ -88,4 +89,6 @@ func _throw_ice_block(dir: Vector2) -> void:
 	block.shatter_damage = ICE_BLOCK_SHATTER_DAMAGE
 	get_tree().root.add_child(block)
 	block.add_collision_exception_with(self)
+	SoundService.play_sound_at("throw", global_position, -7.0)
+	SoundService.play_sound_at("ice_crack", block.global_position, -10.0)
 	NoiseService.emit_noise(get_tree(), global_position, 400.0)

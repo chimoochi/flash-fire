@@ -3,6 +3,16 @@ extends Node
 const SOUNDS: Dictionary = {
 	"music": preload("res://audio/music.mp3"),
 	"kill":  preload("res://audio/kill.mp3"),
+	"throw": preload("res://audio/throw.mp3"),
+	"stomp": preload("res://audio/stomp.mp3"),
+	"shotgun": preload("res://audio/shotgun.mp3"),
+	"fireball": preload("res://audio/firefire.mp3"),
+	"fire_beam": preload("res://audio/fire beam.mp3"),
+	"fire_hurt": preload("res://audio/fire hurt.mp3"),
+	"fire_impact": preload("res://audio/fire impact.mp3"),
+	"explode": preload("res://audio/explode.mp3"),
+	"ice_crack": preload("res://audio/ice-crack.mp3"),
+	"tornado": preload("res://audio/tornado wind swoosh.mp3"),
 }
 
 
@@ -14,8 +24,10 @@ var _music_player: AudioStreamPlayer = null
 func _ready() -> void:
 	play_music()
 
+func has_sound(sound_name: String) -> bool:
+	return SOUNDS.has(sound_name)
 
-func play_sound(sound_name: String, volume_db: float = 0.0) -> int:
+func play_sound(sound_name: String, volume_db: float = 0.0, start_time: float = 0.0) -> int:
 	if not SOUNDS.has(sound_name):
 		push_warning("SoundService: unknown sound '%s'" % sound_name)
 		return -1
@@ -24,7 +36,7 @@ func play_sound(sound_name: String, volume_db: float = 0.0) -> int:
 	player.stream = SOUNDS[sound_name]
 	player.volume_db = volume_db
 	add_child(player)
-	player.play()
+	player.play(start_time)
 
 	var id := _next_id
 	_next_id += 1
@@ -34,7 +46,7 @@ func play_sound(sound_name: String, volume_db: float = 0.0) -> int:
 	return id
 
 
-func play_sound_at(sound_name: String, position: Vector2, volume_db: float = 0.0) -> int:
+func play_sound_at(sound_name: String, position: Vector2, volume_db: float = 0.0, start_time: float = 0.0) -> int:
 	if not SOUNDS.has(sound_name):
 		push_warning("SoundService: unknown sound '%s'" % sound_name)
 		return -1
@@ -44,7 +56,7 @@ func play_sound_at(sound_name: String, position: Vector2, volume_db: float = 0.0
 	player.volume_db = volume_db
 	player.global_position = position
 	get_tree().root.add_child(player)
-	player.play()
+	player.play(start_time)
 
 	var id := _next_id
 	_next_id += 1
@@ -54,7 +66,7 @@ func play_sound_at(sound_name: String, position: Vector2, volume_db: float = 0.0
 	return id
 
 
-func play_sound_on(sound_name: String, node: Node2D, volume_db: float = 0.0) -> int:
+func play_sound_on(sound_name: String, node: Node2D, volume_db: float = 0.0, start_time: float = 0.0) -> int:
 	if not SOUNDS.has(sound_name):
 		push_warning("SoundService: unknown sound '%s'" % sound_name)
 		return -1
@@ -63,7 +75,7 @@ func play_sound_on(sound_name: String, node: Node2D, volume_db: float = 0.0) -> 
 	player.stream = SOUNDS[sound_name]
 	player.volume_db = volume_db
 	node.add_child(player)
-	player.play()
+	player.play(start_time)
 
 	var id := _next_id
 	_next_id += 1

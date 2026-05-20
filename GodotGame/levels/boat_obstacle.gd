@@ -19,3 +19,4 @@ func _fire_cannonball() -> void:
 	var ball = CannonBall.instantiate()
 	get_parent().add_child(ball)
 	ball.global_position = Vector2(global_position.x, -50.0)
+	SoundService.play_sound_at("throw", global_position, -8.0)

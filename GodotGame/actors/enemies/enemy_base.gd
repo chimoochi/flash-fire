@@ -407,6 +407,7 @@ func stun(duration: float) -> void:
 func die() -> void:
 	EnemyState["is_alive"] = false
 	VisualEffectsService.enemy_killed(global_position, _effect_flavor())
+	SoundService.play_sound_at("kill", global_position, -5.0)
 	_spawn_death_effects()
 	_drop_loot()
 	died.emit()

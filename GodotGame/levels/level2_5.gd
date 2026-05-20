@@ -12,10 +12,11 @@ const THRUST := 3400.0
 const MAX_FALL_SPEED := 520.0
 const MAX_RISE_SPEED := -640.0
 const HAZARD_DELETE_X := -220.0
-const SURVIVE_TIME := 25.0
+const SURVIVE_TIME := 10.0
 const WARNING_TIME := 1.15
-const FLAME_BEAM_SIZE := Vector2(420.0, 52.0)
 const FLOOR_SPARK_RANGE := 190.0
+const BACKGROUND_TEXTURE := preload("res://gameplay/minigame/jetpackjoyridebackground.png")
+const BACKGROUND_SCROLL_SPEED := 180.0
 const STANDING_TEXTURE := preload("res://gameassets/runtime/sprites/standingsideways.png")
 const FLYING_TEXTURE := preload("res://gameassets/runtime/sprites/flying2d.png")
 
@@ -24,6 +25,8 @@ const FLYING_TEXTURE := preload("res://gameassets/runtime/sprites/flying2d.png")
 @onready var _hazards: Node2D = $Hazards
 @onready var _warnings: Node2D = $Warnings
 @onready var _timer_label: Label = $CanvasLayer/TimerLabel
+@onready var _fireball_template: Area2D = $HazardTemplates/FireballHazardTemplate
+@onready var _obstacle_template: Area2D = $HazardTemplates/ObstacleHazardTemplate
 
 var _rng := RandomNumberGenerator.new()
 var _elapsed := 0.0
@@ -31,9 +34,14 @@ var _spawn_timer := 0.4
 var _completed := false
 var _player_fire_particles: CPUParticles2D
 var _floor_spark_particles: CPUParticles2D
+var _background_sprites: Array[Sprite2D] = []
+var _background_tile_width := 0.0
 
 func _ready() -> void:
 	_rng.randomize()
+	_setup_scrolling_background()
+	_fireball_template.visible = false
+	_obstacle_template.visible = false
 	_player.add_to_group("Player")
 	_player_fire_particles = _add_downward_fire_particles(_player, Vector2(1.0, 58.0), 28)
 	_player_fire_particles.lifetime = 0.26
@@ -75,6 +83,7 @@ func _process(delta: float) -> void:
 	if _completed:
 		return
 
+	_scroll_background(delta)
 	_elapsed += delta
 	_timer_label.text = "%02.1f" % max(0.0, SURVIVE_TIME - _elapsed)
 	_spawn_timer -= delta
@@ -89,6 +98,29 @@ func _process(delta: float) -> void:
 
 func _is_pressed(action: StringName) -> bool:
 	return InputMap.has_action(action) and Input.is_action_pressed(action)
+
+func _setup_scrolling_background() -> void:
+	var scale_to_view := 1080.0 / float(BACKGROUND_TEXTURE.get_height())
+	_background_tile_width = float(BACKGROUND_TEXTURE.get_width()) * scale_to_view
+	for i in range(2):
+		var sprite := Sprite2D.new()
+		sprite.name = "JetpackJoyrideBackground%d" % [i + 1]
+		sprite.texture = BACKGROUND_TEXTURE
+		sprite.centered = false
+		sprite.scale = Vector2(scale_to_view, scale_to_view)
+		sprite.position = Vector2(float(i) * _background_tile_width, 0.0)
+		sprite.z_index = -100
+		add_child(sprite)
+		move_child(sprite, 0)
+		_background_sprites.append(sprite)
+
+func _scroll_background(delta: float) -> void:
+	if _background_tile_width <= 0.0:
+		return
+	for sprite in _background_sprites:
+		sprite.position.x -= BACKGROUND_SCROLL_SPEED * delta
+		if sprite.position.x <= -_background_tile_width:
+			sprite.position.x += _background_tile_width * float(_background_sprites.size())
 
 func _update_player_sprite(thrusting: bool, grounded: bool) -> void:
 	var should_fly := thrusting or not grounded
@@ -134,63 +166,58 @@ func _spawn_flame_beam_warning() -> void:
 	_spawn_flame_beam(y_pos)
 
 func _spawn_flame_beam(y_pos: float) -> void:
-	var hazard := Area2D.new()
-	hazard.name = "FlameBeamHazard"
+	var hazard: Area2D = _fireball_template.duplicate() as Area2D
+	hazard.name = "FireballHazard"
 	hazard.position = Vector2(2150.0, y_pos)
 	hazard.collision_layer = 0
 	hazard.collision_mask = 2
+	hazard.visible = true
 	hazard.set_meta("speed", _rng.randf_range(780.0, 960.0))
 	_hazards.add_child(hazard)
 
-	var visual := Polygon2D.new()
-	visual.color = Color(1.0, 0.26, 0.05, 0.92)
-	visual.polygon = PackedVector2Array([
-		Vector2(-FLAME_BEAM_SIZE.x * 0.5, -FLAME_BEAM_SIZE.y * 0.5),
-		Vector2(FLAME_BEAM_SIZE.x * 0.5, -FLAME_BEAM_SIZE.y * 0.5),
-		Vector2(FLAME_BEAM_SIZE.x * 0.5, FLAME_BEAM_SIZE.y * 0.5),
-		Vector2(-FLAME_BEAM_SIZE.x * 0.5, FLAME_BEAM_SIZE.y * 0.5),
-	])
-	hazard.add_child(visual)
-	_add_downward_fire_particles(hazard, Vector2(0.0, FLAME_BEAM_SIZE.y * 0.5 + 5.0), 34)
+	var visual := hazard.get_node_or_null("FireballVisual") as AnimatedSprite2D
+	if visual:
+		visual.play("default")
+	SoundService.play_sound_at("fireball", hazard.global_position, -8.0, 0.5)
 	ParticleService.pulse_light(hazard.global_position, Color(1.0, 0.24, 0.03), 1.8, 0.28, 2.0)
-
-	var shape := CollisionShape2D.new()
-	var rect := RectangleShape2D.new()
-	rect.size = FLAME_BEAM_SIZE
-	shape.shape = rect
-	hazard.add_child(shape)
 
 	hazard.body_entered.connect(_on_hazard_body_entered.bind(hazard))
 
 func _spawn_obstacle() -> void:
-	var hazard := Area2D.new()
+	var hazard: Area2D = _obstacle_template.duplicate() as Area2D
 	hazard.name = "ObstacleHazard"
-	hazard.position = Vector2(2080.0, _rng.randf_range(TOP_BOUND + 160.0, BOTTOM_BOUND - 160.0))
 	hazard.collision_layer = 0
 	hazard.collision_mask = 2
 	hazard.set_meta("speed", _rng.randf_range(420.0, 540.0))
+
+	var height := _rng.randf_range(210.0, 360.0)
+	var local_height := _get_obstacle_template_height()
+	var template_scale := hazard.scale
+	var base_height := local_height * absf(template_scale.y)
+	var scale_to_height := height / base_height
+	var anchored_to_top := _rng.randf() < 0.5
+	hazard.position = Vector2(2080.0, TOP_BOUND if anchored_to_top else FLOOR_TOP)
+	hazard.scale = template_scale * scale_to_height
+	_align_obstacle_anchor(hazard, anchored_to_top, local_height)
+	hazard.visible = true
 	_hazards.add_child(hazard)
 
-	var height := _rng.randf_range(130.0, 260.0)
-	var width := _rng.randf_range(70.0, 130.0)
-	var visual := Polygon2D.new()
-	visual.color = Color(0.48, 0.62, 0.72, 0.9)
-	visual.polygon = PackedVector2Array([
-		Vector2(-width * 0.5, -height * 0.5),
-		Vector2(width * 0.5, -height * 0.5),
-		Vector2(width * 0.5, height * 0.5),
-		Vector2(-width * 0.5, height * 0.5),
-	])
-	hazard.add_child(visual)
-	_add_downward_fire_particles(hazard, Vector2(0.0, height * 0.5 + 8.0), 22)
-
-	var shape := CollisionShape2D.new()
-	var rect := RectangleShape2D.new()
-	rect.size = Vector2(width, height)
-	shape.shape = rect
-	hazard.add_child(shape)
-
 	hazard.body_entered.connect(_on_hazard_body_entered.bind(hazard))
+
+func _align_obstacle_anchor(hazard: Area2D, anchored_to_top: bool, local_height: float) -> void:
+	if anchored_to_top:
+		return
+	for child in hazard.get_children():
+		if child is Node2D:
+			var child_2d := child as Node2D
+			child_2d.position.y -= local_height
+
+func _get_obstacle_template_height() -> float:
+	var shape := _obstacle_template.get_node_or_null("CollisionShape2D") as CollisionShape2D
+	if shape and shape.shape is RectangleShape2D:
+		var rect := shape.shape as RectangleShape2D
+		return maxf(rect.size.y, 1.0)
+	return 910.0
 
 func _add_downward_fire_particles(parent: Node2D, offset: Vector2, amount: int) -> CPUParticles2D:
 	return ParticleService.ember_trail(parent, offset, amount)
@@ -231,6 +258,7 @@ func _move_hazards(delta: float) -> void:
 
 func _on_hazard_body_entered(body: Node, _hazard: Area2D) -> void:
 	if body.is_in_group("Player"):
+		SoundService.play_sound_at("fire_hurt", body.global_position, -2.0)
 		_restart_minigame()
 
 func _restart_minigame() -> void:

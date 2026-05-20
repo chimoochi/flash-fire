@@ -1,10 +1,117 @@
-[gd_scene load_steps=5 format=3 uid="uid://d0syf24iv455n"]
+[gd_scene load_steps=23 format=3 uid="uid://d0syf24iv455n"]
 
 [ext_resource type="Script" uid="uid://bmcxkj63rcx18" path="res://levels/level2_5.gd" id="1_foihk"]
 [ext_resource type="Texture2D" uid="uid://t3u5dksgehay" path="res://gameassets/runtime/sprites/standingsideways.png" id="2_stand"]
+[ext_resource type="Texture2D" uid="uid://dwffx08a6208k" path="res://gameassets/runtime/sprites/small-fireball.png" id="3_fireball"]
+[ext_resource type="Texture2D" uid="uid://oxy0xkdy0cjs" path="res://gameplay/minigame/obstacle2.png" id="4_obstacle"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_player"]
 size = Vector2(54, 92)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fireball_0"]
+atlas = ExtResource("3_fireball")
+region = Rect2(0, 0, 87, 86)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fireball_1"]
+atlas = ExtResource("3_fireball")
+region = Rect2(87, 0, 87, 86)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fireball_2"]
+atlas = ExtResource("3_fireball")
+region = Rect2(174, 0, 87, 86)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fireball_3"]
+atlas = ExtResource("3_fireball")
+region = Rect2(261, 0, 87, 86)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fireball_4"]
+atlas = ExtResource("3_fireball")
+region = Rect2(348, 0, 87, 86)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fireball_5"]
+atlas = ExtResource("3_fireball")
+region = Rect2(435, 0, 87, 86)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fireball_6"]
+atlas = ExtResource("3_fireball")
+region = Rect2(522, 0, 87, 86)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fireball_7"]
+atlas = ExtResource("3_fireball")
+region = Rect2(609, 0, 87, 86)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fireball_8"]
+atlas = ExtResource("3_fireball")
+region = Rect2(696, 0, 87, 86)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fireball_9"]
+atlas = ExtResource("3_fireball")
+region = Rect2(783, 0, 87, 86)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fireball_10"]
+atlas = ExtResource("3_fireball")
+region = Rect2(870, 0, 87, 86)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fireball_11"]
+atlas = ExtResource("3_fireball")
+region = Rect2(957, 0, 87, 86)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fireball_12"]
+atlas = ExtResource("3_fireball")
+region = Rect2(1044, 0, 87, 86)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_fireball_hazard"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fireball_0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fireball_1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fireball_2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fireball_3")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fireball_4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fireball_5")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fireball_6")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fireball_7")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fireball_8")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fireball_9")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fireball_10")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fireball_11")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fireball_12")
+}],
+"loop": true,
+"name": &"default",
+"speed": 10.0
+}]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_fireball_hazard"]
+radius = 77.030365
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_obstacle_hazard"]
+size = Vector2(320, 910)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_bound"]
 size = Vector2(1920, 127)
@@ -15,19 +122,19 @@ script = ExtResource("1_foihk")
 [node name="Background" type="ColorRect" parent="."]
 offset_right = 1920.0
 offset_bottom = 1080.0
-color = Color(0.055, 0.07, 0.095, 1)
+color = Color(0.055, 0.07, 0.095, 0)
 
 [node name="FloorVisual" type="ColorRect" parent="."]
 offset_top = 780.0
 offset_right = 1920.0
 offset_bottom = 1080.0
-color = Color(0.24, 0.28, 0.31, 1)
+color = Color(0.24, 0.28, 0.31, 0.18)
 
 [node name="FloorLip" type="ColorRect" parent="."]
 offset_top = 764.0
 offset_right = 1920.0
 offset_bottom = 780.0
-color = Color(0.5, 0.58, 0.62, 1)
+color = Color(0.5, 0.58, 0.62, 0.28)
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(960, 540)
@@ -45,6 +152,41 @@ texture = ExtResource("2_stand")
 shape = SubResource("RectangleShape2D_player")
 
 [node name="Hazards" type="Node2D" parent="."]
+
+[node name="HazardTemplates" type="Node2D" parent="."]
+visible = false
+
+[node name="FireballHazardTemplate" type="Area2D" parent="HazardTemplates"]
+collision_layer = 0
+collision_mask = 0
+
+[node name="FireballVisual" type="AnimatedSprite2D" parent="HazardTemplates/FireballHazardTemplate"]
+z_index = 12
+rotation = 1.5707964
+scale = Vector2(1.1, 1.1)
+sprite_frames = SubResource("SpriteFrames_fireball_hazard")
+autoplay = "default"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HazardTemplates/FireballHazardTemplate"]
+scale = Vector2(0.34124687, 0.14611629)
+shape = SubResource("CircleShape2D_fireball_hazard")
+
+[node name="ObstacleHazardTemplate" type="Area2D" parent="HazardTemplates"]
+scale = Vector2(0.19976714, 0.19976714)
+collision_layer = 0
+collision_mask = 0
+
+[node name="RockObstacleVisual" type="Sprite2D" parent="HazardTemplates/ObstacleHazardTemplate"]
+z_index = 8
+position = Vector2(-160, 0)
+texture = ExtResource("4_obstacle")
+centered = false
+region_enabled = true
+region_rect = Rect2(7, 114, 320, 910)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HazardTemplates/ObstacleHazardTemplate"]
+position = Vector2(0, 455)
+shape = SubResource("RectangleShape2D_obstacle_hazard")
 
 [node name="Warnings" type="Node2D" parent="."]
 

@@ -125,6 +125,7 @@ func _enter_summoning() -> void:
 	VisualEffectsService.set_mood("boss")
 	ParticleService.boss_shockwave(global_position, Color(0.55, 0.92, 1.0, 0.75), 130.0)
 	ParticleService.ice_shatter(global_position, 0.9)
+	SoundService.play_sound_at("ice_crack", global_position, -3.0)
 	_spawn_random_ice_blocks()
 
 func _enter_tornado_windup() -> void:
@@ -134,6 +135,7 @@ func _enter_tornado_windup() -> void:
 	velocity = Vector2.ZERO
 	VisualEffectsService.set_mood("boss")
 	ParticleService.pulse_light(global_position, Color(0.45, 0.9, 1.0), 2.2, TORNADO_WINDUP, 1.9)
+	SoundService.play_sound_at("tornado", global_position, -2.0)
 	_start_tornado_particles()
 
 func _process_tornado_windup(delta: float) -> void:
@@ -146,6 +148,7 @@ func _process_tornado_windup(delta: float) -> void:
 		_tornado_start = global_position
 		_tornado_hits.clear()
 		ParticleService.boss_shockwave(global_position, Color(0.62, 0.95, 1.0, 0.86), 175.0)
+		SoundService.play_sound_at("tornado", global_position, -4.0)
 
 func _process_tornado_charge(delta: float) -> void:
 	rotation += TAU * 4.0 * delta
@@ -198,6 +201,7 @@ func _predict_tornado_direction() -> Vector2:
 func _stomp() -> void:
 	_stomp_sprite.visible = true
 	_sprite.visible = false
+	SoundService.play_sound_at("stomp", global_position, -3.0)
 	CameraService.shake(0.55)
 	ParticleService.pulse_light(global_position, Color(0.65, 0.92, 1.0), 1.9, 0.34, 1.6)
 	ParticleService.boss_shockwave(global_position, Color(0.48, 0.86, 1.0, 0.56), 100.0)
@@ -216,6 +220,7 @@ func _apply_stomp_hit() -> void:
 	ParticleService.boss_shockwave(global_position, Color(0.74, 0.95, 1.0, 0.9), 210.0)
 	ParticleService.dust_puff(global_position, 1.8)
 	VisualEffectsService.boss_hit(global_position)
+	SoundService.play_sound_at("stomp", global_position, -1.0)
 	var space_state := get_world_2d().direct_space_state
 	var shape := CircleShape2D.new()
 	shape.radius = STOMP_RANGE
@@ -252,6 +257,8 @@ func _throw_ice_block(dir: Vector2) -> void:
 	get_tree().root.add_child(block)
 	block.add_collision_exception_with(self)
 	ParticleService.ice_shatter(block.global_position, 0.55)
+	SoundService.play_sound_at("throw", global_position, -7.0)
+	SoundService.play_sound_at("ice_crack", block.global_position, -9.0)
 	NoiseService.emit_noise(get_tree(), global_position, 450.0)
 
 func _spawn_creeper() -> void:
@@ -259,6 +266,7 @@ func _spawn_creeper() -> void:
 	get_tree().current_scene.add_child(creeper)
 	creeper.global_position = global_position + Vector2.RIGHT.rotated(randf() * TAU) * 85.0
 	ParticleService.ice_shatter(creeper.global_position, 0.75)
+	SoundService.play_sound_at("ice_crack", creeper.global_position, -8.0)
 
 func _acquire_target() -> void:
 	target = get_tree().get_first_node_in_group("Player")
@@ -274,6 +282,7 @@ func take_damage(amount: int, source_pos: Vector2 = Vector2.ZERO, source: Node2D
 		_health_bar.value = health
 	DamageNumber.spawn(get_tree(), global_position + Vector2(randf_range(-14, 14), -48), amount, Color(0.5, 0.9, 1.0))
 	VisualEffectsService.boss_hit(global_position)
+	SoundService.play_sound_at("ice_crack", global_position, -10.0)
 	_flash_hit()
 	if health <= 0:
 		die()
@@ -285,6 +294,8 @@ func die() -> void:
 	_stop_tornado_particles()
 	VisualEffectsService.enemy_killed(global_position, "ice")
 	VisualEffectsService.boss_death(global_position)
+	SoundService.play_sound_at("ice_crack", global_position, -1.0)
+	SoundService.play_sound_at("kill", global_position, -3.0)
 	CameraService.kick(Vector2(0.1, 0.1), 0.22)
 	died.emit()
 	queue_free()
@@ -332,10 +343,10 @@ func _stop_tornado_particles() -> void:
 		_tornado_particles = null
 		return
 	_tornado_particles.emitting = false
-	var particles_ref := weakref(_tornado_particles)
+	var particles_ref: WeakRef = weakref(_tornado_particles)
 	_tornado_particles = null
 	get_tree().create_timer(0.7).timeout.connect(func() -> void:
-		var particles = particles_ref.get_ref()
+		var particles: Object = particles_ref.get_ref()
 		if is_instance_valid(particles):
 			particles.queue_free()
 	)

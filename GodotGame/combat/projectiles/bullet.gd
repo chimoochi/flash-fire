@@ -64,12 +64,14 @@ func _on_body_entered(body: Node2D) -> void:
 	if is_player_bullet:
 		_explode()
 	else:
+		SoundService.play_sound_at("fire_impact", global_position, -8.0)
 		queue_free()
 
 func _explode() -> void:
 	if _dead:
 		return
 	_dead = true
+	SoundService.play_sound_at("fire_impact", global_position, -4.0)
 	set_physics_process(false)
 	$CollisionShape2D.set_deferred("disabled", true)
 	visible = false
