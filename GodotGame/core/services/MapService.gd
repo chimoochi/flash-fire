@@ -88,6 +88,7 @@ func _load_scene(scene_path: String) -> void:
 	out.tween_property(_fade_overlay, "modulate:a", 1.0, 0.5).set_trans(Tween.TRANS_SINE)
 	await out.finished
 
+	EnvironmentService.reset_environment_effects()
 	_cleanup_root_orphans()
 	VisualEffectsService.reset()
 	current_map_scene = scene_path

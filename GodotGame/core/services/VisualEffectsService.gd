@@ -53,12 +53,12 @@ func set_mood(mode: String) -> void:
 			contrast = 0.11
 			saturation_loss = 0.04
 		"low_health":
-			mood_tint = Color(1.28, 0.32, 0.22, 0.18)
-			world_tint = Color(1.0, 0.92, 0.92, 1.0)
-			vignette = 0.28
+			mood_tint = Color(1.18, 0.2, 0.14, 0.075)
+			world_tint = Color(1.0, 0.96, 0.95, 1.0)
+			vignette = 0.24
 			grain = 0.28
-			contrast = 0.12
-			saturation_loss = 0.08
+			contrast = 0.08
+			saturation_loss = 0.045
 		"minigame":
 			mood_tint = Color(1.16, 0.76, 0.5, 0.14)
 			world_tint = Color(0.98, 0.94, 0.9, 1.0)
@@ -143,6 +143,16 @@ func reset() -> void:
 	_set_shader_value("vignette_pulse", 0.0)
 	_set_shader_value("contrast_pulse", 0.0)
 	set_mood("normal")
+
+func clear_transient_pulses() -> void:
+	if _screen_tween != null and _screen_tween.is_running():
+		_screen_tween.kill()
+	_set_shader_value("red_amount", 0.0)
+	_set_shader_value("invert_amount", 0.0)
+	_set_shader_value("flash_color", Color(0.0, 0.0, 0.0, 0.0))
+	_set_shader_value("edge_amount", 0.0)
+	_set_shader_value("vignette_pulse", 0.0)
+	_set_shader_value("contrast_pulse", 0.0)
 
 func _setup_canvas_modulate() -> void:
 	_canvas_modulate = CanvasModulate.new()

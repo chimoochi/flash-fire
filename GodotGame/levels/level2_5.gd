@@ -197,16 +197,15 @@ func _spawn_obstacle() -> void:
 	var scale_to_height := height / base_height
 	var anchored_to_top := _rng.randf() < 0.5
 	hazard.position = Vector2(2080.0, TOP_BOUND if anchored_to_top else FLOOR_TOP)
-	hazard.scale = template_scale * scale_to_height
-	_align_obstacle_anchor(hazard, anchored_to_top, local_height)
+	var y_sign := -1.0 if anchored_to_top else 1.0
+	hazard.scale = Vector2(template_scale.x * scale_to_height, absf(template_scale.y) * scale_to_height * y_sign)
+	_align_obstacle_anchor(hazard, local_height)
 	hazard.visible = true
 	_hazards.add_child(hazard)
 
 	hazard.body_entered.connect(_on_hazard_body_entered.bind(hazard))
 
-func _align_obstacle_anchor(hazard: Area2D, anchored_to_top: bool, local_height: float) -> void:
-	if anchored_to_top:
-		return
+func _align_obstacle_anchor(hazard: Area2D, local_height: float) -> void:
 	for child in hazard.get_children():
 		if child is Node2D:
 			var child_2d := child as Node2D

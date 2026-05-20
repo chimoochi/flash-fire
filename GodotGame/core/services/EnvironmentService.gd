@@ -60,6 +60,16 @@ func add_snow_zone(pos: Vector2, radius: float) -> void:
 func add_heat_zone(pos: Vector2, radius: float) -> void:
 	heat_zones.append({"pos": pos, "radius": radius})
 
+func reset_environment_effects() -> void:
+	_restore_player_speed()
+	current_environment = EnvironmentType.NONE
+	snow_zones.clear()
+	heat_zones.clear()
+	poison_stacks = 0
+	poison_timer = 0.0
+	poison_env_timer = 0.0
+	damage_accumulator = 0.0
+
 func _cycle_environment() -> void:
 	_exit_environment(current_environment)
 	current_environment = (current_environment + 1) % EnvironmentType.size()
@@ -81,9 +91,15 @@ func _exit_environment(type: int) -> void:
 
 	match type:
 		EnvironmentType.SNOW:
-			if player and is_slowed:
-				player.MAX_SPEED = original_speed
-				is_slowed = false
+			_restore_player_speed()
+
+func _restore_player_speed() -> void:
+	if not is_slowed:
+		return
+	if _is_environment_player(player):
+		var fallback_speed: float = player.get("DEFAULT_MAX_SPEED") if player.get("DEFAULT_MAX_SPEED") != null else 300.0
+		player.MAX_SPEED = maxf(original_speed, fallback_speed)
+	is_slowed = false
 
 func _physics_process(delta: float) -> void:
 	if not _is_environment_player(player):

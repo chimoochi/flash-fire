@@ -1,11 +1,14 @@
 extends Node2D
 
-enum Phase {INVESTIGATE, COMBAT, CLEARED}
+const LAVA_FINAL_BOSS_SCENE = preload("res://actors/enemies/lava_final_boss.tscn")
+
+enum Phase {INVESTIGATE, COMBAT, BOSS, CLEARED}
 
 var _phase: Phase = Phase.INVESTIGATE
 var _player: Node2D = null
 var _investigate_area: Node = null
 var _investigated := false
+var _boss_spawned := false
 var _startup_timer := 0.5
 
 func _ready() -> void:
@@ -30,6 +33,9 @@ func _process(delta: float) -> void:
 		Phase.COMBAT:
 			_lock_enemies_on_player()
 			_check_combat_cleared()
+		Phase.BOSS:
+			_lock_enemies_on_player()
+			_check_boss_cleared()
 
 func _check_investigate_trigger() -> void:
 	if _investigated:
@@ -80,4 +86,35 @@ func _check_combat_cleared() -> void:
 		return
 	if get_tree().get_nodes_in_group("EnemyPortal").size() > 0:
 		return
+	_spawn_lava_final_boss()
+
+func _spawn_lava_final_boss() -> void:
+	if _boss_spawned:
+		return
+	_boss_spawned = true
+	_phase = Phase.BOSS
+	EnvironmentService.reset_environment_effects()
+	var boss := LAVA_FINAL_BOSS_SCENE.instantiate() as Node2D
+	get_tree().current_scene.add_child(boss)
+	boss.global_position = _get_lava_boss_spawn_position()
+	TaskService.set_tasks([
+		{"label": "Defeat the lava final boss", "type": "count_group", "group": "LavaFinalBoss"},
+	])
+	VisualEffectsService.set_mood("fire")
+
+func _get_lava_boss_spawn_position() -> Vector2:
+	var spawn := get_node_or_null("LavaFinalBossSpawnPoint") as Node2D
+	if is_instance_valid(spawn):
+		return spawn.global_position
+	if is_instance_valid(_investigate_area):
+		return _investigate_area.global_position
+	return Vector2.ZERO
+
+func _check_boss_cleared() -> void:
+	if get_tree().get_nodes_in_group("LavaFinalBoss").size() > 0:
+		return
 	_phase = Phase.CLEARED
+	VisualEffectsService.set_mood("normal")
+	TaskService.set_tasks([
+		{"label": "Fire palace cleared", "type": "static"},
+	])

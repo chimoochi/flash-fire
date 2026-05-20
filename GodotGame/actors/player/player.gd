@@ -1,7 +1,10 @@
 extends CharacterBody2D
 
+const STOMP_BOULDER_SCENE = preload("res://combat/projectiles/lava_boulder.tscn")
 
-var MAX_SPEED = 300.0
+const DEFAULT_MAX_SPEED := 300.0
+
+var MAX_SPEED = DEFAULT_MAX_SPEED
 var SPRINT_SPEED = 600.0
 var ACCELERATION = 3000.0
 var FRICTION = 4000.0
@@ -31,6 +34,9 @@ const AOE_DAMAGE = 35
 const AOE_RADIUS = 130.0
 const AOE_PUSH_FORCE = 1500.0
 const AOE_COOLDOWN = 1.5
+const STOMP_BOULDER_DAMAGE := 56
+const STOMP_BOULDER_PUSH := 1450.0
+const STOMP_BOULDER_SPEED := 620.0
 
 const DASH_STAMINA_COST = 20.0
 const DASH_DAMAGE = 30
@@ -274,6 +280,8 @@ func _physics_process(delta):
 
 	_handle_push_interaction(delta)
 	push_velocity = push_velocity.move_toward(Vector2.ZERO, PUSH_DECAY * delta)
+	if push_velocity.length_squared() < 1.0:
+		push_velocity = Vector2.ZERO
 
 	if dash_service.is_dashing:
 		dash_service.process_dash_physics(self, delta)
@@ -616,10 +624,13 @@ func _spawn_muzzle_particles(pos: Vector2, dir: Vector2) -> void:
 
 func _spawn_stomp_chain() -> void:
 	var dir := (get_global_mouse_position() - global_position).normalized()
+	if dir == Vector2.ZERO:
+		dir = Vector2.RIGHT.rotated(rotation)
 
 	# Step 1: full explosion at player feet (immediate)
 	ThrowableService.explode(AOE_RADIUS, global_position, AOE_DAMAGE, AOE_PUSH_FORCE, self, 15)
 	_spawn_stomp_burst(global_position, AOE_RADIUS, 5, 10)
+	_spawn_stomp_boulder(dir)
 
 	# Step 2: medium explosion 90px forward
 	var pos2 := global_position + dir * 90.0
@@ -642,6 +653,41 @@ func _spawn_stomp_chain() -> void:
 		_spawn_stomp_burst(pos3, 55.0, 3, 5)
 		CameraService.shake(0.18)
 	)
+
+func _spawn_stomp_boulder(dir: Vector2) -> void:
+	var boulder := STOMP_BOULDER_SCENE.instantiate()
+	boulder.global_position = global_position + dir * 54.0
+	boulder.direction = dir.normalized()
+	boulder.owner_node = self
+	boulder.target = _get_boulder_target(dir)
+	boulder.speed = STOMP_BOULDER_SPEED
+	boulder.turn_rate = 0.35
+	boulder.damage = STOMP_BOULDER_DAMAGE
+	boulder.push_force = STOMP_BOULDER_PUSH
+	boulder.damageable = false
+	get_tree().root.add_child(boulder)
+	ParticleService.dust_puff(boulder.global_position, 0.75)
+	SoundService.play_sound_at("throw", global_position, -5.0)
+
+func _get_boulder_target(dir: Vector2) -> Node2D:
+	var best: Node2D = null
+	var best_score := INF
+	for enemy in get_tree().get_nodes_in_group("Enemy"):
+		if not is_instance_valid(enemy) or not enemy is Node2D:
+			continue
+		var enemy_node := enemy as Node2D
+		var to_enemy: Vector2 = enemy_node.global_position - global_position
+		var dist: float = to_enemy.length()
+		if dist <= 0.01 or dist > 520.0:
+			continue
+		var facing: float = dir.dot(to_enemy / dist)
+		if facing < 0.45:
+			continue
+		var score: float = dist - facing * 160.0
+		if score < best_score:
+			best_score = score
+			best = enemy_node
+	return best
 
 func _spawn_stomp_burst(pos: Vector2, radius: float, ray_count: int, particles_per_ray: int) -> void:
 	for i in range(ray_count):
@@ -755,6 +801,7 @@ func heal(amount: int) -> void:
 	DamageNumber.spawn(get_tree(), global_position + Vector2(randf_range(-8, 8), -20), amount, Color(0.25, 1.0, 0.25))
 	VisualEffectsService.player_healed()
 	if PlayerState["health"] > PlayerState["max_health"] * 0.3:
+		VisualEffectsService.clear_transient_pulses()
 		VisualEffectsService.set_mood("normal")
 
 func _play_hurt_sound(flavor: String) -> void:
@@ -777,6 +824,7 @@ func respawn() -> void:
 	
 	PlayerState["health"] = PlayerState["max_health"]
 	PlayerState["is_alive"] = true
+	VisualEffectsService.clear_transient_pulses()
 	VisualEffectsService.set_mood("normal")
 	
 	if health_bar:
@@ -788,6 +836,7 @@ func respawn() -> void:
 	else:
 		global_position = Vector2.ZERO
 	velocity = Vector2.ZERO
+	push_velocity = Vector2.ZERO
 	
 	visible = true
 	set_physics_process(true)

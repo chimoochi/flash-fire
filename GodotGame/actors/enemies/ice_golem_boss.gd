@@ -22,6 +22,10 @@ const CREEPER_SLOW_TIME := 2.0
 const TORNADO_COOLDOWN := 8.0
 const TORNADO_WINDUP := 2.0
 const TORNADO_RECOVER := 2.0
+const MAX_TARGET_DISTANCE := 520.0
+const HARD_LEASH_DISTANCE := 720.0
+const LEASH_PULL_SPEED := 360.0
+const MAX_PUSH_SPEED := 420.0
 
 enum BossState { ACTIVE, SUMMONING, TORNADO_WINDUP, TORNADO_CHARGE, TORNADO_RECOVER }
 
@@ -81,6 +85,8 @@ func _physics_process(delta: float) -> void:
 		BossState.TORNADO_RECOVER:
 			_process_tornado_recover(delta)
 
+	_apply_target_leash(delta)
+
 func _process_active(delta: float) -> void:
 	var to_target := target.global_position - global_position
 	var dist := to_target.length()
@@ -103,6 +109,7 @@ func _process_active(delta: float) -> void:
 		_enter_tornado_windup()
 		return
 
+	push_velocity = push_velocity.limit_length(MAX_PUSH_SPEED)
 	velocity = dir * MOVE_SPEED + push_velocity
 	move_and_slide()
 	push_velocity = velocity - dir * MOVE_SPEED
@@ -111,6 +118,7 @@ func _process_active(delta: float) -> void:
 func _process_summoning(delta: float) -> void:
 	_state_timer -= delta
 	rotation = global_position.direction_to(target.global_position).angle()
+	push_velocity = push_velocity.limit_length(MAX_PUSH_SPEED)
 	velocity = global_position.direction_to(target.global_position) * SLOWED_SPEED + push_velocity
 	move_and_slide()
 	push_velocity = velocity - global_position.direction_to(target.global_position) * SLOWED_SPEED
@@ -171,7 +179,8 @@ func _process_tornado_charge(delta: float) -> void:
 			if away == Vector2.ZERO:
 				away = _tornado_dir
 			body.push(away * STOMP_KNOCKBACK)
-	if global_position.distance_to(_tornado_start) >= TORNADO_DISTANCE or get_slide_collision_count() > 0:
+	var target_dist := global_position.distance_to(target.global_position) if is_instance_valid(target) else 0.0
+	if global_position.distance_to(_tornado_start) >= TORNADO_DISTANCE or get_slide_collision_count() > 0 or target_dist >= MAX_TARGET_DISTANCE:
 		_enter_tornado_recover()
 
 func _enter_tornado_recover() -> void:
@@ -184,7 +193,11 @@ func _enter_tornado_recover() -> void:
 
 func _process_tornado_recover(delta: float) -> void:
 	_state_timer -= delta
-	velocity = Vector2.ZERO
+	var dist := global_position.distance_to(target.global_position) if is_instance_valid(target) else 0.0
+	if is_instance_valid(target) and dist > STOMP_RANGE * 1.8:
+		velocity = global_position.direction_to(target.global_position) * SLOWED_SPEED
+	else:
+		velocity = Vector2.ZERO
 	move_and_slide()
 	if is_instance_valid(target):
 		rotation = global_position.direction_to(target.global_position).angle()
@@ -197,6 +210,20 @@ func _predict_tornado_direction() -> Vector2:
 		predicted += target.velocity * 0.8
 	var dir := global_position.direction_to(predicted)
 	return dir if dir.length_squared() > 0.01 else Vector2.RIGHT.rotated(randf() * TAU)
+
+func _apply_target_leash(delta: float) -> void:
+	if not is_instance_valid(target) or _state == BossState.TORNADO_CHARGE:
+		return
+	var to_target := target.global_position - global_position
+	var dist := to_target.length()
+	if dist <= MAX_TARGET_DISTANCE:
+		return
+	var dir := to_target.normalized()
+	push_velocity = Vector2.ZERO
+	if dist >= HARD_LEASH_DISTANCE:
+		global_position = target.global_position - dir * MAX_TARGET_DISTANCE
+	else:
+		global_position += dir * LEASH_PULL_SPEED * delta
 
 func _stomp() -> void:
 	_stomp_sprite.visible = true

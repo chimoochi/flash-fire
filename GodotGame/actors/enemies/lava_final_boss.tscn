@@ -1,0 +1,29 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://actors/enemies/lava_final_boss.gd" id="1_script"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_body"]
+radius = 42.0
+
+[node name="LavaFinalBoss" type="CharacterBody2D"]
+collision_layer = 4
+collision_mask = 3
+script = ExtResource("1_script")
+
+[node name="BodyVisual" type="Polygon2D" parent="."]
+color = Color(0.18, 0.04, 0.02, 1)
+polygon = PackedVector2Array(-45, -34, 34, -45, 54, 8, 22, 49, -40, 38, -58, -4)
+
+[node name="LavaCoreVisual" type="Polygon2D" parent="."]
+z_index = 1
+color = Color(1, 0.18, 0.02, 0.9)
+polygon = PackedVector2Array(-20, -12, 8, -24, 28, -2, 18, 24, -15, 21, -30, 2)
+
+[node name="WindupVisual" type="Polygon2D" parent="."]
+visible = false
+z_index = 2
+color = Color(1, 0.78, 0.12, 0.42)
+polygon = PackedVector2Array(-70, -70, 70, -70, 70, 70, -70, 70)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_body")
