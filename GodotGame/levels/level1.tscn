@@ -1,4 +1,4 @@
-[gd_scene load_steps=33 format=3 uid="uid://cf3et80ur7r0d"]
+[gd_scene load_steps=32 format=3 uid="uid://cf3et80ur7r0d"]
 
 [ext_resource type="PackedScene" uid="uid://bq3nv1n2jji1h" path="res://actors/player/player.tscn" id="1_nf4vs"]
 [ext_resource type="Texture2D" uid="uid://b8whads1so5t3" path="res://gameassets/textures/world/TX Plant.png" id="1_s8oj7"]
@@ -18,7 +18,6 @@
 [ext_resource type="Texture2D" uid="uid://btj4g4afxtp7f" path="res://gameassets/runtime/sprites/boat.png" id="15_qegch"]
 [ext_resource type="Script" uid="uid://cxilxq4hu26fu" path="res://levels/level1.gd" id="16_l2script"]
 [ext_resource type="PackedScene" uid="uid://csr6fua6sknbl" path="res://actors/enemies/slime.tscn" id="17_w7ck5"]
-[ext_resource type="PackedScene" uid="uid://b1ymhasmx17o7" path="res://actors/enemies/ice_brute_enemy.tscn" id="20_2nn5w"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_0k6sk"]
 texture = ExtResource("1_s8oj7")
@@ -2564,17 +2563,6 @@ rotation = 0.543966
 position = Vector2(138, 2556)
 rotation = 1.8387429
 
-[node name="Enemy bad3" parent="BoatTrigger" instance=ExtResource("3_enemy")]
-position = Vector2(-65, 2081)
-rotation = 1.440018
-
-[node name="Enemy bad4" parent="BoatTrigger" instance=ExtResource("3_enemy")]
-position = Vector2(-458, 1791)
-
-[node name="Enemy bad5" parent="BoatTrigger" instance=ExtResource("3_enemy")]
-position = Vector2(-198, 1382)
-rotation = 2.0250273
-
 [node name="Enemy bad6" parent="BoatTrigger" instance=ExtResource("3_enemy")]
 position = Vector2(-70, 1789)
 rotation = 2.9233904
@@ -2582,11 +2570,6 @@ rotation = 2.9233904
 [node name="Enemy bad7" parent="BoatTrigger" instance=ExtResource("3_enemy")]
 position = Vector2(-736, 1375)
 rotation = 0.94234055
-
-[node name="Level2Heavy" parent="BoatTrigger" instance=ExtResource("20_2nn5w")]
-position = Vector2(-835, 827)
-rotation = 1.1113393
-scale = Vector2(1.5, 1.5078406)
 
 [node name="Enemy bad8" parent="BoatTrigger" instance=ExtResource("3_enemy")]
 position = Vector2(-871, 425)

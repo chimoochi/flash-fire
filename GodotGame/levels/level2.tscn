@@ -1,4 +1,4 @@
-[gd_scene load_steps=34 format=3 uid="uid://b7e31wa24rvtw"]
+[gd_scene load_steps=35 format=3 uid="uid://b7e31wa24rvtw"]
 
 [ext_resource type="Script" uid="uid://82tvsfn2myas" path="res://levels/level2.gd" id="1_script"]
 [ext_resource type="Texture2D" uid="uid://b8whads1so5t3" path="res://gameassets/textures/world/TX Plant.png" id="2_nq7ub"]
@@ -17,6 +17,7 @@
 [ext_resource type="Texture2D" uid="uid://btj4g4afxtp7f" path="res://gameassets/runtime/sprites/boat.png" id="16_7ej46"]
 [ext_resource type="PackedScene" path="res://environment/explosive_barrel.tscn" id="17_jj0ry"]
 [ext_resource type="PackedScene" path="res://gameplay/minigame/generator.tscn" id="18_w8ofq"]
+[ext_resource type="PackedScene" path="res://environment/spawn_point.tscn" id="19_spawn"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_6slt7"]
 texture = ExtResource("2_nq7ub")
@@ -2948,6 +2949,10 @@ layer_3/tile_data = PackedInt32Array(524265, 720906, 0, 589801, 720906, 1, 65533
 
 [node name="Player" parent="." instance=ExtResource("14_u3me6")]
 position = Vector2(1798, 3840)
+
+[node name="RespawnPoint" parent="." instance=ExtResource("19_spawn")]
+position = Vector2(633, 2771)
+move_player_on_ready = false
 
 [node name="TextureRect" type="TextureRect" parent="."]
 offset_left = 1839.0

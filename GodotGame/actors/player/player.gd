@@ -67,6 +67,8 @@ const THROW_SPEED = 600.0
 @onready var _hud = $CanvasLayer/HUD
 @onready var _sprite: TextureRect = $TextureRect
 @onready var _camera: Camera2D = $Camera2D
+@onready var _death_screen: Control = $CanvasLayer/DeathScreen
+@onready var _respawn_button: Button = $CanvasLayer/DeathScreen/VBoxContainer/RespawnButton
 
 var dash_service: DashService
 var swing_melee: WaterPopper
@@ -126,6 +128,7 @@ var PlayerState: Dictionary = {
 
 var _stamina_bar: ProgressBar = null
 var _spawning: bool = false
+var _pending_respawn: bool = false
 
 var debug_hitboxes: bool = false
 var _selected_weapon: int = 0
@@ -149,6 +152,10 @@ func _ready() -> void:
 	
 	health_bar.max_value = PlayerState["max_health"]
 	health_bar.value = PlayerState["health"]
+	if _death_screen:
+		_death_screen.visible = false
+	if _respawn_button and not _respawn_button.pressed.is_connected(_finish_respawn):
+		_respawn_button.pressed.connect(_finish_respawn)
 	
 	equipped_power = PowerModule.get_random_power()
 	_equip_weapon_visual()
@@ -812,20 +819,30 @@ func _play_hurt_sound(flavor: String) -> void:
 
 
 func die() -> void:
+	if not PlayerState["is_alive"]:
+		return
 	PlayerState["is_alive"] = false
+	_pending_respawn = true
 	VisualEffectsService.death_flash()
-	visible = false
+	_stop_stream()
+	_sprite.visible = false
+	_set_collision_disabled(true)
 	set_physics_process(false)
-	
-	call_deferred("respawn")
+	_show_death_screen()
 
 func respawn() -> void:
-	await get_tree().create_timer(2.0).timeout
+	_finish_respawn()
+
+func _finish_respawn() -> void:
+	if not _pending_respawn and PlayerState["is_alive"]:
+		return
+	_pending_respawn = false
 	
 	PlayerState["health"] = PlayerState["max_health"]
 	PlayerState["is_alive"] = true
 	VisualEffectsService.clear_transient_pulses()
 	VisualEffectsService.set_mood("normal")
+	_hide_death_screen()
 	
 	if health_bar:
 		health_bar.set_health(PlayerState["health"])
@@ -838,8 +855,24 @@ func respawn() -> void:
 	velocity = Vector2.ZERO
 	push_velocity = Vector2.ZERO
 	
-	visible = true
+	_sprite.visible = true
+	_set_collision_disabled(false)
 	set_physics_process(true)
+
+func _show_death_screen() -> void:
+	if _death_screen:
+		_death_screen.visible = true
+	if _respawn_button:
+		_respawn_button.disabled = false
+
+func _hide_death_screen() -> void:
+	if _death_screen:
+		_death_screen.visible = false
+
+func _set_collision_disabled(disabled: bool) -> void:
+	for child in get_children():
+		if child is CollisionShape2D:
+			(child as CollisionShape2D).set_deferred("disabled", disabled)
 
 func _damage_flavor(source: Node2D) -> String:
 	if not is_instance_valid(source):

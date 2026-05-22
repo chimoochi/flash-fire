@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://b0nasicy4i5sa" path="res://levels/level4.gd" id="1_rxes3"]
 
-[node name="Level2" type="Node2D"]
+[node name="TheEnd" type="Node2D"]
 script = ExtResource("1_rxes3")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
@@ -26,8 +26,7 @@ offset_right = 400.0
 offset_bottom = 60.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_font_sizes/font_size = 32
-text = "Demo Finished
-More to be implemented"
+theme_override_font_sizes/font_size = 48
+text = "The end"
 horizontal_alignment = 1
 vertical_alignment = 1

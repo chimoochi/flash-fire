@@ -44,7 +44,7 @@ var _tornado_particles: CPUParticles2D = null
 var _hit_flash_tween: Tween = null
 var _dead := false
 
-@onready var _body_visual: Polygon2D = $BodyVisual
+@onready var _body_visual: Sprite2D = $BodyVisual
 @onready var _windup_visual: Polygon2D = $WindupVisual
 
 var _health_bar: ProgressBar

@@ -1,4 +1,4 @@
-[gd_scene load_steps=34 format=3 uid="uid://c20uot3qqdw3w"]
+[gd_scene load_steps=35 format=3 uid="uid://c20uot3qqdw3w"]
 
 [ext_resource type="Texture2D" uid="uid://b8whads1so5t3" path="res://gameassets/textures/world/TX Plant.png" id="1_nq7ub"]
 [ext_resource type="Script" uid="uid://b31u3x2slqyb0" path="res://levels/level3.gd" id="1_script"]
@@ -17,6 +17,7 @@
 [ext_resource type="Texture2D" uid="uid://d103s34hu7f8k" path="res://gameassets/textures/world/Water+.png" id="14_4sv2i"]
 [ext_resource type="PackedScene" uid="uid://bq3nv1n2jji1h" path="res://actors/player/player.tscn" id="15_6slt7"]
 [ext_resource type="PackedScene" path="res://gameplay/minigame/generator.tscn" id="16_7ej46"]
+[ext_resource type="PackedScene" path="res://environment/spawn_point.tscn" id="17_spawn"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_43cms"]
 texture = ExtResource("1_nq7ub")
@@ -5847,8 +5848,13 @@ layer_3/tile_data = PackedInt32Array(-4849582, 1769486, 42, -4784046, 1769486, 4
 [node name="Player" parent="." instance=ExtResource("15_6slt7")]
 position = Vector2(-51, -169)
 
+[node name="RespawnPoint" parent="." instance=ExtResource("17_spawn")]
+position = Vector2(2301, -1636)
+move_player_on_ready = false
+
 [node name="investigate" type="Area2D" parent="."]
 position = Vector2(2303.0002, -2384)
+rotation = 0.012653801
 scale = Vector2(6.0331097, 5.0373983)
 collision_layer = 0
 collision_mask = 2

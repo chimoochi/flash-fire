@@ -10,6 +10,8 @@ var _transitioning: bool = false
 
 var _canvas_layer: CanvasLayer
 var _fade_overlay: ColorRect
+var _fade_out_duration := 0.5
+var _fade_in_duration := 0.5
 
 func _ready() -> void:
 	_setup_fade()
@@ -57,9 +59,11 @@ func restore_player_status(player: Node2D) -> void:
 		player._equip_weapon_visual()
 		player._update_passive_ui()
 
-func advance_to(destination: String) -> void:
+func advance_to(destination: String, fade_out_duration: float = 0.5, fade_in_duration: float = 0.5) -> void:
 	if _transitioning:
 		return
+	_fade_out_duration = maxf(fade_out_duration, 0.01)
+	_fade_in_duration = maxf(fade_in_duration, 0.01)
 	var players := get_tree().get_nodes_in_group("Player")
 	if players.size() > 0:
 		save_player_status(players[0])
@@ -83,9 +87,11 @@ func change_map(target_scene_path: String) -> void:
 func _load_scene(scene_path: String) -> void:
 	_transitioning = true
 	_fade_overlay.mouse_filter = Control.MOUSE_FILTER_STOP
+	var fade_out_duration := _fade_out_duration
+	var fade_in_duration := _fade_in_duration
 
 	var out := create_tween()
-	out.tween_property(_fade_overlay, "modulate:a", 1.0, 0.5).set_trans(Tween.TRANS_SINE)
+	out.tween_property(_fade_overlay, "modulate:a", 1.0, fade_out_duration).set_trans(Tween.TRANS_SINE)
 	await out.finished
 
 	EnvironmentService.reset_environment_effects()
@@ -99,11 +105,13 @@ func _load_scene(scene_path: String) -> void:
 	_resize_overlay()
 
 	var in_t := create_tween()
-	in_t.tween_property(_fade_overlay, "modulate:a", 0.0, 0.5).set_trans(Tween.TRANS_SINE)
+	in_t.tween_property(_fade_overlay, "modulate:a", 0.0, fade_in_duration).set_trans(Tween.TRANS_SINE)
 	await in_t.finished
 
 	_fade_overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_transitioning = false
+	_fade_out_duration = 0.5
+	_fade_in_duration = 0.5
 
 func _cleanup_root_orphans() -> void:
 	# Free anything sitting directly on root that isn't an autoload or the current scene.

@@ -1,6 +1,7 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=4 format=3 uid="uid://b0mw0aecpbalp"]
 
-[ext_resource type="Script" path="res://actors/enemies/lava_final_boss.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://cwtolom1gcvui" path="res://actors/enemies/lava_final_boss.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://b17ghd1aoasvc" path="res://gameassets/textures/enemies/Lava Golem.png" id="2_lava_golem"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_body"]
 radius = 42.0
@@ -10,14 +11,16 @@ collision_layer = 4
 collision_mask = 3
 script = ExtResource("1_script")
 
-[node name="BodyVisual" type="Polygon2D" parent="."]
-color = Color(0.18, 0.04, 0.02, 1)
-polygon = PackedVector2Array(-45, -34, 34, -45, 54, 8, 22, 49, -40, 38, -58, -4)
+[node name="BodyVisual" type="Sprite2D" parent="."]
+rotation = 1.575103
+scale = Vector2(0.16, 0.16)
+texture = ExtResource("2_lava_golem")
 
-[node name="LavaCoreVisual" type="Polygon2D" parent="."]
+[node name="LavaCoreVisual" type="PointLight2D" parent="."]
 z_index = 1
-color = Color(1, 0.18, 0.02, 0.9)
-polygon = PackedVector2Array(-20, -12, 8, -24, 28, -2, 18, 24, -15, 21, -30, 2)
+color = Color(1, 0.22, 0.04, 1)
+energy = 0.8
+texture_scale = 1.7
 
 [node name="WindupVisual" type="Polygon2D" parent="."]
 visible = false

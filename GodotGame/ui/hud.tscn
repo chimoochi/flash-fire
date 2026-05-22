@@ -1,9 +1,13 @@
-[gd_scene load_steps=9 format=3 uid="uid://bqcu8nov8xb43"]
+[gd_scene load_steps=13 format=3 uid="uid://bqcu8nov8xb43"]
 
 [ext_resource type="Script" uid="uid://bkyxav6vut7bf" path="res://ui/hud.gd" id="1_hud"]
 [ext_resource type="PackedScene" uid="uid://c6jlkk74smucx" path="res://actors/player/health_bar.tscn" id="2_healthbar"]
 [ext_resource type="Texture2D" uid="uid://b8168m60sfs48" path="res://gameassets/runtime/hud/HealthBar1.png" id="3_hb1"]
 [ext_resource type="Texture2D" uid="uid://c5vomqcvkahg8" path="res://gameassets/runtime/hud/HealthBar2.png" id="4_hb2"]
+[ext_resource type="Texture2D" uid="uid://b4jws1y8og3fu" path="res://gameassets/textures/ui_icons/fireball icon.png" id="5_fireball_icon"]
+[ext_resource type="Texture2D" uid="uid://ct5cua4ocfwv5" path="res://gameassets/textures/ui_icons/firebeam.png" id="6_firebeam_icon"]
+[ext_resource type="Texture2D" uid="uid://7s4ye7q7d2ki" path="res://gameassets/textures/ui_icons/aoe.png" id="7_aoe_icon"]
+[ext_resource type="Texture2D" uid="uid://csa81fkl06yx" path="res://gameassets/textures/ui_icons/fireshotgun.png" id="8_shotgun_icon"]
 
 [sub_resource type="StyleBoxFlat" id="SF_hp_bg"]
 bg_color = Color(0.1, 0.1, 0.1, 1)
@@ -108,6 +112,19 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 color = Color(1, 0.38, 0.08, 1)
 
+[node name="AttackIcon1" type="TextureRect" parent="Content/AttacksRow/Slot1/IconWrap1"]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = 2.0
+offset_right = -4.0
+offset_bottom = -2.0
+mouse_filter = 2
+texture = ExtResource("5_fireball_icon")
+expand_mode = 1
+stretch_mode = 5
+
 [node name="Cooldown1" type="ColorRect" parent="Content/AttacksRow/Slot1/IconWrap1"]
 visible = false
 layout_mode = 0
@@ -141,6 +158,19 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(1, 0.85, 0.1, 1)
 
+[node name="AttackIcon2" type="TextureRect" parent="Content/AttacksRow/Slot2/IconWrap2"]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = 2.0
+offset_right = -4.0
+offset_bottom = -2.0
+mouse_filter = 2
+texture = ExtResource("6_firebeam_icon")
+expand_mode = 1
+stretch_mode = 5
+
 [node name="Cooldown2" type="ColorRect" parent="Content/AttacksRow/Slot2/IconWrap2"]
 visible = false
 layout_mode = 0
@@ -171,6 +201,19 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 color = Color(0.6, 0.15, 1, 1)
 
+[node name="AttackIcon3" type="TextureRect" parent="Content/AttacksRow/Slot3/IconWrap3"]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = 2.0
+offset_right = -4.0
+offset_bottom = -2.0
+mouse_filter = 2
+texture = ExtResource("7_aoe_icon")
+expand_mode = 1
+stretch_mode = 5
+
 [node name="Cooldown3" type="ColorRect" parent="Content/AttacksRow/Slot3/IconWrap3"]
 visible = false
 layout_mode = 0
@@ -200,6 +243,19 @@ layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 color = Color(0.2, 0.7, 1, 1)
+
+[node name="AttackIcon4" type="TextureRect" parent="Content/AttacksRow/Slot4/IconWrap4"]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = 2.0
+offset_right = -4.0
+offset_bottom = -2.0
+mouse_filter = 2
+texture = ExtResource("8_shotgun_icon")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="Cooldown4" type="ColorRect" parent="Content/AttacksRow/Slot4/IconWrap4"]
 visible = false
